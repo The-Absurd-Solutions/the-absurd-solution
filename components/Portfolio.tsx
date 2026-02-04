@@ -277,7 +277,7 @@ export const Portfolio: React.FC = () => {
             <AnimatePresence>
                 {selectedProject && (
                     <motion.div
-                        className="fixed inset-0 z-50 flex items-center justify-center p-0 md:p-8"
+                        className="fixed inset-0 z-[9999] flex items-start justify-center pt-20 md:pt-24 p-0 md:p-8"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
@@ -295,7 +295,7 @@ export const Portfolio: React.FC = () => {
                         >
                             <button
                                 onClick={() => setSelectedProject(null)}
-                                className="absolute top-28 md:top-6 right-4 md:right-6 z-50 p-3 bg-black text-white hover:bg-gray-800 transition-colors rounded-full"
+                                className="absolute top-4 right-4 z-[9999] p-3 bg-black text-white hover:bg-gray-800 transition-colors rounded-full shadow-lg"
                             >
                                 <X size={28} />
                             </button>

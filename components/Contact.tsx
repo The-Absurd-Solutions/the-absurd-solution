@@ -72,9 +72,9 @@ export const Contact: React.FC = () => {
                 Novi Sad, Serbia.
             </p>
             <div className="mt-6 pt-4 border-t border-black/20 group-hover:border-white/20 transition-colors duration-300">
-              <a href="mailto:the@absurdsolutin.com" className="inline-flex items-center gap-2 text-black group-hover:text-white hover:underline text-lg font-bold transition-colors duration-300">
+              <a href="mailto:the@absurdsolution.com" className="inline-flex items-center gap-2 text-black group-hover:text-white hover:underline text-lg font-bold transition-colors duration-300">
                 <Mail size={20} className="group-hover:text-white transition-colors duration-300" />
-                the@absurdsolutin.com
+                the@absurdsolution.com
               </a>
             </div>
          </div>

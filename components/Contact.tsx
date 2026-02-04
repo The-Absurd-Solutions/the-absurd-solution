@@ -53,9 +53,9 @@ export const Contact: React.FC = () => {
                 type="submit"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-4 bg-black text-white font-bold tracking-widest uppercase flex items-center justify-center gap-2 group sketch-box hover:text-white"
+                className="w-full py-4 bg-white border-2 border-black text-black font-bold tracking-widest uppercase flex items-center justify-center gap-2 group sketch-box hover:bg-black hover:text-white"
             >
-                <Send size={18} className="group-hover:translate-x-1 transition-transform" />
+                <Send size={18} className="text-black group-hover:text-white group-hover:translate-x-1 transition-all" />
                 Cast Message
             </motion.button>
             {status && <p className="text-lg text-center text-black mt-4 handwritten animate-pulse">{status}</p>}

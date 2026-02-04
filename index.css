@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
+}
+
+body {
+  background-color: #ffffff;
+  color: #1a1a1a;
+  font-family: 'Nanum Pen Script', cursive;
+  font-size: 1.2rem;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'Major Mono Display', monospace;
+  font-weight: bold;
+}
+
+.font-sans {
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* The "Ink" Filter - makes things look wobbly and sketched */
+.ink-effect {
+  filter: url(#ink-filter);
+}
+
+/* Sketchy Borders */
+.sketch-box {
+  border: 2px solid #1a1a1a;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  background: transparent;
+  transition: all 0.3s ease;
+}
+.sketch-box:hover {
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+/* Custom Scrollbar - Minimalist Ink */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+::-webkit-scrollbar-thumb {
+  background: #1a1a1a;
+  border-radius: 4px;
+}

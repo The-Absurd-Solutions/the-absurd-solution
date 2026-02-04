@@ -6,22 +6,6 @@ import { ExternalLink, Github, X, Code, Layers, Cpu, Fingerprint, ArrowRight } f
 
 const projects: Project[] = [
     {
-        id: 'auction-ai',
-        title: "AI Auctioneer's Eye",
-        shortDescription: "Turning chaotic Italian auction PDF catalogs into structured data using Gemini AI.",
-        longDescription: "A sophisticated document processing system designed to handle the visual and textual chaos of art auction catalogs. From extracting lot numbers hidden in full-page oil paintings to parsing dense, unstructured Italian text, this system creates order from entropy.",
-        techStack: ["Python", "PyMuPDF", "Gemini API", "AWS Fargate", "S3"],
-        challenges: [
-            "Extracting lot numbers from scanned full-page artwork images.",
-            "Prompt engineering for handling skewed text and complex layout associations.",
-            "Cost optimization for processing ~20,000 documents."
-        ],
-        links: {
-            demo: "#"
-        },
-        images: []
-    },
-    {
         id: 'ona-tools',
         title: "Corporate Web Spinner (ONA)",
         shortDescription: "Visualizing the invisible threads of organizational hierarchy and influence.",
@@ -83,44 +67,51 @@ const projects: Project[] = [
         images: ["/images/paddle-1.png", "/images/paddel-2.png"]
     },
     {
-        id: 'lex-ai',
-        title: "LexExpert (AI Legal Mind)",
-        shortDescription: "Grounded AI legal assistant with citation tracking and document highlighting.",
-        longDescription: "A legal assistant chat platform designed to help lawyers navigate complex legal content. Users ask questions and receive AI-generated answers enriched with direct references to legal documents. The system emphasizes traceability: returned sources are visually highlighted in the original document to validate the AI's claims.",
-        techStack: ["React", "AWS Serverless", "DynamoDB", "Cognito", "Vector Search"],
+        id: 'cafe-connect',
+        title: "CaféConnect",
+        shortDescription: "A platform for discovering cafés, earning loyalty rewards, and connecting coffee lovers.",
+        longDescription: "Full-stack mobile and web application connecting coffee enthusiasts with the best cafés in town. Users can explore cafés, collect loyalty stamps by scanning QR codes, pre-order coffee, reserve tables and work spots, and connect with friends. Café owners get a dashboard for business analytics, loyalty program management, and operations tracking.",
+        techStack: ["React 19", "Vite", "AWS Lambda", "DynamoDB", "AWS CDK", "Stripe", "Cognito"],
         features: [
-            "Chat-based Q&A with grounded AI responses.",
-            "Source referencing with visual highlighting.",
-            "Document preview and open-from-chat workflow.",
-            "Voice interaction support (Mobile)."
-        ],
-        challenges: [
-            "Implementing RBAC (Role-Based Access Control) for admin/editor/viewer roles.",
-            "Ensuring Observability with correlation IDs across Chat → Retrieval → Response.",
-            "Managing strict data privacy/redaction for sensitive legal inputs."
+            "Explore - search and discover cafés in your city (Novi Sad, etc.)",
+            "Events - create and RSVP to coffee meetups, workshops, tastings",
+            "QR Scanner - collect loyalty stamps with every purchase",
+            "Ordering - pre-order coffee with customizations (sugar, bean type)",
+            "Reservations - book tables and work spots",
+            "Friends & Chat - social network within the app",
+            "Profile - view badges, loyalty stamps, friends list",
+            "Business Dashboard - analytics and operations for café owners"
         ],
         architectureAscii: `
-  ┌─────────────┐      ┌──────────────┐
-  │   User UI   │◄────►│  API Gateway │
-  └──────┬──────┘      └──────┬───────┘
-         │                    │
-         ▼                    ▼
-  ┌─────────────┐      ┌──────────────┐
-  │    Auth     │      │ Orchestrator │
-  │  (Cognito)  │      │   (Lambda)   │
-  └─────────────┘      └──────┬───────┘
-                              │
-           ┌──────────────────┼──────────────────┐
-           ▼                  ▼                  ▼
-    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-    │  Vector DB  │    │  Legal LLM  │    │  Doc Store  │
-    │ (Knowledge) │    │ (Inference) │    │    (S3)     │
-    └─────────────┘    └─────────────┘    └─────────────┘
+  ┌─────────────────────────────────────────────────────────┐                             
+  │                      Frontend                           │                             
+  │              React + Vite + TailwindCSS                 │                              
+  │                   (AWS Amplify)                         │                             
+  └─────────────────────┬───────────────────────────────────┘                             
+                        │                                                                 
+                        ▼                                                                 
+  ┌─────────────────────────────────────────────────────────┐                             
+  │                   API Gateway                           │                             
+  │              REST API + Cognito Auth                    │                             
+  └─────────────────────┬───────────────────────────────────┘                             
+                        │                                                                 
+            ┌───────────┼───────────┬───────────┐                                         
+            ▼           ▼           ▼           ▼                                         
+      ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐                                 
+      │  Cafés   │ │ Loyalty  │ │  Orders  │ │  Events  │                                 
+      │ Lambdas  │ │ Lambdas  │ │ Lambdas  │ │ Lambdas  │                                 
+      └────┬─────┘ └────┬─────┘ └────┬─────┘ └────┬─────┘                                 
+           │            │            │            │                                       
+           ▼            ▼            ▼            ▼                                       
+      ┌─────────────────────┐  ┌──────────┐  ┌──────────┐                                 
+      │     DynamoDB        │  │  Stripe  │  │   S3     │                                 
+      │  (Single Table)     │  │   API    │  │ (Images) │                                 
+      └─────────────────────┘  └──────────┘  └──────────┘  
     `,
         links: {
             demo: "#"
         },
-        images: []
+        images: ["/images/coffee.png"]
     },
     {
         id: 'survey-etl',

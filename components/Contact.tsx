@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send, MapPin } from 'lucide-react';
+import { Send, MapPin, Mail } from 'lucide-react';
 
 export const Contact: React.FC = () => {
     const [status, setStatus] = useState<string>('');
@@ -62,15 +62,21 @@ export const Contact: React.FC = () => {
         </form>
       </div>
 
-      <div className="w-full max-w-md relative h-80 border-2 border-black bg-white flex items-center justify-center sketch-box">
+      <div className="w-full max-w-md relative h-80 border-2 border-black bg-white flex items-center justify-center sketch-box group hover:bg-black transition-colors duration-300">
          <div className="text-center z-10 ink-effect">
-            <MapPin size={48} className="mx-auto mb-4 text-black" />
-            <h3 className="font-bold text-2xl mb-2">LOCATION: UNKNOWN</h3>
-            <p className="text-xl text-gray-600 leading-relaxed">
+            <MapPin size={48} className="mx-auto mb-4 text-black group-hover:text-white transition-colors duration-300" />
+            <h3 className="font-bold text-2xl mb-2 group-hover:text-white transition-colors duration-300">LOCATION: NOVI SAD</h3>
+            <p className="text-xl text-gray-600 leading-relaxed group-hover:text-gray-300 transition-colors duration-300">
                 Somewhere between 0 and 1.<br/>
                 The Floating Bridge, Floor 404.<br/>
-                Belgrade, Digital Ether.
+                Novi Sad, Serbia.
             </p>
+            <div className="mt-6 pt-4 border-t border-black/20 group-hover:border-white/20 transition-colors duration-300">
+              <a href="mailto:the@absurdsolutin.com" className="inline-flex items-center gap-2 text-black group-hover:text-white hover:underline text-lg font-bold transition-colors duration-300">
+                <Mail size={20} className="group-hover:text-white transition-colors duration-300" />
+                the@absurdsolutin.com
+              </a>
+            </div>
          </div>
       </div>
     </section>

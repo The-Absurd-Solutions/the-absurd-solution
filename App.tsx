@@ -68,9 +68,9 @@ const App: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-white z-30 flex flex-col items-center justify-center space-y-8 text-4xl font-bold"
+              className="fixed top-[72px] left-0 right-0 bottom-0 bg-white z-30 flex flex-col items-center justify-center space-y-8 text-4xl font-bold"
           >
-               <a href="#about" onClick={(e) => handleNavClick(e, '#about')}>ABOUT</a>
+              <a href="#about" onClick={(e) => handleNavClick(e, '#about')}>ABOUT</a>
               <a href="#services" onClick={(e) => handleNavClick(e, '#services')}>SERVICES</a>
               <a href="#process" onClick={(e) => handleNavClick(e, '#process')}>PROCESS</a>
               <a href="#work" onClick={(e) => handleNavClick(e, '#work')}>WORK</a>
@@ -91,7 +91,8 @@ const App: React.FC = () => {
 
       {/* Footer */}
       <footer className="py-8 text-center text-lg text-gray-500 border-t-2 border-black bg-white">
-        <p>&copy; {new Date().getFullYear()} The Absurd Solution. All wrongs reserved.</p>
+        <a href="mailto:the@absurdsolutin.com" className="text-black hover:underline font-bold">the@absurdsolutin.com</a>
+        <p className="mt-4">&copy; {new Date().getFullYear()} The Absurd Solution. All wrongs reserved.</p>
         <p className="text-sm mt-2">Built with Ink & React.</p>
       </footer>
     </div>

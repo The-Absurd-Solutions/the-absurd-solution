@@ -112,7 +112,7 @@ export const Process: React.FC = () => {
                 {/* Content Side */}
                 <div className="flex-1 w-full md:w-auto">
                     <div className="sketch-box p-6 bg-white relative group hover:bg-black hover:text-white transition-colors duration-300">
-                        <span className="absolute -top-4 font-bold text-4xl font-sans opacity-20 group-hover:opacity-100 group-hover:text-white transition-all duration-300">
+                        <span className="absolute -top-4 font-bold text-4xl font-sans opacity-20 group-hover:opacity-100 group-hover:text-black group-hover:[text-shadow:0_3px_0_white] transition-all duration-300">
                             {step.id}
                         </span>
                         <h3 className="text-xl font-bold font-sans mb-1 uppercase tracking-wider">{step.absurdTitle}</h3>

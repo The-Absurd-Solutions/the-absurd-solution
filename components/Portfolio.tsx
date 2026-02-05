@@ -114,6 +114,26 @@ const projects: Project[] = [
         images: ["/images/coffee.png"]
     },
     {
+        id: 'blink-clinic',
+        title: "Blink Eye Clinic",
+        shortDescription: "Premium ophthalmology clinic website with an innovative 'vision correction' lens effect.",
+        longDescription: "A modern, minimalist single-page website for an ophthalmology clinic in Belgrade. Features a signature 'Blink Lens' effect — a mouse-following magnifying lens that simulates vision correction, making blurred content crystal clear. Built with bilingual support, accessibility-first approach, and comprehensive SEO optimization.",
+        techStack: ["React 19", "TypeScript", "Vite 6", "Tailwind CSS 4", "Lucide React"],
+        features: [
+            "Signature 'Blink Lens' — cursor-following clarity effect simulating vision correction",
+            "Bilingual support (Serbian/English) with dynamic content switching",
+            "LCP/CLS optimizations: image preloading, explicit dimensions, async fonts",
+            "Full SEO: JSON-LD schemas (MedicalBusiness, FAQPage), Open Graph, hreflang",
+            "Accessibility: skip links, ARIA labels, keyboard nav, high contrast mode",
+            "Expandable services section with smooth hover interactions",
+            "FAQ accordion with animated transitions"
+        ],
+        links: {
+            demo: "#"
+        },
+        images: ["/images/blink.png"]
+    },
+    {
         id: 'survey-etl',
         title: "Survey ETL & Analytics",
         shortDescription: "End-to-end survey ingestion, ETL transformation, and graph analytics via GraphQL.",

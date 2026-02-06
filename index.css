@@ -40,6 +40,68 @@ h1, h2, h3, h4, h5 {
   color: #ffffff;
 }
 
+/* Focus Styles for Accessibility */
+.sketch-box:focus-visible {
+  outline: 3px solid #1a1a1a;
+  outline-offset: 2px;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #1a1a1a;
+  outline-offset: 2px;
+}
+
+/* Screen Reader Only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .sketch-box {
+    border-width: 3px;
+  }
+  
+  a, button {
+    text-decoration: underline;
+  }
+}
+
 /* Custom Scrollbar - Minimalist Ink */
 ::-webkit-scrollbar {
   width: 8px;
@@ -50,4 +112,15 @@ h1, h2, h3, h4, h5 {
 ::-webkit-scrollbar-thumb {
   background: #1a1a1a;
   border-radius: 4px;
+}
+
+/* Print Styles */
+@media print {
+  .ink-effect {
+    filter: none;
+  }
+  
+  nav, footer {
+    display: none;
+  }
 }

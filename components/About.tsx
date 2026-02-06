@@ -119,7 +119,7 @@ export const About: React.FC = () => {
               <div className="text-left relative pl-4 border-l-2 border-black/20 group-hover:border-black transition-colors duration-300">
                 <h3 className="text-4xl font-black font-sans uppercase leading-[0.85] text-black mb-2">
                   {member.name.split(' ').map((n, i) => (
-                    <span key={i} className="block bg-white inline-block px-1 skew-x-[-10deg]">{n}</span>
+                    <span key={i} className="inline-block bg-white px-1 skew-x-[-10deg]">{n}</span>
                   ))}
                 </h3>
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GlitchText } from './GlitchText';
 import { Project } from '../types';
-import { ExternalLink, Github, X, Code, Layers, Cpu, Fingerprint, ArrowRight } from 'lucide-react';
+import { ExternalLink, Github, X, ArrowRight } from 'lucide-react';
 
 const projects: Project[] = [
     {
@@ -288,7 +288,7 @@ export const Portfolio: React.FC = () => {
             <AnimatePresence>
                 {selectedProject && (
                     <motion.div
-                        className="fixed inset-0 z-[9999] flex items-start justify-center pt-20 md:pt-24 p-0 md:p-8"
+                        className="fixed inset-0 z-9999 flex items-start justify-center pt-20 md:pt-24 p-0 md:p-8"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
@@ -306,7 +306,7 @@ export const Portfolio: React.FC = () => {
                         >
                             <button
                                 onClick={() => setSelectedProject(null)}
-                                className="absolute top-4 right-4 z-[9999] p-3 bg-black text-white hover:bg-gray-800 transition-colors rounded-full shadow-lg"
+                                className="absolute top-4 right-4 z-9999 p-3 bg-black text-white hover:bg-gray-800 transition-colors rounded-full shadow-lg"
                             >
                                 <X size={28} />
                             </button>
@@ -316,14 +316,14 @@ export const Portfolio: React.FC = () => {
                                 <div className="absolute top-4 left-4 z-20 bg-black text-white px-2 py-1 text-xs font-mono uppercase">
                                     Exhibit A
                                 </div>
-                                <motion.div layoutId={`image-${selectedProject.id}`} className="relative flex-grow h-64 md:h-auto overflow-hidden">
+                                <motion.div layoutId={`image-${selectedProject.id}`} className="relative grow h-64 md:h-auto overflow-hidden">
                                     <img
                                         src={selectedProject.images[0]}
                                         alt={selectedProject.title}
                                         className="w-full h-full object-cover grayscale contrast-110"
                                     />
                                     {/* Scanlines */}
-                                    <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%] pointer-events-none"></div>
+                                    <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-size-[100%_2px,3px_100%] pointer-events-none"></div>
                                 </motion.div>
 
                                 {selectedProject.architectureAscii && (

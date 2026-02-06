@@ -31,7 +31,7 @@ export const MobiusLoop: React.FC = () => {
 
         {/* Scribble Particle */}
         <motion.rect width="4" height="4" fill="#000">
-           <motion.animateMotion 
+           <animateMotion 
              path="M20,50 C20,-50 180,-50 180,50 C180,150 20,150 20,50"
              dur="5s"
              repeatCount="indefinite"

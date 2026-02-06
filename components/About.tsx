@@ -107,7 +107,7 @@ export const About: React.FC = () => {
                         : "polygon(2% 2%, 98% 0, 100% 98%, 0 95%)"
                   }}
                 >
-                  <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                  <img src={member.image} alt={member.name} className="w-full h-full object-cover object-top" />
                   <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dust.png')] opacity-50 mix-blend-screen"></div>
                 </div>
 

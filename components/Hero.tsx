@@ -4,7 +4,7 @@ import { MobiusLoop } from './MobiusLoop';
 
 export const Hero: React.FC = () => {
   return (
-    <section id="home" className="min-h-screen relative flex flex-col md:flex-row items-center justify-center p-8 overflow-hidden">
+    <section id="home" className="min-h-screen relative flex flex-col md:flex-row items-center justify-center p-4 md:p-8 overflow-hidden">
 
       {/* Background Scribbles */}
       <svg className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20 z-0">
@@ -23,14 +23,14 @@ export const Hero: React.FC = () => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1 }}
         >
-          <h1 className="text-6xl md:text-8xl tracking-tighter text-black mb-4 ink-effect">
+          <h1 className="text-4xl sm:text-6xl md:text-8xl tracking-tighter text-black mb-4 ink-effect">
             THE ABSURD<br />
-            <span className="text-4xl md:text-6xl font-sans italic">solution.</span>
+            <span className="text-2xl sm:text-4xl md:text-6xl font-sans italic">solution.</span>
           </h1>
         </motion.div>
 
         <motion.p
-          className="text-2xl md:text-3xl text-[#333] transform -rotate-1"
+          className="text-lg sm:text-2xl md:text-3xl text-[#333] transform -rotate-1"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 1 }}

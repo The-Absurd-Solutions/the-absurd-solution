@@ -69,12 +69,12 @@ export const Contact: React.FC = () => {
         <section
             id="contact"
             aria-labelledby="contact-heading"
-            className="min-h-screen py-20 px-8 flex flex-col md:flex-row items-center justify-center gap-16 relative bg-white"
+            className="min-h-screen py-16 md:py-20 px-4 md:px-8 flex flex-col md:flex-row items-center justify-center gap-10 md:gap-16 relative bg-white"
         >
             <div className="w-full max-w-md">
                 <h2
                     id="contact-heading"
-                    className="text-5xl font-bold mb-8 text-black ink-effect"
+                    className="text-3xl md:text-5xl font-bold mb-6 md:mb-8 text-black ink-effect"
                 >
                     TELEPORT <br /> INTO OUR WORLD
                 </h2>

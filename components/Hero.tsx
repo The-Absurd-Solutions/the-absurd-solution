@@ -12,9 +12,15 @@ export const Hero: React.FC = () => {
           animate={{ d: ["M50,50 Q100,10 150,50 T250,50", "M50,55 Q100,15 150,55 T250,55"] }}
           transition={{ repeat: Infinity, repeatType: "mirror", duration: 2 }}
         />
-        <motion.circle cx="80%" cy="20%" r="50" stroke="black" fill="none" strokeWidth="1"
-          className="ink-effect"
-        />
+
+        {/* Wobbly concentric circles - CSS animated */}
+        <circle cx="80%" cy="20%" r="50" stroke="black" fill="none" strokeWidth="1.5" className="ink-effect hero-circle-1" />
+        <circle cx="80%" cy="20%" r="35" stroke="black" fill="none" strokeWidth="0.5" strokeDasharray="6 4" className="hero-circle-2" />
+        <circle cx="80%" cy="20%" r="70" stroke="black" fill="none" strokeWidth="0.3" className="hero-circle-3" />
+
+        {/* Scratchy lines */}
+        <line x1="60%" y1="5%" x2="90%" y2="8%" stroke="black" strokeWidth="0.8" />
+        <line x1="70%" y1="30%" x2="95%" y2="35%" stroke="black" strokeWidth="0.5" strokeDasharray="3 5" className="hero-dash-line" />
       </svg>
 
       <div className="z-10 flex-1 flex flex-col items-center md:items-start space-y-6 max-w-2xl text-center md:text-left">

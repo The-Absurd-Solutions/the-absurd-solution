@@ -1,78 +1,50 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { GlitchText } from './GlitchText';
-import { Terminal, Map, Skull, Truck, Layers, ShieldCheck, Eye, Activity, Wallet, Key } from 'lucide-react';
+import { MessageCircle, Search, Map, Layers, RefreshCw, Rocket } from 'lucide-react';
 
 const steps = [
   {
     id: '01',
-    title: "Orientation / Framing",
-    absurdTitle: "Framing the Hallucination",
-    description: "We clarify what 'success' means (business + technical outcomes), constraints, and what must not break.",
-    icon: Terminal
+    title: "Discovery Call",
+    absurdTitle: "Reading Your Mind",
+    description: "We sit down, listen, and ask the hard questions. What's the real problem? Who are the users? What does success look like? No code yet — just honest conversation.",
+    icon: MessageCircle
   },
   {
     id: '02',
-    title: "System Map",
-    absurdTitle: "Cartography of Chaos",
-    description: "We produce a high-signal system map. We define boundaries, deployment topology, data flows, and the trust model.",
-    icon: Map
+    title: "Research & Brainstorm",
+    absurdTitle: "Controlled Chaos",
+    description: "We dig deep — market research, technical options, competitor analysis. We brainstorm multiple approaches, debate trade-offs, and narrow down to the best solution for your budget and timeline.",
+    icon: Search
   },
   {
     id: '03',
-    title: "Risk Register",
-    absurdTitle: "Prophesying Doom",
-    description: "Pre-mortem: assume it failed—why? We assess security risks, reliability risks, scalability risks, and cost risks.",
-    icon: Skull
+    title: "Strategy & Roadmap",
+    absurdTitle: "Cartography of Chaos",
+    description: "We break the project into clear milestones and sprints. You get a roadmap with priorities, timelines, and deliverables — no vague promises, just a concrete plan we both agree on.",
+    icon: Map
   },
   {
     id: '04',
-    title: "Delivery Blueprint",
-    absurdTitle: "Shipping the Unshippable",
-    description: "We make delivery boring. CI/CD with consistent environments, IaC with reviewable diffs, and a solid release strategy.",
-    icon: Truck
-  },
-  {
-    id: '05',
-    title: "Build in Slices",
+    title: "Build in Sprints",
     absurdTitle: "Slicing Reality",
-    description: "We build thin vertical slices: UI → API → storage. Exposes integration issues early and prevents 'late surprises'.",
+    description: "We work in short agile cycles. Every 1-2 weeks you see real progress, give feedback, and we adjust. No disappearing for months — you're in the loop the entire time.",
     icon: Layers
   },
   {
+    id: '05',
+    title: "Review & Iterate",
+    absurdTitle: "Embracing the Plot Twist",
+    description: "After each sprint we review together. Things changed? New idea? No problem. We adapt the plan, reprioritize, and keep moving. Flexibility is built into how we work.",
+    icon: RefreshCw
+  },
+  {
     id: '06',
-    title: "Security Baseline",
-    absurdTitle: "Paranoia as a Service",
-    description: "Security is a baseline. Least-privilege IAM, managed secrets, WAF/rate-limits, and strict auth flows.",
-    icon: ShieldCheck
-  },
-  {
-    id: '07',
-    title: "Observability First",
-    absurdTitle: "Staring into the Void",
-    description: "If you can't see it, you can't run it. Structured logs, key metrics (latency, errors), and business dashboards.",
-    icon: Eye
-  },
-  {
-    id: '08',
-    title: "Reliability Patterns",
-    absurdTitle: "Embracing the Crash",
-    description: "We design for failure. Timeouts, retries, circuit breakers, idempotency, and DLQs.",
-    icon: Activity
-  },
-  {
-    id: '09',
-    title: "Cost Discipline",
-    absurdTitle: "Wallet Defense",
-    description: "Budgets are architecture. We set budgets, per-request cost estimates, caching strategies, and scaling limits.",
-    icon: Wallet
-  },
-  {
-    id: '10',
-    title: "Handover",
+    title: "Launch & Handover",
     absurdTitle: "The Great Escape",
-    description: "We don't just 'deliver code.' We deliver a system you can own. Docs that explain 'why', playbooks, and ownership maps.",
-    icon: Key
+    description: "We deploy, test in production, and make sure everything works. Then we hand over — documentation, access, knowledge transfer. Your project, your ownership. We stay available if you need us.",
+    icon: Rocket
   }
 ];
 

@@ -7,24 +7,24 @@ const team: TeamMember[] = [
   {
     id: 'mila',
     name: "Mila Dobric",
-    role: "Entropy Tamer",
-    description: "Transmutes abstract confusion into intentional hallucinations. She defines the 'what' and 'why' before reality even exists.",
+    role: "Product & Strategy",
+    description: "Turns vague ideas into real products. She owns the roadmap, runs the sprints, and makes sure what we build actually solves the right problem.",
     image: "/images/mila.png",
     quirk: "Prioritizes backlogs with telepathy."
   },
   {
     id: 'dino',
     name: "Dino Bata",
-    role: "Slice Sorcerer",
-    description: "Weaves codebases that grow without shattering. He slices reality from the UI down to the metal.",
+    role: "Full-Stack Engineering",
+    description: "Builds everything from pixel-perfect interfaces to rock-solid APIs. React, Node, databases, cloud — if it's code, he ships it.",
     image: "/images/dino.png",
     quirk: "His tests pass in parallel dimensions."
   },
   {
     id: 'vesna',
     name: "Vesna Bozic",
-    role: "Infra Oracle",
-    description: "Defines the boundaries where the monolith ends and the void begins. Scales systems that are auditably insane.",
+    role: "DevOps & Infrastructure",
+    description: "Architects the cloud, automates the pipelines, and keeps systems alive at scale. AWS, IaC, CI/CD — she makes deployment boring on purpose.",
     image: "/images/vesna.png",
     quirk: "Her runbooks read like ancient prophecies."
   }
@@ -46,19 +46,19 @@ export const About: React.FC = () => {
 
       {/* Giant Background Text Stroke */}
       <div className="absolute top-20 left-0 w-full text-[20vw] leading-none font-black text-black opacity-[0.03] select-none pointer-events-none overflow-hidden whitespace-nowrap">
-        THE_CREW
+        ARCHITECTS
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="mb-16 md:mb-40 md:text-left text-center pl-0 md:pl-20">
           <h2 className="text-4xl sm:text-6xl md:text-9xl text-black tracking-tighter mix-blend-multiply opacity-90 -rotate-2 inline-block relative">
-            <GlitchText text="COLLECTIVE" />
+            <GlitchText text="THE ARCHITECTS" />
             <div className="absolute -bottom-4 left-0 w-full h-2 bg-black skew-x-12"></div>
           </h2>
           <div className="flex items-center gap-4 mt-8 justify-center md:justify-start">
             <div className="h-px w-20 bg-black"></div>
             <p className="font-mono text-sm tracking-[0.2em] uppercase">
-                    // Agents of Chaos
+                    // Strategy. Code. Infrastructure.
             </p>
           </div>
         </div>

@@ -256,7 +256,7 @@ export const Portfolio: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="flex flex-col gap-16 md:gap-32">
+                <div className="flex flex-col gap-24 md:gap-40">
                     {projects.map((project, index) => (
                         <motion.div
                             key={project.id}
@@ -264,10 +264,18 @@ export const Portfolio: React.FC = () => {
                             initial={{ opacity: 0, y: 50 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, margin: "-100px" }}
-                            className={`flex flex-col md:flex-row gap-6 md:gap-24 items-center group cursor-pointer ${index % 2 === 1 ? 'md:flex-row-reverse' : ''
-                                }`}
+                            className={`flex flex-col md:flex-row gap-6 md:gap-24 items-center group cursor-pointer relative ${index % 2 === 1 ? 'md:flex-row-reverse' : ''
+                                } ${index > 0 ? 'pt-24 md:pt-40' : ''}`}
                             onClick={() => setSelectedProject(project)}
                         >
+                            {/* Separator line between projects */}
+                            {index > 0 && (
+                                <div className="absolute top-0 left-0 right-0 flex items-center gap-4">
+                                    <div className="flex-1 border-t-2 border-dashed border-black/20"></div>
+                                    <span className="font-mono text-xs text-black/30 uppercase tracking-widest">File {String(index + 1).padStart(2, '0')}</span>
+                                    <div className="flex-1 border-t-2 border-dashed border-black/20"></div>
+                                </div>
+                            )}
                             {/* Image Area - Rough Cut Style */}
                             <div className="w-full md:w-7/12 relative">
                                 {/* Black Backdrop for depth */}

@@ -102,6 +102,31 @@ select:focus-visible {
   }
 }
 
+/* Hero background scribble animations */
+@keyframes wobble-circle-1 {
+  0%, 100% { r: 50; }
+  25% { r: 55; }
+  75% { r: 48; }
+}
+@keyframes wobble-circle-2 {
+  0%, 100% { r: 35; stroke-dashoffset: 0; }
+  25% { r: 30; }
+  75% { r: 38; stroke-dashoffset: 50; }
+}
+@keyframes wobble-circle-3 {
+  0%, 100% { r: 70; }
+  25% { r: 75; }
+  75% { r: 65; }
+}
+@keyframes dash-crawl {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: 30; }
+}
+.hero-circle-1 { animation: wobble-circle-1 4s ease-in-out infinite; }
+.hero-circle-2 { animation: wobble-circle-2 6s ease-in-out infinite; }
+.hero-circle-3 { animation: wobble-circle-3 5s ease-in-out infinite; }
+.hero-dash-line { animation: dash-crawl 8s linear infinite; }
+
 /* Custom Scrollbar - Minimalist Ink */
 ::-webkit-scrollbar {
   width: 8px;

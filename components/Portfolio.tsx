@@ -117,10 +117,10 @@ const projects: Project[] = [
         id: 'blink-clinic',
         title: "Blink Eye Clinic",
         shortDescription: "Premium ophthalmology clinic website with an innovative 'vision correction' lens effect.",
-        longDescription: "A modern, minimalist single-page website for an ophthalmology clinic in Belgrade. Features a signature 'Blink Lens' effect — a mouse-following magnifying lens that simulates vision correction, making blurred content crystal clear. Built with bilingual support, accessibility-first approach, and comprehensive SEO optimization.",
+        longDescription: "A modern, minimalist single-page website for an ophthalmology clinic in Belgrade. Features a signature 'Blink Lens' effect, a mouse-following magnifying lens that simulates vision correction, making blurred content crystal clear. Built with bilingual support, accessibility-first approach, and comprehensive SEO optimization.",
         techStack: ["React 19", "TypeScript", "Vite 6", "Tailwind CSS 4", "Lucide React"],
         features: [
-            "Signature 'Blink Lens' — cursor-following clarity effect simulating vision correction",
+            "Signature 'Blink Lens': cursor-following clarity effect simulating vision correction",
             "Bilingual support (Serbian/English) with dynamic content switching",
             "LCP/CLS optimizations: image preloading, explicit dimensions, async fonts",
             "Full SEO: JSON-LD schemas (MedicalBusiness, FAQPage), Open Graph, hreflang",
@@ -177,7 +177,7 @@ const projects: Project[] = [
         id: 'absurd-automation',
         title: "Absurd Automation",
         shortDescription: "AI-powered CV processing platform that reads, scores, and ranks candidates automatically.",
-        longDescription: "A fully serverless recruitment automation platform. Upload a CV in any format — the system extracts structured data using AI, deduplicates candidates by email, and stores everything in a single-table DynamoDB design with 6 GSIs. The AI scoring agent batches candidates through GPT-4.1-nano for job matching with 24-hour cached results. Complete with Cognito auth, presigned S3 uploads, and a Redux-powered React dashboard.",
+        longDescription: "A fully serverless recruitment automation platform. Upload a CV in any format, the system extracts structured data using AI, deduplicates candidates by email, and stores everything in a single-table DynamoDB design with 6 GSIs. The AI scoring agent batches candidates through GPT-4.1-nano for job matching with 24-hour cached results. Complete with Cognito auth, presigned S3 uploads, and a Redux-powered React dashboard.",
         techStack: ["React 19", "Redux", "AWS Lambda", "DynamoDB", "S3", "Cognito", "OpenAI", "AWS CDK"],
         features: [
             "AI-powered CV parsing from PDF/DOCX with vision fallback.",
@@ -190,7 +190,7 @@ const projects: Project[] = [
         ],
         challenges: [
             "11 Lambda functions orchestrating processing, scoring, and API.",
-            "Batch scoring optimization — 10 candidates per GPT call.",
+            "Batch scoring optimization, 10 candidates per GPT call.",
             "Docker Lambda for ProcessCV with pdfplumber + pdf2image fallback."
         ],
         architectureAscii: `

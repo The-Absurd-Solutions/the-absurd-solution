@@ -32,7 +32,7 @@ const team: TeamMember[] = [
 
 export const About: React.FC = () => {
   return (
-    <section id="about" className="min-h-screen py-40 px-4 relative overflow-hidden bg-white">
+    <section id="about" className="min-h-screen py-20 md:py-40 px-4 relative overflow-hidden bg-white">
 
       {/* Background Scribbles & Noise */}
       <div className="absolute inset-0 opacity-10 pointer-events-none">
@@ -50,8 +50,8 @@ export const About: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="mb-40 md:text-left text-center pl-0 md:pl-20">
-          <h2 className="text-6xl md:text-9xl text-black tracking-tighter mix-blend-multiply opacity-90 -rotate-2 inline-block relative">
+        <div className="mb-16 md:mb-40 md:text-left text-center pl-0 md:pl-20">
+          <h2 className="text-4xl sm:text-6xl md:text-9xl text-black tracking-tighter mix-blend-multiply opacity-90 -rotate-2 inline-block relative">
             <GlitchText text="COLLECTIVE" />
             <div className="absolute -bottom-4 left-0 w-full h-2 bg-black skew-x-12"></div>
           </h2>
@@ -63,7 +63,7 @@ export const About: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-24 md:gap-12 relative">
+        <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-12 md:gap-12 relative">
 
           {/* Chaotic Connecting Line */}
           <svg className="absolute top-0 left-0 w-full h-full pointer-events-none hidden md:block -z-10 overflow-visible opacity-30">

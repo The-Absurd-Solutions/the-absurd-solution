@@ -172,6 +172,55 @@ const projects: Project[] = [
             demo: "#"
         },
         images: ["/images/survey-1.png"]
+    },
+    {
+        id: 'absurd-automation',
+        title: "Absurd Automation",
+        shortDescription: "AI-powered CV processing platform that reads, scores, and ranks candidates automatically.",
+        longDescription: "A fully serverless recruitment automation platform. Upload a CV in any format — the system extracts structured data using AI, deduplicates candidates by email, and stores everything in a single-table DynamoDB design with 6 GSIs. The AI scoring agent batches candidates through GPT-4.1-nano for job matching with 24-hour cached results. Complete with Cognito auth, presigned S3 uploads, and a Redux-powered React dashboard.",
+        techStack: ["React 19", "Redux", "AWS Lambda", "DynamoDB", "S3", "Cognito", "OpenAI", "AWS CDK"],
+        features: [
+            "AI-powered CV parsing from PDF/DOCX with vision fallback.",
+            "GPT-4.1-nano candidate scoring with job description matching (0-100).",
+            "Single-table DynamoDB design with 6 GSIs for flexible querying.",
+            "Email-based deduplication with multi-version candidate support.",
+            "Presigned S3 URLs for secure client-side uploads and downloads.",
+            "24-hour AI score caching via TTL for cost optimization.",
+            "Cognito JWT authentication across all endpoints."
+        ],
+        challenges: [
+            "11 Lambda functions orchestrating processing, scoring, and API.",
+            "Batch scoring optimization — 10 candidates per GPT call.",
+            "Docker Lambda for ProcessCV with pdfplumber + pdf2image fallback."
+        ],
+        architectureAscii: `
+  ┌───────────────────────────────────────────────┐
+  │              Frontend (Amplify)                │
+  │         React + Redux + Tailwind              │
+  └───────────────────┬───────────────────────────┘
+                      │
+                      ▼
+  ┌───────────────────────────────────────────────┐
+  │            API Gateway + Cognito              │
+  └───────────────────┬───────────────────────────┘
+                      │
+        ┌─────────────┼─────────────┐
+        ▼             ▼             ▼
+  ┌──────────┐  ┌──────────┐  ┌──────────┐
+  │ ProcessCV│  │   CRUD   │  │  Score   │
+  │ (Docker) │  │ Lambdas  │  │ Lambdas  │
+  └────┬─────┘  └────┬─────┘  └────┬─────┘
+       │             │             │
+       ▼             ▼             ▼
+  ┌──────────┐  ┌──────────┐  ┌──────────┐
+  │    S3    │  │ DynamoDB │  │  OpenAI  │
+  │  (CVs)  │  │ (6 GSIs) │  │  GPT-4.1 │
+  └──────────┘  └──────────┘  └──────────┘
+    `,
+        links: {
+            demo: "#"
+        },
+        images: ["/images/absurd-automation.png"]
     }
 ];
 
@@ -179,7 +228,7 @@ export const Portfolio: React.FC = () => {
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
     return (
-        <section id="work" className="min-h-screen py-32 px-4 bg-white relative overflow-hidden">
+        <section id="work" className="min-h-screen py-16 md:py-32 px-4 bg-white relative overflow-hidden">
 
             {/* Background Static/Grain */}
             <div className="absolute inset-0 opacity-10 pointer-events-none">
@@ -193,8 +242,8 @@ export const Portfolio: React.FC = () => {
             </div>
 
             <div className="max-w-7xl mx-auto relative z-10 px-4">
-                <div className="mb-32 text-center md:text-left border-b-4 border-black pb-8">
-                    <h2 className="text-6xl md:text-9xl text-black tracking-tighter uppercase leading-none">
+                <div className="mb-12 md:mb-32 text-center md:text-left border-b-4 border-black pb-8">
+                    <h2 className="text-4xl sm:text-6xl md:text-9xl text-black tracking-tighter uppercase leading-none">
                         <GlitchText text="EVIDENCE" />
                     </h2>
                     <div className="flex justify-between items-end mt-4">
@@ -207,7 +256,7 @@ export const Portfolio: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="flex flex-col gap-32">
+                <div className="flex flex-col gap-16 md:gap-32">
                     {projects.map((project, index) => (
                         <motion.div
                             key={project.id}
@@ -215,7 +264,7 @@ export const Portfolio: React.FC = () => {
                             initial={{ opacity: 0, y: 50 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, margin: "-100px" }}
-                            className={`flex flex-col md:flex-row gap-12 md:gap-24 items-center group cursor-pointer ${index % 2 === 1 ? 'md:flex-row-reverse' : ''
+                            className={`flex flex-col md:flex-row gap-6 md:gap-24 items-center group cursor-pointer ${index % 2 === 1 ? 'md:flex-row-reverse' : ''
                                 }`}
                             onClick={() => setSelectedProject(project)}
                         >
@@ -257,16 +306,16 @@ export const Portfolio: React.FC = () => {
                             <div className="w-full md:w-5/12 relative">
                                 <motion.h3
                                     layoutId={`title-${project.id}`}
-                                    className="text-4xl md:text-6xl font-black font-sans uppercase leading-[0.9] mb-6 text-black group-hover:underline decoration-4 underline-offset-4"
+                                    className="text-2xl sm:text-4xl md:text-6xl font-black font-sans uppercase leading-[0.9] mb-4 md:mb-6 text-black group-hover:underline decoration-4 underline-offset-4"
                                 >
                                     {project.title}
                                 </motion.h3>
 
-                                <motion.p className="text-xl font-serif text-gray-900 leading-relaxed mb-8 border-l-2 border-black pl-4">
+                                <motion.p className="text-base md:text-xl font-serif text-gray-900 leading-relaxed mb-6 md:mb-8 border-l-2 border-black pl-4">
                                     {project.shortDescription}
                                 </motion.p>
 
-                                <div className="flex flex-wrap gap-x-6 gap-y-2 font-mono text-sm uppercase text-gray-500 mb-8">
+                                <div className="flex flex-wrap gap-x-4 md:gap-x-6 gap-y-2 font-mono text-xs md:text-sm uppercase text-gray-500 mb-6 md:mb-8">
                                     {project.techStack.slice(0, 4).map((tech, i) => (
                                         <span key={i} className="relative">
                                             {tech}
@@ -288,7 +337,7 @@ export const Portfolio: React.FC = () => {
             <AnimatePresence>
                 {selectedProject && (
                     <motion.div
-                        className="fixed inset-0 z-9999 flex items-start justify-center pt-20 md:pt-24 p-0 md:p-8"
+                        className="fixed inset-0 z-9999 flex items-start justify-center pt-16 md:pt-24 p-0 md:p-8"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
@@ -302,7 +351,7 @@ export const Portfolio: React.FC = () => {
                         {/* Modal Content - Styled like a Top Secret Document */}
                         <motion.div
                             layoutId={`project-container-${selectedProject.id}`}
-                            className="bg-white w-full max-w-6xl h-full md:max-h-[90vh] overflow-y-auto relative shadow-2xl flex flex-col md:flex-row border-4 border-black"
+                            className="bg-white w-full max-w-6xl h-full md:max-h-[90vh] overflow-y-auto relative shadow-2xl flex flex-col md:flex-row border-2 md:border-4 border-black"
                         >
                             <button
                                 onClick={() => setSelectedProject(null)}
@@ -335,25 +384,25 @@ export const Portfolio: React.FC = () => {
                             </div>
 
                             {/* Right Side: The Dossier */}
-                            <div className="w-full md:w-7/12 p-8 md:p-16 text-left relative bg-white">
+                            <div className="w-full md:w-7/12 p-5 md:p-16 text-left relative bg-white">
                                 {/* Stamp */}
-                                <div className="absolute top-10 right-20 border-4 border-black text-black px-4 py-2 transform -rotate-12 opacity-20 pointer-events-none">
-                                    <span className="text-4xl font-black uppercase tracking-tighter">CONFIDENTIAL</span>
+                                <div className="absolute top-10 right-4 md:right-20 border-4 border-black text-black px-4 py-2 transform -rotate-12 opacity-20 pointer-events-none hidden sm:block">
+                                    <span className="text-2xl md:text-4xl font-black uppercase tracking-tighter">CONFIDENTIAL</span>
                                 </div>
 
                                 <div className="mb-2 font-mono text-xs uppercase text-gray-500">
                                     CASE ID: {selectedProject.id}
                                 </div>
 
-                                <motion.h2 layoutId={`title-${selectedProject.id}`} className="text-5xl md:text-7xl font-black mb-12 uppercase tracking-tighter text-black leading-[0.85]">
+                                <motion.h2 layoutId={`title-${selectedProject.id}`} className="text-3xl sm:text-5xl md:text-7xl font-black mb-6 md:mb-12 uppercase tracking-tighter text-black leading-[0.85]">
                                     {selectedProject.title}
                                 </motion.h2>
 
-                                <p className="text-xl md:text-2xl leading-relaxed mb-12 font-serif text-black">
+                                <p className="text-base md:text-2xl leading-relaxed mb-6 md:mb-12 font-serif text-black">
                                     {selectedProject.longDescription}
                                 </p>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 mb-6 md:mb-12">
                                     {selectedProject.challenges && (
                                         <div>
                                             <h4 className="font-bold uppercase mb-4 text-sm tracking-widest border-b-2 border-black pb-2 inline-block">
@@ -385,7 +434,7 @@ export const Portfolio: React.FC = () => {
                                     )}
                                 </div>
 
-                                <div className="mb-12">
+                                <div className="mb-6 md:mb-12">
                                     <h4 className="font-bold uppercase mb-4 text-sm tracking-widest">
                                         Technical Components
                                     </h4>
@@ -400,13 +449,13 @@ export const Portfolio: React.FC = () => {
 
                                 <div className="flex flex-col md:flex-row gap-4 pt-8 border-t border-gray-300">
                                     {selectedProject.links.demo && (
-                                        <a href={selectedProject.links.demo} target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-black text-white text-center font-bold uppercase hover:bg-white hover:text-black border-2 border-black transition-colors flex items-center justify-center gap-2">
-                                            <ExternalLink size={20} /> Launch System
+                                        <a href={selectedProject.links.demo} target="_blank" rel="noopener noreferrer" className="px-6 py-3 md:px-8 md:py-4 bg-black text-white text-center font-bold uppercase text-sm md:text-base hover:bg-white hover:text-black border-2 border-black transition-colors flex items-center justify-center gap-2">
+                                            <ExternalLink size={18} /> Launch System
                                         </a>
                                     )}
                                     {selectedProject.links.repo && (
-                                        <a href={selectedProject.links.repo} target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-white text-black border-2 border-black text-center font-bold uppercase hover:bg-black hover:text-white transition-colors flex items-center justify-center gap-2">
-                                            <Github size={20} /> Source Code
+                                        <a href={selectedProject.links.repo} target="_blank" rel="noopener noreferrer" className="px-6 py-3 md:px-8 md:py-4 bg-white text-black border-2 border-black text-center font-bold uppercase text-sm md:text-base hover:bg-black hover:text-white transition-colors flex items-center justify-center gap-2">
+                                            <Github size={18} /> Source Code
                                         </a>
                                     )}
                                 </div>

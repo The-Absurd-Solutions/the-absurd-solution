@@ -16,7 +16,7 @@ const team: TeamMember[] = [
     id: 'dino',
     name: "Dino Bata",
     role: "Full-Stack Engineering",
-    description: "Builds everything from pixel-perfect interfaces to rock-solid APIs. React, Node, databases, cloud — if it's code, he ships it.",
+    description: "Builds everything from pixel-perfect interfaces to rock-solid APIs. React, Node, databases, cloud. If it's code, he ships it.",
     image: "/images/dino.png",
     quirk: "His tests pass in parallel dimensions."
   },
@@ -24,7 +24,7 @@ const team: TeamMember[] = [
     id: 'vesna',
     name: "Vesna Bozic",
     role: "DevOps & Infrastructure",
-    description: "Architects the cloud, automates the pipelines, and keeps systems alive at scale. AWS, IaC, CI/CD — she makes deployment boring on purpose.",
+    description: "Architects the cloud, automates the pipelines, and keeps systems alive at scale. AWS, IaC, CI/CD. She makes deployment boring on purpose.",
     image: "/images/vesna.png",
     quirk: "Her runbooks read like ancient prophecies."
   }

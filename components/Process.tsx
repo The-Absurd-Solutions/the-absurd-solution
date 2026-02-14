@@ -8,28 +8,28 @@ const steps = [
     id: '01',
     title: "Discovery Call",
     absurdTitle: "Reading Your Mind",
-    description: "We sit down, listen, and ask the hard questions. What's the real problem? Who are the users? What does success look like? No code yet — just honest conversation.",
+    description: "We sit down, listen, and ask the hard questions. What's the real problem? Who are the users? What does success look like? No code yet, just honest conversation.",
     icon: MessageCircle
   },
   {
     id: '02',
     title: "Research & Brainstorm",
     absurdTitle: "Controlled Chaos",
-    description: "We dig deep — market research, technical options, competitor analysis. We brainstorm multiple approaches, debate trade-offs, and narrow down to the best solution for your budget and timeline.",
+    description: "We dig deep. Market research, technical options, competitor analysis. We brainstorm multiple approaches, debate trade-offs, and narrow down to the best solution for your budget and timeline.",
     icon: Search
   },
   {
     id: '03',
     title: "Strategy & Roadmap",
     absurdTitle: "Cartography of Chaos",
-    description: "We break the project into clear milestones and sprints. You get a roadmap with priorities, timelines, and deliverables — no vague promises, just a concrete plan we both agree on.",
+    description: "We break the project into clear milestones and sprints. You get a roadmap with priorities, timelines, and deliverables. No vague promises, just a concrete plan we both agree on.",
     icon: Map
   },
   {
     id: '04',
     title: "Build in Sprints",
     absurdTitle: "Slicing Reality",
-    description: "We work in short agile cycles. Every 1-2 weeks you see real progress, give feedback, and we adjust. No disappearing for months — you're in the loop the entire time.",
+    description: "We work in short agile cycles. Every 1-2 weeks you see real progress, give feedback, and we adjust. No disappearing for months. You're in the loop the entire time.",
     icon: Layers
   },
   {
@@ -43,7 +43,7 @@ const steps = [
     id: '06',
     title: "Launch & Handover",
     absurdTitle: "The Great Escape",
-    description: "We deploy, test in production, and make sure everything works. Then we hand over — documentation, access, knowledge transfer. Your project, your ownership. We stay available if you need us.",
+    description: "We deploy, test in production, and make sure everything works. Then we hand over: documentation, access, knowledge transfer. Your project, your ownership. We stay available if you need us.",
     icon: Rocket
   }
 ];

@@ -128,13 +128,13 @@ export const About: React.FC = () => {
                   <span className="font-mono text-xs uppercase tracking-widest text-gray-500">{member.role}</span>
                 </div>
 
-                <p className="font-serif text-lg leading-6 text-gray-800 mb-4 group-hover:text-black">
+                <p className="font-serif text-lg leading-6 text-gray-800 mb-4 group-hover:text-black transition-colors duration-300 ease-in-out">
                   {member.description}
                 </p>
 
                 {/* Quirk Scribble */}
                 <div className="relative mt-6 pt-4 border-t border-dashed border-black/30">
-                  <svg className="absolute -top-3 right-0 w-8 h-8 text-red-600 opacity-0 group-hover:opacity-100 transition-opacity" viewBox="0 0 100 100">
+                  <svg className="absolute -top-3 right-0 w-8 h-8 text-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out" viewBox="0 0 100 100">
                     <path d="M10,10 L90,90 M90,10 L10,90" stroke="currentColor" strokeWidth="10" />
                   </svg>
                   <p className="font-handwritten text-sm text-gray-600 rotate-1">

@@ -43,7 +43,7 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetErrorBoundary
                     <div className="flex gap-4 justify-center">
                         <button
                             onClick={resetErrorBoundary}
-                            className="px-6 py-3 sketch-box font-bold uppercase tracking-wider flex items-center gap-2 hover:bg-black hover:text-white transition-colors"
+                            className="px-6 py-3 sketch-box font-bold uppercase tracking-wider flex items-center gap-2 hover:bg-black hover:text-white transition-colors duration-300 ease-in-out"
                             aria-label="Try again"
                         >
                             <RefreshCw size={18} aria-hidden="true" />
@@ -52,7 +52,7 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetErrorBoundary
 
                         <button
                             onClick={handleReload}
-                            className="px-6 py-3 border-2 border-black font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors"
+                            className="px-6 py-3 border-2 border-black font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-300 ease-in-out"
                             aria-label="Reload page"
                         >
                             Reload

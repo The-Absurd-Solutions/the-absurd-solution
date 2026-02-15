@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, useScroll, useSpring, AnimatePresence } from 'framer-motion';
 import { Hero } from './components/Hero';
 import { About } from './components/About';
@@ -19,6 +19,13 @@ const App: React.FC = () => {
   });
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    document.fonts.ready.then(() => {
+      setTimeout(() => setIsLoading(false), 300);
+    });
+  }, []);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     e.preventDefault();
@@ -31,6 +38,18 @@ const App: React.FC = () => {
 
   return (
     <ErrorBoundary>
+      {/* Loading Overlay */}
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            className="fixed inset-0 z-[9999] bg-white"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+          />
+        )}
+      </AnimatePresence>
+
       <div className="min-h-screen text-black selection:bg-black selection:text-white bg-white">
         {/* Skip to Content Link for Accessibility */}
         <SkipToContent targetId="main-content" />
@@ -53,7 +72,7 @@ const App: React.FC = () => {
           <a
             href="#home"
             onClick={(e) => handleNavClick(e, '#home')}
-            className="text-3xl font-bold tracking-tighter hover:scale-105 transition-transform origin-left focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
+            className="text-3xl font-bold tracking-tighter hover:scale-105 transition-transform duration-300 ease-in-out origin-left focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
             aria-label="The Absurd Solution - Go to homepage"
           >
             ABSURD.
@@ -120,17 +139,17 @@ const App: React.FC = () => {
           {/* Social Links */}
           <ul className="flex justify-center gap-6 mt-4 list-none" aria-label="Social media links">
             <li>
-              <a href="https://instagram.com/absurdsolution" target="_blank" rel="noopener noreferrer" className="text-black hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded inline-block" aria-label="Follow us on Instagram">
+              <a href="https://instagram.com/absurdsolution" target="_blank" rel="noopener noreferrer" className="text-black hover:scale-110 transition-transform duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded inline-block" aria-label="Follow us on Instagram">
                 <Instagram size={24} aria-hidden="true" />
               </a>
             </li>
             <li>
-              <a href="https://twitter.com/absurdsolution" target="_blank" rel="noopener noreferrer" className="text-black hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded inline-block" aria-label="Follow us on Twitter">
+              <a href="https://twitter.com/absurdsolution" target="_blank" rel="noopener noreferrer" className="text-black hover:scale-110 transition-transform duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded inline-block" aria-label="Follow us on Twitter">
                 <Twitter size={24} aria-hidden="true" />
               </a>
             </li>
             <li>
-              <a href="https://tiktok.com/@absurdsolution" target="_blank" rel="noopener noreferrer" className="text-black hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded inline-block" aria-label="Follow us on TikTok">
+              <a href="https://tiktok.com/@absurdsolution" target="_blank" rel="noopener noreferrer" className="text-black hover:scale-110 transition-transform duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded inline-block" aria-label="Follow us on TikTok">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" /></svg>
               </a>
             </li>

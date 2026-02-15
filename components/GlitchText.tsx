@@ -12,14 +12,14 @@ export const GlitchText: React.FC<GlitchTextProps> = ({ text, className = "", as
     <Component className={`relative inline-block group ink-effect ${className}`}>
       <span className="relative z-10">{text}</span>
       <motion.span
-        className="absolute top-0 left-0 -z-10 text-gray-400 opacity-0 group-hover:opacity-100"
+        className="absolute top-0 left-0 -z-10 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out"
         animate={{ x: [-2, 2, -1, 0], y: [1, -1, 0] }}
         transition={{ repeat: Infinity, duration: 0.1, repeatType: "mirror" }}
       >
         {text}
       </motion.span>
       <motion.span
-        className="absolute top-0 left-0 -z-10 text-black opacity-0 group-hover:opacity-50"
+        className="absolute top-0 left-0 -z-10 text-black opacity-0 group-hover:opacity-50 transition-opacity duration-300 ease-in-out"
         animate={{ x: [2, -2, 1, 0], y: [-1, 1, 0] }}
         transition={{ repeat: Infinity, duration: 0.2, repeatType: "mirror" }}
       >

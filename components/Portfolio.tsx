@@ -363,7 +363,7 @@ export const Portfolio: React.FC = () => {
                         >
                             <button
                                 onClick={() => setSelectedProject(null)}
-                                className="absolute top-4 right-4 z-9999 p-3 bg-black text-white hover:bg-gray-800 transition-colors rounded-full shadow-lg"
+                                className="absolute top-4 right-4 z-9999 p-3 bg-black text-white hover:bg-gray-800 transition-colors duration-300 ease-in-out rounded-full shadow-lg cursor-pointer"
                             >
                                 <X size={28} />
                             </button>
@@ -410,37 +410,35 @@ export const Portfolio: React.FC = () => {
                                     {selectedProject.longDescription}
                                 </p>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 mb-6 md:mb-12">
-                                    {selectedProject.challenges && (
-                                        <div>
-                                            <h4 className="font-bold uppercase mb-4 text-sm tracking-widest border-b-2 border-black pb-2 inline-block">
-                                                Problem Space
-                                            </h4>
-                                            <ul className="list-none space-y-3 font-mono text-sm text-black">
-                                                {selectedProject.challenges.map((c, i) => (
-                                                    <li key={i} className="flex gap-3 items-start">
-                                                        <span className="text-black font-bold text-lg leading-none">×</span> {c}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    )}
+                                {selectedProject.challenges && (
+                                    <div className="mb-6 md:mb-12">
+                                        <h4 className="font-bold uppercase mb-4 text-sm tracking-widest border-b-2 border-black pb-2 inline-block">
+                                            Problem Space
+                                        </h4>
+                                        <ul className="list-none space-y-3 font-mono text-sm text-black">
+                                            {selectedProject.challenges.map((c, i) => (
+                                                <li key={i} className="flex gap-3 items-start">
+                                                    <span className="text-black font-bold text-lg leading-none">×</span> {c}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
 
-                                    {selectedProject.features && (
-                                        <div>
-                                            <h4 className="font-bold uppercase mb-4 text-sm tracking-widest border-b-2 border-black pb-2 inline-block">
-                                                Solution Vector
-                                            </h4>
-                                            <ul className="list-none space-y-3 font-mono text-sm text-black">
-                                                {selectedProject.features.map((f, i) => (
-                                                    <li key={i} className="flex gap-3 items-start">
-                                                        <span className="text-black font-bold text-lg leading-none">✓</span> {f}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    )}
-                                </div>
+                                {selectedProject.features && (
+                                    <div className="mb-6 md:mb-12">
+                                        <h4 className="font-bold uppercase mb-4 text-sm tracking-widest border-b-2 border-black pb-2 inline-block">
+                                            Solution Vector
+                                        </h4>
+                                        <ul className="list-none space-y-3 md:grid md:grid-cols-2 md:gap-x-10 md:gap-y-4 md:space-y-0 font-mono text-sm text-black">
+                                            {selectedProject.features.map((f, i) => (
+                                                <li key={i} className="flex gap-3 items-start">
+                                                    <span className="text-black font-bold text-lg leading-none">✓</span> {f}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
 
                                 <div className="mb-6 md:mb-12">
                                     <h4 className="font-bold uppercase mb-4 text-sm tracking-widest">
@@ -448,21 +446,21 @@ export const Portfolio: React.FC = () => {
                                     </h4>
                                     <div className="flex flex-wrap gap-2">
                                         {selectedProject.techStack.map(tech => (
-                                            <span key={tech} className="border border-black px-3 py-1 text-sm font-bold bg-white text-black hover:bg-black hover:text-white transition-colors">
+                                            <span key={tech} className="border border-black px-3 py-1 text-sm font-bold bg-white text-black hover:bg-black hover:text-white transition-colors duration-300 ease-in-out">
                                                 {tech}
                                             </span>
                                         ))}
                                     </div>
                                 </div>
 
-                                <div className="flex flex-col md:flex-row gap-4 pt-8 border-t border-gray-300">
+                                <div className="flex flex-col md:flex-row gap-4 pt-8 pb-8 border-t border-gray-300">
                                     {selectedProject.links.demo && (
-                                        <a href={selectedProject.links.demo} target="_blank" rel="noopener noreferrer" className="px-6 py-3 md:px-8 md:py-4 bg-black text-white text-center font-bold uppercase text-sm md:text-base hover:bg-white hover:text-black border-2 border-black transition-colors flex items-center justify-center gap-2">
+                                        <a href={selectedProject.links.demo} target="_blank" rel="noopener noreferrer" className="px-6 py-3 md:px-8 md:py-4 bg-black text-white text-center font-bold uppercase text-sm md:text-base hover:bg-white hover:text-black border-2 border-black transition-colors duration-300 ease-in-out flex items-center justify-center gap-2">
                                             <ExternalLink size={18} /> Launch System
                                         </a>
                                     )}
                                     {selectedProject.links.repo && (
-                                        <a href={selectedProject.links.repo} target="_blank" rel="noopener noreferrer" className="px-6 py-3 md:px-8 md:py-4 bg-white text-black border-2 border-black text-center font-bold uppercase text-sm md:text-base hover:bg-black hover:text-white transition-colors flex items-center justify-center gap-2">
+                                        <a href={selectedProject.links.repo} target="_blank" rel="noopener noreferrer" className="px-6 py-3 md:px-8 md:py-4 bg-white text-black border-2 border-black text-center font-bold uppercase text-sm md:text-base hover:bg-black hover:text-white transition-colors duration-300 ease-in-out flex items-center justify-center gap-2">
                                             <Github size={18} /> Source Code
                                         </a>
                                     )}

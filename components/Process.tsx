@@ -88,7 +88,7 @@ export const Process: React.FC = () => {
                     </span>
                     <h3 className="text-base md:text-xl font-bold font-sans mb-1 uppercase tracking-wider">{step.absurdTitle}</h3>
                     <p className="text-xs font-mono uppercase mb-2 md:mb-3 opacity-60">[{step.title}]</p>
-                    <p className="text-sm md:text-lg leading-relaxed handwritten group-hover:text-gray-200">
+                    <p className="text-sm md:text-lg leading-relaxed handwritten group-hover:text-gray-200 transition-colors duration-300 ease-in-out">
                       {step.description}
                     </p>
                   </div>

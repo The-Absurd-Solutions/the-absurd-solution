@@ -68,7 +68,7 @@ export const Process: React.FC = () => {
 
         <div className="relative">
           {/* The Timeline Line - Wobbly and sketched */}
-          <div className="absolute left-5 md:left-1/2 top-0 bottom-0 w-1 bg-black md:-ml-0.5 ink-effect opacity-20"></div>
+          <div className="absolute right-5 md:right-auto md:left-1/2 top-0 bottom-0 w-1 bg-black md:-ml-0.5 ink-effect opacity-20"></div>
 
           <div className="space-y-8 md:space-y-12">
             {steps.map((step, index) => (

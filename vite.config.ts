@@ -13,6 +13,17 @@ export default defineConfig(() => {
       alias: {
         '@': path.resolve(__dirname, '.'),
       }
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vendor-react': ['react', 'react-dom'],
+            'vendor-framer': ['framer-motion'],
+            'vendor-icons': ['lucide-react'],
+          }
+        }
+      }
     }
   };
 });

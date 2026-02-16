@@ -20,7 +20,7 @@ const projects: Project[] = [
         links: {
             demo: "#"
         },
-        images: ["/images/ona-1.png", "/images/ona-2.png"]
+        images: ["/images/ona-1.webp", "/images/ona-2.webp"]
     },
     {
         id: 'paddle-camp',
@@ -64,7 +64,7 @@ const projects: Project[] = [
             demo: "https://develop.xxx.amplifyapp.com",
             repo: "https://github.com/The-Absurd-Solutions/three-state-paddel"
         },
-        images: ["/images/paddle-1.png", "/images/paddel-2.png"]
+        images: ["/images/paddle-1.webp", "/images/paddle-3.webp"]
     },
     {
         id: 'cafe-connect',
@@ -111,7 +111,7 @@ const projects: Project[] = [
         links: {
             demo: "#"
         },
-        images: ["/images/coffee.png"]
+        images: ["/images/coffee.webp"]
     },
     {
         id: 'blink-clinic',
@@ -131,7 +131,7 @@ const projects: Project[] = [
         links: {
             demo: "#"
         },
-        images: ["/images/blink.png"]
+        images: ["/images/blink.webp"]
     },
     {
         id: 'survey-etl',
@@ -171,7 +171,7 @@ const projects: Project[] = [
         links: {
             demo: "#"
         },
-        images: ["/images/survey-1.png"]
+        images: ["/images/survey-1.webp"]
     },
     {
         id: 'absurd-automation',
@@ -220,7 +220,7 @@ const projects: Project[] = [
         links: {
             demo: "#"
         },
-        images: ["/images/absurd-automation.png"]
+        images: ["/images/absurd-automation.webp"]
     }
 ];
 
@@ -297,7 +297,7 @@ export const Portfolio: React.FC = () => {
                                             : "polygon(0 0, 100% 5%, 95% 100%, 5% 95%)"
                                     }}
                                 >
-                                    <img src={project.images[0]} alt={project.title} className="w-full h-full object-cover" />
+                                    <img src={project.images[0]} alt={project.title} loading="lazy" className="w-full h-full object-cover" />
                                     {/* Noise Overlay */}
                                     <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dust.png')] opacity-40 mix-blend-overlay"></div>
                                 </motion.div>
@@ -377,6 +377,7 @@ export const Portfolio: React.FC = () => {
                                     <img
                                         src={selectedProject.images[0]}
                                         alt={selectedProject.title}
+                                        loading="lazy"
                                         className="w-full h-full object-cover grayscale contrast-110"
                                     />
                                     {/* Scanlines */}

@@ -9,7 +9,7 @@ const team: TeamMember[] = [
     name: "Mila Dobric",
     role: "Product & Strategy",
     description: "Turns vague ideas into real products. She owns the roadmap, runs the sprints, and makes sure what we build actually solves the right problem.",
-    image: "/images/mila.png",
+    image: "/images/mila.webp",
     quirk: "Prioritizes backlogs with telepathy."
   },
   {
@@ -17,7 +17,7 @@ const team: TeamMember[] = [
     name: "Dino Bata",
     role: "Full-Stack Engineering",
     description: "Builds everything from pixel-perfect interfaces to rock-solid APIs. React, Node, databases, cloud. If it's code, he ships it.",
-    image: "/images/dino.png",
+    image: "/images/dino.webp",
     quirk: "His tests pass in parallel dimensions."
   },
   {
@@ -25,7 +25,7 @@ const team: TeamMember[] = [
     name: "Vesna Bozic",
     role: "DevOps & Infrastructure",
     description: "Architects the cloud, automates the pipelines, and keeps systems alive at scale. AWS, IaC, CI/CD. She makes deployment boring on purpose.",
-    image: "/images/vesna.png",
+    image: "/images/vesna.webp",
     quirk: "Her runbooks read like ancient prophecies."
   }
 ];
@@ -107,7 +107,7 @@ export const About: React.FC = () => {
                         : "polygon(2% 2%, 98% 0, 100% 98%, 0 95%)"
                   }}
                 >
-                  <img src={member.image} alt={member.name} className="w-full h-full object-cover object-top" />
+                  <img src={member.image} alt={member.name} loading="lazy" className="w-full h-full object-cover object-top" />
                   <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dust.png')] opacity-50 mix-blend-screen"></div>
                 </div>
 

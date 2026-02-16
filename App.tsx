@@ -1,14 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { motion, useScroll, useSpring, AnimatePresence } from 'framer-motion';
 import { Hero } from './components/Hero';
-import { About } from './components/About';
-import { Services } from './components/Services';
-import { Process } from './components/Process';
-import { Portfolio } from './components/Portfolio';
-import { Contact } from './components/Contact';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { SkipToContent } from './components/SkipToContent';
 import { Menu, X, Instagram, Twitter } from 'lucide-react';
+
+// Lazy load components below the fold
+const About = lazy(() => import('./components/About').then(m => ({ default: m.About })));
+const Services = lazy(() => import('./components/Services').then(m => ({ default: m.Services })));
+const Process = lazy(() => import('./components/Process').then(m => ({ default: m.Process })));
+const Portfolio = lazy(() => import('./components/Portfolio').then(m => ({ default: m.Portfolio })));
+const Contact = lazy(() => import('./components/Contact').then(m => ({ default: m.Contact })));
 
 const App: React.FC = () => {
   const { scrollYProgress } = useScroll();
@@ -125,11 +127,13 @@ const App: React.FC = () => {
         {/* Main Content */}
         <main id="main-content" className="relative z-10 pt-20" role="main">
           <Hero />
-          <About />
-          <Services />
-          <Process />
-          <Portfolio />
-          <Contact />
+          <Suspense fallback={<div className="min-h-screen" />}>
+            <About />
+            <Services />
+            <Process />
+            <Portfolio />
+            <Contact />
+          </Suspense>
         </main>
 
         {/* Footer */}

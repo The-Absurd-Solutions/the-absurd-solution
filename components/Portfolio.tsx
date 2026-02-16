@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GlitchText } from './GlitchText';
 import { Project } from '../types';
@@ -227,6 +227,17 @@ const projects: Project[] = [
 export const Portfolio: React.FC = () => {
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
+    useEffect(() => {
+        if (selectedProject) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [selectedProject]);
+
     return (
         <section id="work" className="min-h-screen py-16 md:py-32 px-4 bg-white relative overflow-hidden">
 
@@ -345,7 +356,7 @@ export const Portfolio: React.FC = () => {
             <AnimatePresence>
                 {selectedProject && (
                     <motion.div
-                        className="fixed inset-0 z-9999 flex items-start justify-center pt-16 md:pt-24 p-0 md:p-8"
+                        className="fixed inset-0 z-9999 flex items-start justify-center pt-[87px] md:pt-24 p-0 md:p-8"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}

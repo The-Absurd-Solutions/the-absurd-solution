@@ -6,52 +6,51 @@ html {
 }
 
 body {
-  background-color: #ffffff;
-  color: #1a1a1a;
-  font-family: 'Nanum Pen Script', cursive;
-  font-size: 1.2rem;
+  background-color: #0a0a0f;
+  color: #e0e0e8;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
   overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5 {
-  font-family: 'Major Mono Display', monospace;
-  font-weight: bold;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
 }
 
 .font-sans {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
-/* The "Ink" Filter - makes things look wobbly and sketched */
-.ink-effect {
-  filter: url(#ink-filter);
+.font-display {
+  font-family: 'Space Grotesk', sans-serif;
 }
 
-/* Sketchy Borders */
-.sketch-box {
-  border: 2px solid #1a1a1a;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  background: transparent;
-  transition: all 0.3s ease;
+/* Glass card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  transition: all 0.4s ease;
 }
-.sketch-box:hover {
-  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
-  background: #1a1a1a;
-  color: #ffffff;
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(74, 222, 128, 0.3);
+}
+
+/* Accent glow */
+.accent-glow {
+  box-shadow: 0 0 20px rgba(74, 222, 128, 0.1);
 }
 
 /* Focus Styles for Accessibility */
-.sketch-box:focus-visible {
-  outline: 3px solid #1a1a1a;
-  outline-offset: 2px;
-}
-
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 2px solid #1a1a1a;
+  outline: 2px solid #4ade80;
   outline-offset: 2px;
 }
 
@@ -91,60 +90,23 @@ select:focus-visible {
   }
 }
 
-/* High Contrast Mode Support */
-@media (prefers-contrast: high) {
-  .sketch-box {
-    border-width: 3px;
-  }
-  
-  a, button {
-    text-decoration: underline;
-  }
-}
-
-/* Hero background scribble animations */
-@keyframes wobble-circle-1 {
-  0%, 100% { r: 50; }
-  25% { r: 55; }
-  75% { r: 48; }
-}
-@keyframes wobble-circle-2 {
-  0%, 100% { r: 35; stroke-dashoffset: 0; }
-  25% { r: 30; }
-  75% { r: 38; stroke-dashoffset: 50; }
-}
-@keyframes wobble-circle-3 {
-  0%, 100% { r: 70; }
-  25% { r: 75; }
-  75% { r: 65; }
-}
-@keyframes dash-crawl {
-  from { stroke-dashoffset: 0; }
-  to { stroke-dashoffset: 30; }
-}
-.hero-circle-1 { animation: wobble-circle-1 4s ease-in-out infinite; }
-.hero-circle-2 { animation: wobble-circle-2 6s ease-in-out infinite; }
-.hero-circle-3 { animation: wobble-circle-3 5s ease-in-out infinite; }
-.hero-dash-line { animation: dash-crawl 8s linear infinite; }
-
-/* Custom Scrollbar - Minimalist Ink */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #ffffff;
+  background: #0a0a0f;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1a1a1a;
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(74, 222, 128, 0.4);
 }
 
 /* Print Styles */
 @media print {
-  .ink-effect {
-    filter: none;
-  }
-  
   nav, footer {
     display: none;
   }

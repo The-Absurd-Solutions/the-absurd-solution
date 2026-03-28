@@ -7,9 +7,20 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                'handwritten': ['"Nanum Pen Script"', 'cursive'],
-                'mono-display': ['"Major Mono Display"', 'monospace'],
-                'sans': ['Montserrat', 'sans-serif'],
+                'display': ['"Space Grotesk"', 'sans-serif'],
+                'sans': ['Inter', 'sans-serif'],
+            },
+            colors: {
+                surface: {
+                    DEFAULT: '#0a0a0f',
+                    light: '#12121a',
+                    lighter: '#1a1a25',
+                },
+                accent: {
+                    DEFAULT: '#4ade80',
+                    dim: 'rgba(74, 222, 128, 0.15)',
+                },
+                muted: '#6b6b80',
             },
         },
     },

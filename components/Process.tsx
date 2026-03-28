@@ -50,31 +50,21 @@ const steps = [
 
 export const Process: React.FC = () => {
   return (
-    <section id="process" className="min-h-screen py-16 md:py-20 px-4 md:px-8 bg-white relative overflow-hidden">
-      {/* Background Chaos */}
-      <div className="absolute inset-0 pointer-events-none opacity-5">
-        <svg className="w-full h-full">
-          <filter id="noiseFilter">
-            <feTurbulence type="fractalNoise" baseFrequency="0.6" stitchTiles="stitch" />
-          </filter>
-          <rect width="100%" height="100%" filter="url(#noiseFilter)" />
-        </svg>
-      </div>
-
+    <section id="process" className="min-h-screen py-16 md:py-20 px-4 md:px-8 relative overflow-hidden">
       <div className="max-w-4xl mx-auto relative z-10">
-        <h2 className="text-2xl sm:text-4xl md:text-6xl mb-12 md:mb-20 text-center text-black">
+        <h2 className="text-2xl sm:text-4xl md:text-6xl mb-12 md:mb-20 text-center text-white font-display font-bold">
           <GlitchText text="METHOD TO THE MADNESS" />
         </h2>
 
         <div className="relative">
-          {/* The Timeline Line - Wobbly and sketched */}
-          <div className="absolute left-5 md:left-1/2 top-0 bottom-0 w-1 bg-black md:-ml-0.5 ink-effect opacity-20"></div>
+          {/* Timeline Line */}
+          <div className="absolute left-5 md:left-1/2 top-0 bottom-0 w-px bg-white/10 md:-ml-px"></div>
 
           <div className="space-y-8 md:space-y-12">
             {steps.map((step, index) => (
               <motion.div
                 key={step.id}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+                initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 className={`flex items-start md:items-center gap-4 md:gap-8 ${index % 2 === 0 ? 'md:flex-row-reverse text-left md:text-right' : 'md:flex-row text-left'
@@ -82,21 +72,21 @@ export const Process: React.FC = () => {
               >
                 {/* Content Side */}
                 <div className="flex-1 w-full md:w-auto">
-                  <div className="sketch-box p-4 md:p-6 bg-white relative group hover:bg-black hover:text-white transition-colors duration-300">
-                    <span className="absolute -top-4 font-bold text-2xl md:text-4xl font-sans opacity-20 group-hover:opacity-100 group-hover:text-black group-hover:[text-shadow:0_3px_0_white] transition-all duration-300">
+                  <div className="glass-card p-4 md:p-6 relative group">
+                    <span className="absolute -top-4 font-display font-bold text-2xl md:text-4xl text-white/5 group-hover:text-accent/20 transition-all duration-300">
                       {step.id}
                     </span>
-                    <h3 className="text-base md:text-xl font-bold font-sans mb-1 uppercase tracking-wider">{step.absurdTitle}</h3>
-                    <p className="text-xs font-mono uppercase mb-2 md:mb-3 opacity-60">[{step.title}]</p>
-                    <p className="text-sm md:text-lg leading-relaxed handwritten group-hover:text-gray-200">
+                    <h3 className="text-base md:text-xl font-display font-semibold mb-1 uppercase tracking-wider text-white">{step.absurdTitle}</h3>
+                    <p className="text-xs uppercase mb-2 md:mb-3 text-accent/50 tracking-widest">[{step.title}]</p>
+                    <p className="text-sm md:text-base leading-relaxed text-white/50 group-hover:text-white/70 transition-colors">
                       {step.description}
                     </p>
                   </div>
                 </div>
 
                 {/* Center Icon */}
-                <div className="relative z-10 flex items-center justify-center w-10 h-10 md:w-16 md:h-16 shrink-0 bg-white border-2 border-black rounded-full ink-effect">
-                  <step.icon size={20} className="md:w-8 md:h-8" />
+                <div className="relative z-10 flex items-center justify-center w-10 h-10 md:w-14 md:h-14 shrink-0 bg-surface-light border border-white/10 rounded-full">
+                  <step.icon size={18} className="md:w-6 md:h-6 text-accent" />
                 </div>
 
                 {/* Spacer for the other side */}
@@ -108,7 +98,7 @@ export const Process: React.FC = () => {
 
         {/* Bottom Connector */}
         <div className="text-center mt-16">
-          <p className="font-mono text-sm">END OF ALGORITHM.</p>
+          <p className="text-xs text-muted tracking-widest uppercase">END OF ALGORITHM.</p>
         </div>
       </div>
     </section>

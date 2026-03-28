@@ -37,8 +37,8 @@
   <meta name="twitter:image" content="https://absurdsolution.com/images/og-image.png" />
 
   <!-- Theme Color -->
-  <meta name="theme-color" content="#ffffff" />
-  <meta name="msapplication-TileColor" content="#1a1a1a" />
+  <meta name="theme-color" content="#0a0a0f" />
+  <meta name="msapplication-TileColor" content="#0a0a0f" />
 
   <!-- Geo Tags for Local SEO -->
   <meta name="geo.region" content="RS-VO" />
@@ -55,7 +55,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=Montserrat:wght@300;400;600&family=Nanum+Pen+Script&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
     rel="stylesheet">
 
   <!-- Structured Data / JSON-LD -->
@@ -144,15 +144,6 @@
 </head>
 
 <body>
-  <!-- SVG Filter Definition for the Sketchy Look -->
-  <svg style="position: absolute; width: 0; height: 0; pointer-events: none;">
-    <defs>
-      <filter id="ink-filter">
-        <feTurbulence type="fractalNoise" baseFrequency="0.01 0.005" numOctaves="2" result="noise" />
-        <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" />
-      </filter>
-    </defs>
-  </svg>
   <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
 </body>

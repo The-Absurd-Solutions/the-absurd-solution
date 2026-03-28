@@ -13,29 +13,29 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetErrorBoundary
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-white p-8" role="alert">
+        <div className="min-h-screen flex items-center justify-center bg-surface p-8" role="alert">
             <div className="max-w-md w-full text-center">
-                <div className="sketch-box p-8 bg-white">
+                <div className="glass-card p-8">
                     <AlertTriangle
                         size={64}
-                        className="mx-auto mb-6 text-black animate-pulse"
+                        className="mx-auto mb-6 text-accent animate-pulse"
                         aria-hidden="true"
                     />
 
-                    <h1 className="text-3xl font-bold mb-4 text-black ink-effect">
+                    <h1 className="text-3xl font-display font-bold mb-4 text-white">
                         REALITY GLITCHED
                     </h1>
 
-                    <p className="text-lg text-gray-600 mb-6 font-sans">
+                    <p className="text-base text-muted mb-6">
                         Something went wrong in this dimension.
                         The universe is recalibrating...
                     </p>
 
-                    <details className="text-left mb-6 p-4 bg-gray-100 rounded-lg text-sm font-mono">
-                        <summary className="cursor-pointer font-bold text-black mb-2">
+                    <details className="text-left mb-6 p-4 bg-white/5 rounded-lg text-sm font-mono">
+                        <summary className="cursor-pointer font-medium text-white mb-2">
                             Debug Info
                         </summary>
-                        <pre className="overflow-auto text-red-600 whitespace-pre-wrap">
+                        <pre className="overflow-auto text-red-400 whitespace-pre-wrap">
                             {error.message}
                         </pre>
                     </details>
@@ -43,7 +43,7 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetErrorBoundary
                     <div className="flex gap-4 justify-center">
                         <button
                             onClick={resetErrorBoundary}
-                            className="px-6 py-3 sketch-box font-bold uppercase tracking-wider flex items-center gap-2 hover:bg-black hover:text-white transition-colors"
+                            className="px-6 py-3 border border-accent/30 text-accent font-display font-medium uppercase tracking-wider flex items-center gap-2 rounded-full hover:bg-accent hover:text-black transition-all"
                             aria-label="Try again"
                         >
                             <RefreshCw size={18} aria-hidden="true" />
@@ -52,7 +52,7 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetErrorBoundary
 
                         <button
                             onClick={handleReload}
-                            className="px-6 py-3 border-2 border-black font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors"
+                            className="px-6 py-3 border border-white/10 text-white font-display font-medium uppercase tracking-wider rounded-full hover:bg-white/10 transition-all"
                             aria-label="Reload page"
                         >
                             Reload

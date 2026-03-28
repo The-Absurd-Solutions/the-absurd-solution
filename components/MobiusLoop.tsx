@@ -20,17 +20,17 @@ export const MobiusLoop: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative w-64 h-64 md:w-96 md:h-96 flex items-center justify-center ink-effect">
+    <div className="relative w-64 h-64 md:w-96 md:h-96 flex items-center justify-center">
 
-      {/* The Loop Path - Sketchy Black Line */}
+      {/* The Loop Path */}
       <svg viewBox="0 0 200 100" className="w-full h-full absolute overflow-visible">
 
-        {/* Infinite Figure 8 - Multiple strokes for sketchy look */}
+        {/* Infinite Figure 8 */}
         <motion.path
           d="M20,50 C20,-50 180,-50 180,50 C180,150 20,150 20,50"
           fill="none"
-          stroke="#000"
-          strokeWidth="1.5"
+          stroke="rgba(255,255,255,0.08)"
+          strokeWidth="1"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
           transition={{ duration: 3, ease: "easeInOut" }}
@@ -39,20 +39,20 @@ export const MobiusLoop: React.FC = () => {
         <motion.path
           d="M22,51 C22,-48 178,-48 178,51 C178,148 22,148 22,51"
           fill="none"
-          stroke="#000"
+          stroke="rgba(74,222,128,0.15)"
           strokeWidth="0.5"
           strokeDasharray="4 2"
           animate={{ strokeDashoffset: [0, 100] }}
           transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
         />
 
-        {/* Phase labels at cardinal points of the loop */}
+        {/* Phase labels at cardinal points */}
         {phases.map((phase, i) => {
           const positions = [
-            { x: 20, y: 50 },   // left
-            { x: 100, y: -14 }, // top
-            { x: 180, y: 50 },  // right
-            { x: 100, y: 114 }, // bottom
+            { x: 20, y: 50 },
+            { x: 100, y: -14 },
+            { x: 180, y: 50 },
+            { x: 100, y: 114 },
           ];
           const pos = positions[i];
           return (
@@ -61,12 +61,12 @@ export const MobiusLoop: React.FC = () => {
               x={pos.x}
               y={pos.y}
               textAnchor="middle"
-              className="font-mono"
+              style={{ fontFamily: "'Space Grotesk', sans-serif" }}
               fontSize="7"
-              fontWeight={activePhase === i ? "900" : "400"}
-              fill="#000"
+              fontWeight={activePhase === i ? "700" : "400"}
+              fill={activePhase === i ? "#4ade80" : "rgba(255,255,255,0.15)"}
               animate={{
-                opacity: activePhase === i ? 1 : 0.15,
+                opacity: activePhase === i ? 1 : 0.3,
               }}
               transition={{ duration: 0.4 }}
             >
@@ -75,14 +75,14 @@ export const MobiusLoop: React.FC = () => {
           );
         })}
 
-        {/* Scribble Particle */}
-        <motion.rect width="4" height="4" fill="#000">
+        {/* Particle */}
+        <motion.circle r="2" fill="#4ade80" opacity="0.6">
           <animateMotion
             path="M20,50 C20,-50 180,-50 180,50 C180,150 20,150 20,50"
             dur="10s"
             repeatCount="indefinite"
           />
-        </motion.rect>
+        </motion.circle>
       </svg>
 
       {/* Central cycling text */}
@@ -96,16 +96,16 @@ export const MobiusLoop: React.FC = () => {
             transition={{ duration: 0.3 }}
             className="text-center"
           >
-            <span className="text-lg md:text-2xl font-black text-black tracking-tighter block">
+            <span className="text-lg md:text-2xl font-display font-bold text-white tracking-tight block">
               {phases[activePhase].word}
             </span>
-            <span className="text-[10px] md:text-xs font-mono text-gray-500 tracking-widest uppercase">
+            <span className="text-[10px] md:text-xs text-muted tracking-widest uppercase">
               {phases[activePhase].sub}
             </span>
           </motion.div>
         </AnimatePresence>
 
-        <span className="text-[8px] md:text-[10px] font-mono text-black/30 mt-2 tracking-[0.3em] uppercase">
+        <span className="text-[8px] md:text-[10px] text-white/15 mt-2 tracking-[0.3em] uppercase">
           the loop is closed
         </span>
       </div>

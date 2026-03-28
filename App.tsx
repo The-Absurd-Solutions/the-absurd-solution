@@ -6,10 +6,8 @@ import { SkipToContent } from './components/SkipToContent';
 import { Menu, X, Instagram, Twitter } from 'lucide-react';
 
 // Lazy load components below the fold
-const About = lazy(() => import('./components/About').then(m => ({ default: m.About })));
 const Services = lazy(() => import('./components/Services').then(m => ({ default: m.Services })));
 const Process = lazy(() => import('./components/Process').then(m => ({ default: m.Process })));
-const Portfolio = lazy(() => import('./components/Portfolio').then(m => ({ default: m.Portfolio })));
 const Contact = lazy(() => import('./components/Contact').then(m => ({ default: m.Contact })));
 
 const App: React.FC = () => {
@@ -82,10 +80,8 @@ const App: React.FC = () => {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex space-x-8 font-bold text-lg tracking-widest">
-            <a href="#about" onClick={(e) => handleNavClick(e, '#about')} className="hover:underline decoration-2 decoration-black underline-offset-4 whitespace-nowrap">ABOUT</a>
             <a href="#services" onClick={(e) => handleNavClick(e, '#services')} className="hover:underline decoration-2 decoration-black underline-offset-4 whitespace-nowrap">SERVICES</a>
             <a href="#process" onClick={(e) => handleNavClick(e, '#process')} className="hover:underline decoration-2 decoration-black underline-offset-4 whitespace-nowrap">PROCESS</a>
-            <a href="#work" onClick={(e) => handleNavClick(e, '#work')} className="hover:underline decoration-2 decoration-black underline-offset-4 whitespace-nowrap">WORK</a>
             <a href="#contact" onClick={(e) => handleNavClick(e, '#contact')} className="hover:underline decoration-2 decoration-black underline-offset-4 whitespace-nowrap">CONTACT</a>
           </div>
 
@@ -115,10 +111,8 @@ const App: React.FC = () => {
               transition={{ duration: 0.2 }}
               className="fixed top-18 left-0 right-0 bottom-0 bg-white z-30 flex flex-col items-center justify-center space-y-8 text-4xl font-bold"
             >
-              <a href="#about" onClick={(e) => handleNavClick(e, '#about')} className="focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2">ABOUT</a>
               <a href="#services" onClick={(e) => handleNavClick(e, '#services')} className="focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2">SERVICES</a>
               <a href="#process" onClick={(e) => handleNavClick(e, '#process')} className="focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2">PROCESS</a>
-              <a href="#work" onClick={(e) => handleNavClick(e, '#work')} className="focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2">WORK</a>
               <a href="#contact" onClick={(e) => handleNavClick(e, '#contact')} className="focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2">CONTACT</a>
             </motion.div>
           )}
@@ -128,10 +122,8 @@ const App: React.FC = () => {
         <main id="main-content" className="relative z-10 pt-20" role="main">
           <Hero />
           <Suspense fallback={<div className="min-h-screen" />}>
-            <About />
             <Services />
             <Process />
-            <Portfolio />
             <Contact />
           </Suspense>
         </main>

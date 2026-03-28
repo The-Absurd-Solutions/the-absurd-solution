@@ -6,49 +6,58 @@ export const Hero: React.FC = () => {
   return (
     <section id="home" className="min-h-screen relative flex flex-col md:flex-row items-center justify-center p-4 md:p-8 overflow-hidden">
 
-      {/* Subtle gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-surface via-surface-light to-surface pointer-events-none" />
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-accent/3 rounded-full blur-[100px] pointer-events-none" />
+      {/* Background Scribbles */}
+      <svg className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20 z-0">
+        <motion.path d="M50,50 Q100,10 150,50 T250,50" stroke="black" fill="none" strokeWidth="2"
+          animate={{ d: ["M50,50 Q100,10 150,50 T250,50", "M50,55 Q100,15 150,55 T250,55"] }}
+          transition={{ repeat: Infinity, repeatType: "mirror", duration: 2 }}
+        />
+
+        {/* Wobbly concentric circles - CSS animated */}
+        <circle cx="80%" cy="20%" r="50" stroke="black" fill="none" strokeWidth="1.5" className="ink-effect hero-circle-1" />
+        <circle cx="80%" cy="20%" r="35" stroke="black" fill="none" strokeWidth="0.5" strokeDasharray="6 4" className="hero-circle-2" />
+        <circle cx="80%" cy="20%" r="70" stroke="black" fill="none" strokeWidth="0.3" className="hero-circle-3" />
+
+        {/* Scratchy lines */}
+        <line x1="60%" y1="5%" x2="90%" y2="8%" stroke="black" strokeWidth="0.8" />
+        <line x1="70%" y1="30%" x2="95%" y2="35%" stroke="black" strokeWidth="0.5" strokeDasharray="3 5" className="hero-dash-line" />
+      </svg>
 
       <div className="z-10 flex-1 flex flex-col items-center md:items-start space-y-6 max-w-2xl text-center md:text-left">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1 }}
         >
-          <h1 className="text-4xl sm:text-6xl md:text-8xl tracking-tight text-white mb-4 font-display font-bold">
+          <h1 className="text-4xl sm:text-6xl md:text-8xl tracking-tighter text-black mb-4 ink-effect">
             THE ABSURD<br />
-            <span className="text-2xl sm:text-4xl md:text-6xl font-light text-accent italic">solution.</span>
+            <span className="text-2xl sm:text-4xl md:text-6xl font-sans italic">solution.</span>
           </h1>
         </motion.div>
 
         <motion.p
-          className="text-lg sm:text-2xl md:text-3xl text-muted font-light"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
+          className="text-lg sm:text-2xl md:text-3xl text-[#333] transform -rotate-1"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 1 }}
         >
           "Building what no one else would dare imagine."
         </motion.p>
 
         <motion.p
-          className="text-base text-white/70 border-l-2 border-accent/40 pl-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.8 }}
+          className="text-lg font-bold text-black border-l-2 border-black pl-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
         >
           Complexity is our simplicity.<br />(But slightly crazier.)
         </motion.p>
 
         <motion.a
           href="#contact"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9, duration: 0.8 }}
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          className="mt-8 px-8 py-3 border border-accent/30 text-accent text-sm uppercase tracking-widest cursor-pointer inline-block rounded-full hover:bg-accent hover:text-black transition-all duration-300"
+          whileHover={{ scale: 1.05, rotate: -2 }}
+          whileTap={{ scale: 0.95 }}
+          className="mt-8 px-8 py-3 sketch-box text-xl uppercase tracking-widest cursor-pointer inline-block"
         >
           Catch Us If You Can
         </motion.a>

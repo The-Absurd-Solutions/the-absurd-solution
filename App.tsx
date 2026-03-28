@@ -29,13 +29,13 @@ const App: React.FC = () => {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen text-white selection:bg-accent selection:text-black bg-surface">
+      <div className="min-h-screen text-black selection:bg-black selection:text-white bg-white">
         {/* Skip to Content Link for Accessibility */}
         <SkipToContent targetId="main-content" />
 
-        {/* Progress Bar */}
+        {/* Progress Bar - Ink Line */}
         <motion.div
-          className="fixed top-0 left-0 right-0 h-[2px] bg-accent origin-left z-50"
+          className="fixed top-0 left-0 right-0 h-2 bg-black origin-left z-50 ink-effect"
           style={{ scaleX }}
           role="progressbar"
           aria-label="Page scroll progress"
@@ -44,35 +44,35 @@ const App: React.FC = () => {
 
         {/* Navigation */}
         <nav
-          className="fixed top-0 left-0 right-0 z-40 px-6 md:px-12 py-5 flex justify-between items-center bg-surface/80 backdrop-blur-md border-b border-white/5"
+          className="fixed top-0 left-0 right-0 z-40 p-6 flex justify-between items-center bg-white/90 backdrop-blur-sm border-b border-black/10"
           role="navigation"
           aria-label="Main navigation"
         >
           <a
             href="#home"
             onClick={(e) => handleNavClick(e, '#home')}
-            className="text-2xl font-display font-bold tracking-tight hover:text-accent transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-surface"
+            className="text-3xl font-bold tracking-tighter hover:scale-105 transition-transform origin-left focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
             aria-label="The Absurd Solution - Go to homepage"
           >
             ABSURD.
           </a>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center space-x-10 text-sm tracking-widest">
-            <a href="#services" onClick={(e) => handleNavClick(e, '#services')} className="text-muted hover:text-accent transition-colors whitespace-nowrap">SERVICES</a>
-            <a href="#process" onClick={(e) => handleNavClick(e, '#process')} className="text-muted hover:text-accent transition-colors whitespace-nowrap">PROCESS</a>
-            <a href="#contact" onClick={(e) => handleNavClick(e, '#contact')} className="px-5 py-2 border border-accent/30 text-accent rounded-full text-xs hover:bg-accent hover:text-black transition-all whitespace-nowrap">CONTACT</a>
+          <div className="hidden md:flex space-x-8 font-bold text-lg tracking-widest">
+            <a href="#services" onClick={(e) => handleNavClick(e, '#services')} className="hover:underline decoration-2 decoration-black underline-offset-4 whitespace-nowrap">SERVICES</a>
+            <a href="#process" onClick={(e) => handleNavClick(e, '#process')} className="hover:underline decoration-2 decoration-black underline-offset-4 whitespace-nowrap">PROCESS</a>
+            <a href="#contact" onClick={(e) => handleNavClick(e, '#contact')} className="hover:underline decoration-2 decoration-black underline-offset-4 whitespace-nowrap">CONTACT</a>
           </div>
 
           {/* Mobile Nav Toggle */}
           <button
-            className="md:hidden text-white focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-surface rounded p-1"
+            className="md:hidden text-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded p-1"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-expanded={isMenuOpen}
             aria-controls="mobile-menu"
             aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
           >
-            {isMenuOpen ? <X size={28} aria-hidden="true" /> : <Menu size={28} aria-hidden="true" />}
+            {isMenuOpen ? <X size={32} aria-hidden="true" /> : <Menu size={32} aria-hidden="true" />}
           </button>
         </nav>
 
@@ -88,11 +88,11 @@ const App: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.2 }}
-              className="fixed top-18 left-0 right-0 bottom-0 bg-surface/95 backdrop-blur-lg z-30 flex flex-col items-center justify-center space-y-10 text-3xl font-display"
+              className="fixed top-18 left-0 right-0 bottom-0 bg-white z-30 flex flex-col items-center justify-center space-y-8 text-4xl font-bold"
             >
-              <a href="#services" onClick={(e) => handleNavClick(e, '#services')} className="text-muted hover:text-accent transition-colors">SERVICES</a>
-              <a href="#process" onClick={(e) => handleNavClick(e, '#process')} className="text-muted hover:text-accent transition-colors">PROCESS</a>
-              <a href="#contact" onClick={(e) => handleNavClick(e, '#contact')} className="text-accent hover:text-white transition-colors">CONTACT</a>
+              <a href="#services" onClick={(e) => handleNavClick(e, '#services')} className="focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2">SERVICES</a>
+              <a href="#process" onClick={(e) => handleNavClick(e, '#process')} className="focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2">PROCESS</a>
+              <a href="#contact" onClick={(e) => handleNavClick(e, '#contact')} className="focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2">CONTACT</a>
             </motion.div>
           )}
         </AnimatePresence>
@@ -106,29 +106,30 @@ const App: React.FC = () => {
         </main>
 
         {/* Footer */}
-        <footer className="py-10 text-center border-t border-white/5 bg-surface" role="contentinfo">
-          <a href="mailto:the@absurdsolution.com" className="text-accent hover:text-white font-display font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-surface" aria-label="Send email to the@absurdsolution.com">the@absurdsolution.com</a>
+        <footer className="py-8 text-center text-lg text-gray-500 border-t-2 border-black bg-white" role="contentinfo">
+          <a href="mailto:the@absurdsolution.com" className="text-black hover:underline font-bold focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2" aria-label="Send email to the@absurdsolution.com">the@absurdsolution.com</a>
 
           {/* Social Links */}
-          <ul className="flex justify-center gap-6 mt-5 list-none" aria-label="Social media links">
+          <ul className="flex justify-center gap-6 mt-4 list-none" aria-label="Social media links">
             <li>
-              <a href="https://instagram.com/absurdsolution" target="_blank" rel="noopener noreferrer" className="text-muted hover:text-accent transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-surface rounded inline-block" aria-label="Follow us on Instagram">
-                <Instagram size={20} aria-hidden="true" />
+              <a href="https://instagram.com/absurdsolution" target="_blank" rel="noopener noreferrer" className="text-black hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded inline-block" aria-label="Follow us on Instagram">
+                <Instagram size={24} aria-hidden="true" />
               </a>
             </li>
             <li>
-              <a href="https://twitter.com/absurdsolution" target="_blank" rel="noopener noreferrer" className="text-muted hover:text-accent transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-surface rounded inline-block" aria-label="Follow us on Twitter">
-                <Twitter size={20} aria-hidden="true" />
+              <a href="https://twitter.com/absurdsolution" target="_blank" rel="noopener noreferrer" className="text-black hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded inline-block" aria-label="Follow us on Twitter">
+                <Twitter size={24} aria-hidden="true" />
               </a>
             </li>
             <li>
-              <a href="https://tiktok.com/@absurdsolution" target="_blank" rel="noopener noreferrer" className="text-muted hover:text-accent transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-surface rounded inline-block" aria-label="Follow us on TikTok">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" /></svg>
+              <a href="https://tiktok.com/@absurdsolution" target="_blank" rel="noopener noreferrer" className="text-black hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded inline-block" aria-label="Follow us on TikTok">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" /></svg>
               </a>
             </li>
           </ul>
 
-          <p className="mt-5 text-sm text-muted">&copy; {new Date().getFullYear()} The Absurd Solution. All wrongs reserved.</p>
+          <p className="mt-4">&copy; {new Date().getFullYear()} The Absurd Solution. All wrongs reserved.</p>
+          <p className="text-sm mt-2">Built with Ink & React.</p>
         </footer>
       </div>
     </ErrorBoundary>

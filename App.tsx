@@ -41,7 +41,7 @@ const pageMarkup = String.raw`<!-- preloader: the boulder rolls in, then becomes
     <a href="#process">Process</a>
     <a href="#journey">Cases</a>
   </nav>
-  <a class="line-btn" href="mailto:vesna.bozic.se@gmail.com?subject=Book%20a%20call%20%E2%80%94%20The%20Absurd%20Solution">Start a project <span class="ar">→</span></a>
+  <a class="line-btn" href="mailto:vesna.bozic.se@gmail.com?subject=Book%20a%20call%20%E2%80%94%20The%20Absurd%20Solution"><span class="cta-label">Start <span>a project</span></span><span class="ar">→</span></a>
 </header>
 
 <main id="top">
@@ -679,7 +679,8 @@ const pageScripts = [
   var hero = document.querySelector('.hero');
   var hw = hero ? hero.clientWidth : window.innerWidth;
   var hh = hero ? hero.clientHeight : window.innerHeight;
-  var R = Math.min(hw, hh) * .39;
+  var stoneScale = window.matchMedia('(max-width: 360px)').matches ? .26 : (window.matchMedia('(max-width: 560px)').matches ? .31 : .39);
+  var R = Math.min(hw, hh) * stoneScale;
   var d0 = 64;
   var tx = hw * .5 + Math.sin(3.5) * hw * .27;   /* the stone's first frame, mirrored */
   var ty = hh * .47 + Math.sin(1.2) * hh * .07;
@@ -779,7 +780,8 @@ const pageScripts = [
   var rot = 0;                       /* rolling rotation of the grain */
   var sc = 1, scT = 1;               /* it shrinks under the effort of being pushed */
 
-  function radius(){ return Math.min(W, H) * .39; }
+  function stoneScale(){ return window.matchMedia('(max-width: 360px)').matches ? .26 : (window.matchMedia('(max-width: 560px)').matches ? .31 : .39); }
+  function radius(){ return Math.min(W, H) * stoneScale(); }
   function driftX(){ return W * .5 + Math.sin(T * .00009 + 3.5) * W * .27; }
   function driftY(){ return H * .47 + Math.sin(T * .00014 + 1.2) * H * .07; }
   function ballX(){ return driftX() + off; }

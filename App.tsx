@@ -36,7 +36,7 @@ const pageMarkup = String.raw`<!-- preloader: the boulder rolls in, then becomes
   <a class="logo" href="#top"><svg class="sisy" viewBox="0 0 72 44" aria-hidden="true" focusable="false"><use href="#sisy"/></svg><span>ABS<span class="hollow">U</span>RD</span></a>
   <nav class="nav-links">
     <a href="#about">About</a>
-    <a href="#work">Work</a>
+    <!-- <a href="#work">Work</a> -->
     <a href="#services">Services</a>
     <a href="#process">Process</a>
     <a href="#journey">Cases</a>
@@ -166,7 +166,7 @@ const pageMarkup = String.raw`<!-- preloader: the boulder rolls in, then becomes
     </div>
   </section>
 
-  <!-- WORK -->
+  <!-- WORK (temporarily disabled)
   <section class="sec" id="work">
     <div class="mega-wrap"><h2 class="mega reveal">Selected <span class="ostroke">Work</span></h2><span class="mega-sub reveal">[ izabrani radovi ]</span></div>
     <div class="wrap">
@@ -378,6 +378,7 @@ const pageMarkup = String.raw`<!-- preloader: the boulder rolls in, then becomes
       <p class="work-note reveal">Client details under NDA — walkthroughs on request.</p>
     </div>
   </section>
+  -->
 
   <!-- PROCESS -->
   <section class="sec" id="process">
@@ -513,7 +514,7 @@ const pageMarkup = String.raw`<!-- preloader: the boulder rolls in, then becomes
     <a class="logo" href="#top"><svg class="sisy" viewBox="0 0 72 44" aria-hidden="true" focusable="false"><use href="#sisy"/></svg><span>ABS<span class="hollow">U</span>RD</span></a>
     <nav class="foot-links">
       <a href="#about">About</a>
-      <a href="#work">Work</a>
+      <!-- <a href="#work">Work</a> -->
       <a href="#services">Services</a>
       <a href="#process">Process</a>
     <a href="#journey">Cases</a>

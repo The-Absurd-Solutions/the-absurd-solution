@@ -96,8 +96,8 @@ const pageMarkup = String.raw`<!-- preloader: the boulder rolls in, then becomes
           <p>Model providers integrated in production — Claude, OpenAI, Gemini, Qwen</p>
         </div>
         <div class="stat reveal" style="--rd:.16s">
-          <span class="big">2</span>
-          <p>Regions served from one practice — EU &amp; GCC</p>
+          <span class="big">1</span>
+          <p>Region served from one practice — EU</p>
         </div>
       </div>
     </div>
@@ -126,7 +126,7 @@ const pageMarkup = String.raw`<!-- preloader: the boulder rolls in, then becomes
       <div class="pt-intro reveal">
         <p class="pt-eyebrow">Senior AI/ML engineering, serverless architecture, and a sociologist's read of organizations — turned into systems that hold in production.</p>
         <div class="plumb" aria-hidden="true"></div>
-        <p class="pt-state">The Absurd Solution is an independent AI engineering practice for the EU and GCC. Through spec-driven builds, evals and cost discipline, we take systems from first brief to production — and hand them over running. Everything listed below has shipped at least once.<span class="endsq" aria-hidden="true">✳</span></p>
+        <p class="pt-state">The Absurd Solution is an independent AI engineering practice for the EU. Through spec-driven builds, evals and cost discipline, we take systems from first brief to production — and hand them over running. Everything listed below has shipped at least once.<span class="endsq" aria-hidden="true">✳</span></p>
       </div>
 
       <div class="pt-cols">
@@ -423,7 +423,7 @@ const pageMarkup = String.raw`<!-- preloader: the boulder rolls in, then becomes
         <div class="case reveal">
           <aside class="case-side">
             <span class="kicker">[ case — 01 ]</span>
-            <div class="cfact"><span class="k">Industry</span><span class="v">Management consulting · GCC</span></div>
+            <div class="cfact"><span class="k">Industry</span><span class="v">Platforms · EU</span></div>
             <div class="cfact"><span class="k">Scope</span><span class="v">Identity &amp; SSO, product suite, AI layer</span></div>
             <div class="cfact"><span class="k">Stack</span><span class="v">AWS · Next.js · Bedrock · CDK</span></div>
             <div class="cstat"><b>9+</b><span>applications behind one login</span></div>
@@ -471,7 +471,7 @@ const pageMarkup = String.raw`<!-- preloader: the boulder rolls in, then becomes
         The Absurd Solution is an independent AI engineering practice with a research
         background in sociology — systems get read as organizations, not just code.
         Implementation-first by conviction: production AI systems, serverless platforms
-        and automation for consultancies and product teams across the EU and GCC.
+        and automation for consultancies and product teams across the EU.
       </p>
       <div class="facts reveal" style="--rd:.1s">
         <div class="fact"><span class="k">Base</span><span class="v">Novi Sad, Serbia · CET</span></div>
@@ -500,7 +500,7 @@ const pageMarkup = String.raw`<!-- preloader: the boulder rolls in, then becomes
       <a class="cta-line reveal" style="--rd:.1s" href="mailto:vesna.bozic.se@gmail.com?subject=Book%20a%20call%20%E2%80%94%20The%20Absurd%20Solution">Tell us the problem <span class="ar">→</span></a>
       <div class="outro-meta reveal" style="--rd:.16s">
         <span>( Novi Sad — CET )</span>
-        <span>( EU &amp; GCC )</span>
+        <span>( EU )</span>
         <span>( Remote-first )</span>
       </div>
       <a class="email reveal" style="--rd:.2s" href="mailto:vesna.bozic.se@gmail.com">vesna.bozic.se@gmail.com</a>

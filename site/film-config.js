@@ -10,6 +10,7 @@ const FILM = {
   src: 'video/woman-full.mp4',              // version 15: the whole page on wide screens. The 1920×1080 frame at its own pixels,
                                             // 12 Mbps, keyframe every 8 frames: sharp and quick to seek
   portraitSrc: 'video/woman-band.mp4',      // 1240×1080 crop that pans with the climb, for the band on narrow screens
+  narrowSkyOnly: true,                      // phones: no film at all, only the constellations in a night band (the video is never loaded)
   poster: 'video/woman-poster-full.jpg',
   referenceDuration: 15.04,                 // the Kling climb, 361 frames at 24 fps
   allIntra: false,                          // true only for every-frame-keyframe encodes (enables fastSeek)

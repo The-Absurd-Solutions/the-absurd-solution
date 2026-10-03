@@ -723,10 +723,13 @@ html[data-palette] .film .film-stack{filter:var(--pal-map,grayscale(1))}
      shows. It covers the column and fades out within a few words' width past it (no edge line), so the woman, who
      climbs just right of the words, stays clear of it at the start. */
   .film-frame::after{content:'';position:absolute;inset:0;pointer-events:none;
-    background:linear-gradient(90deg,var(--veil) 0,var(--veil) calc(var(--gut) + var(--col) + 16px),transparent calc(var(--gut) + var(--col) + 72px))}
+    background:linear-gradient(90deg,var(--veil) 0,var(--veil) calc(var(--gut) + var(--col) - 8px),
+      color-mix(in srgb,#fff 52%,transparent) calc(var(--gut) + var(--col) + 70px),
+      color-mix(in srgb,#fff 18%,transparent) calc(var(--gut) + var(--col) + 150px),
+      transparent calc(var(--gut) + var(--col) + 220px))}   /* a long, eased blend into the film */
 }
 /* the veil's paper (palette-aware) */
-:root{--veil:color-mix(in srgb,var(--chalk) 66%,transparent)}
+:root{--veil:color-mix(in srgb,#fff 80%,transparent)}   /* white, the film shows through at 20% (was chalk 66%) */
 @media (max-width:899px){
   /* phones: the band keeps a hard top edge (no fade into the page) */
   .film{-webkit-mask-image:none;mask-image:none}
@@ -796,7 +799,7 @@ html[data-palette] .film .film-stack{filter:var(--pal-map,grayscale(1))}
    fades out below the bar (the film still runs under it) */
 @media (min-width:900px){
   .bar::before{content:'';position:absolute;left:0;right:0;top:0;height:calc(100% + 26px);z-index:-1;pointer-events:none;
-    background:linear-gradient(180deg,color-mix(in srgb,var(--chalk) 80%,transparent) 0%,color-mix(in srgb,var(--chalk) 66%,transparent) 58%,color-mix(in srgb,var(--chalk) 0%,transparent) 100%)}
+    background:linear-gradient(180deg,color-mix(in srgb,#fff 80%,transparent) 0%,color-mix(in srgb,#fff 66%,transparent) 58%,color-mix(in srgb,#fff 0%,transparent) 100%)}
 }
 
 /* version 17: the constellations carry the page's meanings, so their words are set a little larger */

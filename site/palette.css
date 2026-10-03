@@ -3,7 +3,7 @@
    layer of the Sisyphus film pages, copied so the version stands on its own. */
 html[data-palette="cyanotype"]{
   --chalk:#f3f0e8;--chalk-2:#e9e5da;--sand:#e9e5da;--ink:#0d2a4f;--ochre-ink:#0d2a4f;--ink-2:#2f4b74;--muted:#536a8c;--ochre:#536a8c;
-  --red:#c4432a;--line:rgba(13,42,79,.16);
+  --red:#cc0000;--line:rgba(13,42,79,.16);   /* communist red (was brick #c4432a) */
   --pal-filter:contrast(1.07) brightness(var(--film-bri,1.12)) url(#pal-cyanotype);--pal-map:url(#pal-cyanotype);
   --font-display:'Tilt Warp','Libre Franklin',Arial,sans-serif;--font-text:'Outfit','Libre Franklin',Arial,sans-serif;--font-label:'Space Mono','Libre Franklin',Arial,sans-serif;
   --display-weight:400;--display-tracking:-.02em;--display-stretch:normal;
@@ -35,3 +35,46 @@ html[data-type]{--serif:var(--font-text);--mono:var(--font-label);--sans:var(--f
 html[data-type] body{font-family:var(--font-text)}
 html[data-type] :is(h1,h2,h3,h4,.drail-pair,.mark,.foot-mark){font-family:var(--font-display);font-weight:var(--display-weight);letter-spacing:var(--display-tracking);font-stretch:var(--display-stretch)}
 html[data-type] :is(.k,.drail-no,.alt,.links,.legend,.tip,.hint,.slip-sub,.note,.eng-notes>summary){font-family:var(--font-label)}
+
+/* a little more of the red: the kicker and the rule over the project index carry it */
+html[data-palette="cyanotype"] .kicker span:first-child{color:var(--red)}
+html[data-palette="cyanotype"] .project-index{border-top:2px solid var(--red)}
+
+/* the words on the left in black (the navy stays on the film side and in the bar); the red keeps its places */
+html[data-palette="cyanotype"] .col{--ink:#0b0b0b;--ochre-ink:#0b0b0b;--ink-2:#2b2b2b;--muted:#555;--ochre:#555;--line:rgba(0,0,0,.16);color:var(--ink)}
+
+/* the case-study pictures in their own colours, a little muted so they sit beside the film (no cyanotype grade) */
+html[data-palette] .study-image,html[data-palette] .plate-image{filter:saturate(.75)}
+html[data-palette] .plate img{filter:none}
+
+/* phones: no film, only the constellations, in the page's ink behind the words over the whole screen; they change
+   and turn as you scroll (film.js adds .sky-only and never loads the film) */
+@media (max-width:899px){
+  .sky-only .film{inset:0;height:auto;z-index:0;background:var(--chalk);-webkit-mask-image:none;mask-image:none}
+  .sky-only .film-stack,.sky-only .film-wash,.sky-only .film-toggle,.sky-only .spots,.sky-only .tethers,.sky-only .tt-label,
+  .sky-only .slip,.sky-only .say,.sky-only .hint,.sky-only .ph-note,.sky-only .rail{display:none}
+  .sky-only .film-frame{background:none}
+  .sky-only .sky{opacity:.42}
+  .sky-only .notes{display:none}   /* the sky's words would sit on the page's words */
+}
+
+/* "Let's talk" as a red button, square like "Start a conversation": no boulder, no pill */
+.bar .links .write{padding:0 20px;gap:0;border-color:var(--red);border-radius:0;background:var(--red);color:#fff;font-weight:600}
+.bar .links .write .boulder{display:none}
+.bar .links .write:is(:hover,:focus-visible,.on) .write-t{transform:none}
+.bar .links .write:is(:hover,:focus-visible){border-color:var(--ink)}
+
+/* the floor's heading is poured as its constellation arrives (v04's wet concrete): an outline while the floor waits,
+   filled from the bottom with weight when it becomes the floor you are on, settling once; it drains when you leave */
+.station .col :is(.section-heading h2,.study-heading h3,.contact-title){
+  color:transparent;-webkit-text-stroke:1px var(--ink);text-shadow:none;
+  background:linear-gradient(var(--ink),var(--ink)) no-repeat 0 100%/100% 0%;-webkit-background-clip:text;background-clip:text;
+  transition:background-size 1.6s cubic-bezier(.7,0,.2,1)}
+.station .col :is(.section-heading h2,.study-heading h3,.contact-title) *{color:transparent;-webkit-text-stroke:inherit;text-shadow:none}
+.station.is-active .col :is(.section-heading h2,.study-heading h3,.contact-title){background-size:100% 100%;animation:pour-settle .9s cubic-bezier(.3,0,.3,1) 1.3s}
+@keyframes pour-settle{0%{translate:0 0}28%{translate:0 4px}58%{translate:0 -1px}100%{translate:0 0}}
+/* phones and reduced motion: the headings stay solid (on phones the split headings move, and the pour would fight them) */
+@media (prefers-reduced-motion:reduce),(max-width:899px){
+  .station .col :is(.section-heading h2,.study-heading h3,.contact-title){transition:none;animation:none;color:var(--ink);-webkit-text-stroke:0;background:none}
+  .station .col :is(.section-heading h2,.study-heading h3,.contact-title) *{color:inherit;-webkit-text-stroke:0}
+}

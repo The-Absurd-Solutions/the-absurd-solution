@@ -82,12 +82,15 @@
   let reserve = 52;   // the bottom of the film taken by the rail (on phones: by the palette dock)
   const BAND = { top: 18, bottom: 18, rail: 8 };   // phones: the band's edges kept clear (version 17: no rail, no picker)
   let filmCompact = false, filmExpandedByUser = null, collapseAfter = Infinity;
+  const skyOnly = () => narrow && FILM.narrowSkyOnly === true;   // phones: the constellations without the film
   // Use the headline's document position, independent of the band's size, to avoid resize/scroll oscillation.
   // A deliberate choice stays in effect while reading and when rotating the device.
   function syncMobileFilm(y) {
-    const compact = narrow && !(filmExpandedByUser ?? (y < collapseAfter && vh >= 500));
+    const compact = narrow && !skyOnly() && !(filmExpandedByUser ?? (y < collapseAfter && vh >= 500));
+    doc.classList.toggle('sky-only', skyOnly());
     if (filmToggle) {
-      if (filmToggle.hidden === narrow) filmToggle.hidden = !narrow;
+      const hide = !narrow || skyOnly();
+      if (filmToggle.hidden !== hide) filmToggle.hidden = hide;
       if (filmToggle.getAttribute('aria-expanded') !== String(!compact)) {
         filmToggle.setAttribute('aria-expanded', String(!compact));
         filmToggle.querySelector('span').textContent = compact ? 'Expand film' : 'Minimize film';
@@ -116,6 +119,7 @@
   function layout() {
     vw = innerWidth; vh = innerHeight;
     narrow = narrowMQ.matches;
+    doc.classList.toggle('sky-only', skyOnly());   // before anything is measured: the band's size depends on it
     barH = $('.bar').getBoundingClientRect().height;
     if (writeBtn) { const bw = writeBtn.getBoundingClientRect().width, bb = writeBtn.querySelector('.boulder'); writeBtn.style.setProperty('--run', `${Math.max(0, bw - (bb ? bb.offsetWidth : 26) - 18).toFixed(1)}px`); }
     collapseAfter = heroTitle.getBoundingClientRect().bottom + scrollY - barH - 16;
@@ -124,9 +128,9 @@
     filmBox = { left: box.left, top: box.top };
     bandH = narrow ? box.height : vh;
     bandTop = narrow ? box.top : 0;
-    readH = narrow ? bandTop : vh;
+    readH = narrow && !skyOnly() ? bandTop : vh;   // phones without the film: the sky is behind the words, the whole screen reads
     if (narrow) {
-      const controlBottom = filmToggle ? vh - filmToggle.getBoundingClientRect().top + 8 : 60;
+      const controlBottom = filmToggle && !filmToggle.hidden ? vh - filmToggle.getBoundingClientRect().top + 8 : 18;   // sky-only: no toggle, only a small margin
       BAND.bottom = Math.min(controlBottom, Math.max(16, bandH - BAND.top - 16));
     }
     maxScroll = Math.max(1, doc.scrollHeight - vh);
@@ -401,6 +405,8 @@
   const once = (el, type) => new Promise(r => el.addEventListener(type, r, { once: true }));
 
   async function loadFilm() {
+    doc.classList.toggle('sky-only', skyOnly());
+    if (skyOnly()) { setLoading(1); return; }   // phones: the film is never fetched; the sky runs on the scroll alone
     const src = narrow && FILM.portraitSrc ? FILM.portraitSrc : FILM.src;
     if (src === loadedSrc) return;
     loadedSrc = src;
@@ -875,7 +881,7 @@
     else { roll += -roll * (1 - Math.exp(-dt * 4)); if (roll < .002) roll = 0; }
     const shown = clamp(cur - roll, 0, endT);
     if (ready) present(shown * fps);
-    const tp = ready ? tD : 0;   // the sky and the hotspots follow the moment on screen
+    const tp = ready ? tD : skyOnly() ? shown : 0;   // the sky and the hotspots follow the moment on screen (phones: the scroll's moment)
 
     // writes
     paintTop();
@@ -894,7 +900,7 @@
     placeSpots(tp);
     if (SKY && !filmCompact) SKY.frame(tp, now);
     if (TETH && !filmCompact) TETH.frame(y, tp, now);
-    hintEl.classList.toggle('on', !ready && doc.classList.contains('is-in'));   // version 17: no scroll cue, only the film's loading
+    hintEl.classList.toggle('on', !ready && !skyOnly() && doc.classList.contains('is-in'));   // version 17: no scroll cue, only the film's loading
 
     if (document.hidden) { running = false; return; }
     requestAnimationFrame(frame);

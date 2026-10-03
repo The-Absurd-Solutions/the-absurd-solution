@@ -27,6 +27,7 @@ const ClimbSky = (() => {
   let LEAD = .45;   // FILM.sky.lead overrides it (version 15)
   const FADE = .15;
   const LY = 3.26156;   // light-years in a parsec
+  const SWAY = { per: 260, max: 56, k: .04 };   // scroll sway: px of scroll per radian, px at most, share of width
 
   // Star names: Bayer letters as Greek, constellations in the genitive (for the tooltips)
   const GREEK = { Alp: 'α', Bet: 'β', Gam: 'γ', Del: 'δ', Eps: 'ε', Zet: 'ζ', Eta: 'η', The: 'θ', Iot: 'ι', Kap: 'κ', Lam: 'λ', Mu: 'μ', Nu: 'ν', Xi: 'ξ', Omi: 'ο', Pi: 'π', Rho: 'ρ', Sig: 'σ', Tau: 'τ', Ups: 'υ', Phi: 'φ', Chi: 'χ', Psi: 'ψ', Ome: 'ω' };
@@ -182,6 +183,8 @@ const ClimbSky = (() => {
     if (R.align.includes('top')) cy = R.y + bh * s / 2 + 4;
     if (R.align.includes('bottom')) cy = R.y + R.h - bh * s / 2 - 4;
     let px = cx - (u0 + u1) / 2 * s, py = cy + (v0 + v1) / 2 * s;
+    // the figure sways left and right as the page scrolls, as if the sky turned
+    if (!still) px += Math.sin(window.scrollY / SWAY.per) * Math.min(SWAY.max, W * SWAY.k);
     // the figure keeps clear of the woman and the boulder: if its extent would touch them, it steps aside
     if (!still) {
       const ex = exclusion(t), fx0 = px + u0 * s - 14, fx1 = px + u1 * s + 14, fy0 = py - v1 * s - 14, fy1 = py - v0 * s + 14;
@@ -590,7 +593,8 @@ const ClimbSky = (() => {
     if (ell) { x0 = Math.min(x0, ell.cx - ell.rx * 2.2); x1 = Math.max(x1, ell.cx + ell.rx * 2.2); y0 = Math.min(y0, ell.cy - ell.ry * 2.2); y1 = Math.max(y1, ell.cy + ell.ry * 2.2); }
     return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
   }
-  const dimOf = c => (c.cfg.dim ?? (view.narrow() && !still ? SKY.dim.narrow : SKY.dim.wide)) * c.a;
+  const dayOnly = () => document.documentElement.classList.contains('sky-only');   // phones: the sky behind the words, on paper
+  const dimOf = c => (dayOnly() ? 0 : (c.cfg.dim ?? (view.narrow() && !still ? SKY.dim.narrow : SKY.dim.wide))) * c.a;   // no dusk on paper
   const sigmaOf = c => clamp(c.pl.s * .34, 24, 64);
 
   /* ---------------- three.js ---------------- */
@@ -807,6 +811,8 @@ const ClimbSky = (() => {
       renderer, cam, ortho, fieldScene, overScene, field, fieldMat, src, over, rings, res, dpr, starMat, figMat, overMat,
       v3: new THREE.Vector3(),
       ink(rgb) { ink.set(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255); },
+      // the figures' colour: white over the film, the page's ink on paper (phones)
+      tone(rgb) { const v = rgb ? [rgb[0] / 255, rgb[1] / 255, rgb[2] / 255] : [1, 1, 1]; [starMat, ringMat, figMat, overMat].forEach(m => m.uniforms.uColor.value.set(v[0], v[1], v[2])); },
       size() {
         renderer.setPixelRatio(DPR);
         renderer.setSize(W, H, false);
@@ -822,6 +828,7 @@ const ClimbSky = (() => {
     r.setRenderTarget(null);
     r.clear();
     if (!c) return;
+    G.tone(dayOnly() ? C.ink : null);
     // the figure: star alphas, sizes and how far each line is drawn
     const st = c.g.stars, k = view.narrow() ? .88 : 1;
     c.stars.forEach((s, j) => { st.size.array[j] = s.r * k * 1.35 * (.65 + .35 * s.k); st.alpha.array[j] = s.a; });
@@ -872,6 +879,7 @@ const ClimbSky = (() => {
   function tetherLines(c, t) {
     const out = [];
     if (still || c.tetherG < .01) return out;
+    if (document.documentElement.classList.contains('sky-only')) return out;   // phones without the film: nothing in it to tie a star to
     const A = view.area();
     for (const th of c.tethers) {
       const h = headOf(th.track, t), vis = api.vis(th.track, t);
@@ -1006,7 +1014,7 @@ const ClimbSky = (() => {
     const leads = layoutNotes(shown, t, now, dt);
     // draw only when something moved: the film, the pointer, an entrance, a word
     const busy = shown && (now - shown.bornAt < 3200 || leads.some(l => l.g < 1 || l.a < 1) || notes.some(n => n.c === shown && (n.on ? now - n.onAt - n.delay < 700 : now - n.offAt < NOTE_OUT)));
-    const sig = shown ? `${shown.key}|${t.toFixed(4)}|${par.yaw.toFixed(4)}|${par.pitch.toFixed(4)}|${W}x${H}` : 'none';
+    const sig = shown ? `${shown.key}|${t.toFixed(4)}|${Math.round(window.scrollY)}|${par.yaw.toFixed(4)}|${par.pitch.toFixed(4)}|${W}x${H}` : 'none';
     if (dirty || busy || sig !== lastSig || debug) {
       dirty = false; lastSig = sig;
       if (mode === 'gl') glDraw(shown, leads, t);

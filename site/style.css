@@ -1,0 +1,842 @@
+/* Sisyphus · film — one continuous climb, filmed. Scroll scrubs the film. Black and white; red only for the ×. */
+:root{
+  --chalk:#ffffff;
+  --chalk-2:#f3f3f3;
+  --sand:#e4e4e4;
+  --ochre:#6b6b6b;
+  --ochre-ink:#0b0b0b;
+  --ink:#0b0b0b;
+  --ink-2:#444444;
+  --muted:#6b6b6b;
+  --line:rgba(0,0,0,.14);
+  --red:#c7240e;
+  --serif:'Libre Franklin',Arial,sans-serif;
+  --mono:'Libre Franklin',Arial,sans-serif;
+  --gut:clamp(24px,6vw,120px);
+  --col:min(560px,37vw);
+  --bar-h:64px;
+  --band:0px;
+  --horizon:62%;
+  --sun-x:70%;
+  --sun-y:47%;
+  --sun-d:64vh;
+  --film-x:50%;       /* object-position of the film on narrow screens (the band) */
+  --film-y:50%;
+  --film-bri:1.12;    /* lifts the film's hazy sky to a light grey that melts into the white page */
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--bar-h) + 12px);-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--chalk);color:var(--ink);
+  font-family:var(--serif);font-size:19px;line-height:1.62;font-weight:380;
+  font-optical-sizing:auto;font-variation-settings:"SOFT" 30,"WONK" 0;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  overflow-x:clip;
+}
+::selection{background:var(--ink);color:var(--chalk)}
+img{display:block;max-width:100%;height:auto}
+a{color:inherit;text-decoration-thickness:1px;text-underline-offset:.22em}
+a:focus-visible{outline:2px solid var(--ink);outline-offset:4px;border-radius:2px}
+h1,h2,h3,h4{margin:0;font-weight:340;line-height:1;letter-spacing:-.022em;text-wrap:balance}
+p{margin:0}
+em{font-style:italic;font-variation-settings:"SOFT" 100,"WONK" 1;color:var(--ochre-ink)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+.skip{position:fixed;left:12px;top:12px;z-index:100;background:var(--ink);color:var(--chalk);padding:10px 14px;font:500 13px/1 var(--mono);transform:translateY(-200%);text-decoration:none}
+.skip:focus{transform:none}
+
+/* ---------- Bar ---------- */
+.bar{
+  position:fixed;inset:0 0 auto;z-index:20;height:var(--bar-h);
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+  padding:0 var(--gut);
+  background:linear-gradient(180deg,rgba(255,255,255,.985) 0%,rgba(255,255,255,.97) 74%,rgba(255,255,255,0) 100%);
+}
+.mark{font:600 24px/1 var(--serif);letter-spacing:-.04em;text-decoration:none;font-variation-settings:"SOFT" 100,"WONK" 0;display:inline-flex;align-items:baseline}
+.mark .x,.foot-mark .x{color:var(--red);display:inline-block;margin-left:1px;transition:transform .8s cubic-bezier(.2,1.4,.4,1)}
+.mark:hover .x{transform:rotate(90deg)}
+.mark .x.spin{animation:spin 1.3s cubic-bezier(.2,.9,.25,1)}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.alt{display:flex;gap:14px;font:400 11.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.links{display:flex;align-items:center;gap:clamp(14px,2vw,28px);font:400 12.5px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase}
+.links a{text-decoration:none;padding:8px 0}
+.links a:hover{text-decoration:underline}
+.links .write{padding:10px 14px;background:var(--ink);color:var(--chalk);border-radius:1px}
+.links .write:hover{background:var(--ink-2);text-decoration:none}
+
+/* ---------- Film ---------- */
+.film{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:var(--chalk)}
+/* Wide screens: the whole frame, as generated, in a 16:9 box at the bottom right. Its bleached sky dissolves into the page. */
+.film-frame{
+  position:absolute;right:0;bottom:0;width:min(80vw,calc(94vh * 16 / 9));aspect-ratio:16/9;overflow:hidden;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 25%),linear-gradient(90deg,transparent 0,#000 9%);
+  -webkit-mask-composite:source-in;
+  mask-image:linear-gradient(180deg,transparent 0,#000 25%),linear-gradient(90deg,transparent 0,#000 9%);
+  mask-composite:intersect;
+}
+.film-frame img,.film-v{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 50%}
+/* The grade is applied once, to the whole stack (poster and both copies of the film), never per video:
+   the copies blend first, then the palette's gradient map colours the result. */
+.film-stack{position:absolute;inset:0;filter:grayscale(1) contrast(1.07) brightness(var(--film-bri,1.12))}
+html[data-palette] .film-stack{filter:var(--pal-filter)}
+.film-stack img,.film-stack .film-v,
+html[data-palette] .film-frame .film-stack img,html[data-palette] .film-frame .film-stack .film-v{filter:none}
+.film-vids{position:absolute;inset:0;opacity:0;transition:opacity .9s ease}
+.film-ready .film-vids{opacity:1}
+/* the top copy's opacity is the fraction between two frames, set every frame */
+.film-v1{opacity:0}
+/* the film's top and bottom dissolve into the paper */
+.film-wash{position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,0) 86%,rgba(255,255,255,.3) 100%)}
+.haze{
+  position:absolute;inset:0;
+  background:linear-gradient(90deg,rgba(255,255,255,.96) 0,rgba(255,255,255,.92) calc(var(--gut) + var(--col)),rgba(255,255,255,0) calc(var(--gut) + var(--col) + 56px));
+}
+
+.ph-note{position:fixed;right:var(--gut);top:calc(var(--bar-h) + 10px);z-index:5;margin:0;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.88);font:400 10px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);pointer-events:none}
+
+.slip,.hint{position:fixed;left:0;top:0;z-index:4;margin:0;pointer-events:none;will-change:transform,opacity}
+.slip{
+  text-shadow:0 0 2px rgba(255,255,255,.95),0 0 14px rgba(255,255,255,.95),0 0 30px rgba(255,255,255,.85);
+  max-width:17ch;font:italic 400 19px/1.25 var(--serif);font-variation-settings:"SOFT" 100,"WONK" 1;color:var(--ink);
+  opacity:0;transition:opacity .6s ease;text-align:right;
+}
+.slip.on{opacity:1}
+.slip small{display:block;margin-top:6px;font:400 10.5px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;font-style:normal;color:var(--muted)}
+.hint{font:400 11.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);opacity:0;transition:opacity .8s ease;white-space:nowrap;padding:9px 14px;border-radius:999px;background:rgba(255,255,255,.88)}
+.hint.on{opacity:1}
+.hint-arrow{display:inline-block;margin-right:6px;animation:nudge 1.6s ease-in-out infinite}
+.hint-bar{display:none;width:120px;height:1px;margin-top:10px;background:var(--line);position:relative;overflow:hidden}
+.hint-bar i{position:absolute;inset:0;background:var(--ink);transform-origin:left center;transform:scaleX(var(--load,0));transition:transform .25s linear}
+.loading .hint-bar{display:block}
+.loading .hint-arrow{display:none}
+@keyframes nudge{0%,100%{transform:translateY(-2px)}50%{transform:translateY(3px)}}
+
+/* ---------- The left column: the dichotomy site's text, in one column beside the film ---------- */
+main{position:relative;z-index:2;overflow-x:clip}   /* split halves slide in from past the edges; the page never widens */
+.station{position:relative;padding:10vh 0 4vh}
+.s-intro{padding-top:calc(var(--bar-h) + 7vh)}
+.col{width:var(--col);margin-left:var(--gut);position:relative;font-size:16px;line-height:1.65;font-weight:400;color:var(--ink)}
+.col h1,.col h2,.col h3,.col h4{font-family:var(--serif);font-weight:500;letter-spacing:-.04em;line-height:1.06;text-wrap:balance;overflow-wrap:anywhere}
+.col p{max-width:62ch}
+.k{display:block;font-size:.75rem;line-height:1.5;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:.9rem 1.3rem;border:1px solid var(--red);border-radius:5px;background:var(--red);color:var(--chalk);font-size:.875rem;font-weight:600;line-height:1.2;text-decoration:none;transition:background .2s,color .2s,border-color .2s,transform .2s}
+.btn:hover{background:var(--ink);border-color:var(--ink);color:var(--chalk)}
+.btn:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){.btn:hover{transform:translateY(-2px)}}
+
+/* I — introduction */
+.hero-kicker{display:flex;justify-content:space-between;gap:.35rem 1.5rem;flex-wrap:wrap}
+.hero-title{margin-top:1.5rem;font-size:clamp(2.35rem,3.7vw,3.7rem);line-height:1.04;letter-spacing:-.045em}
+.hero-title span{display:block}
+.hero-tagline{margin-top:1.6rem;font-size:1rem;line-height:1.6}
+.hero-ownership{display:block;margin-top:.8rem;font-size:.875rem;line-height:1.5;color:var(--ink-2)}
+.hero-description{margin-top:1.3rem;font-size:1.0625rem;line-height:1.65;color:var(--ink-2);max-width:44ch}
+.hero-actions{margin-top:1.6rem}
+.project-index{display:grid;gap:.1rem;margin-top:2.6rem;padding-top:.8rem;border-top:1px solid var(--line)}
+.project-index a{display:grid;grid-template-columns:2rem minmax(0,1fr);align-items:baseline;gap:.6rem;padding:.6rem 0;min-height:44px;text-decoration:none}
+.project-index .index-number{font-size:.875rem;color:var(--red);font-variant-numeric:tabular-nums}
+.project-index .index-title{font-size:1.35rem;font-weight:500;letter-spacing:-.035em;line-height:1.25}
+.project-index .index-title small{margin-left:.7rem;font-size:.875rem;font-weight:400;letter-spacing:0;color:var(--ink-2)}
+.project-index a:hover .index-title{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.2em}
+.project-index a:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
+.s-intro .section-heading{margin-top:4rem}
+.section-heading .k{margin-bottom:1rem}
+.section-heading h2{font-size:clamp(2.5rem,4.1vw,4.3rem)}
+.work-ownership{margin-top:1.25rem;font-size:1rem;color:var(--ink-2);max-width:46ch}
+
+/* Headings in two parts: apart while they enter, joined at reading height, cut by a line. */
+.col h2.dz{position:relative;display:grid}
+.col h2.dz>.dz-a,.col h2.dz>.dz-b{display:block}
+.col h2.dz>.dz-a{transform:translate(calc(var(--s,0) * -1 * min(6vw,3rem)),calc(var(--s,0) * -.06em))}
+.col h2.dz>.dz-b{transform:translate(calc(var(--s,0) * min(6vw,3rem)),calc(var(--s,0) * .06em))}
+#services-title .dz-b{color:var(--ink-2)}
+.dz-cut{display:block;position:relative;height:0;pointer-events:none}
+.dz-cut::before{content:'';position:absolute;left:-1.25rem;right:-1.25rem;top:-1px;height:2px;background:var(--ink);opacity:calc(var(--s,0) * 1.4);transform:scaleX(calc(.25 + var(--s,0) * .75))}
+
+/* Dichotomy rails: one pair per station, split and joined like the headings, closed by a turning red ×. */
+.drail{--s:0;position:relative;display:flex;flex-direction:column;gap:.75rem;max-width:24rem;margin:1.6rem 0 2rem;padding-top:1.1rem;border-top:1px solid var(--line)}
+.drail-no{margin:0;font-size:.75rem;line-height:1.5;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);font-variant-numeric:tabular-nums}
+.drail-no b{font-weight:600;color:var(--red)}
+.drail-pair{display:grid;grid-template-columns:1.5rem minmax(0,1fr);margin:0;font-size:1.45rem;font-weight:500;letter-spacing:-.03em;line-height:1.12;color:var(--ink)}
+.drail-pair .ra,.drail-pair .rb{grid-column:2;display:block;text-wrap:balance}
+.drail-pair .ra{grid-row:1;transform:translate(calc(var(--s) * -1 * min(7vw,2.75rem)),calc(var(--s) * -.06em))}
+.drail-pair .rb{grid-row:3;color:var(--ink-2);transform:translate(calc(var(--s) * min(7vw,2.75rem)),calc(var(--s) * .06em))}
+.drail-cut{grid-column:1/-1;grid-row:2;position:relative;height:1.05rem}
+.drail-cut::after{content:'';position:absolute;left:1.5rem;right:-1rem;top:50%;height:2px;margin-top:-1px;background:var(--ink);opacity:calc(var(--s) * 1.4);transform:scaleX(calc(.25 + var(--s) * .75))}
+.drail-cut b{position:absolute;left:0;top:50%;width:1rem;margin-top:-.55rem;font-size:1.05rem;line-height:1;font-weight:500;text-align:center;color:var(--red);opacity:calc(1 - var(--s) * .9);transform:rotate(calc(var(--s) * -180deg)) scale(calc(1 - var(--s) * .6))}
+.drail-line{margin:0;font-size:.875rem;line-height:1.55;color:var(--ink-2);max-width:32ch}
+
+/* Seams between stations: two lines drawn in from the edges, closed by a red ×. */
+/* Buildings: the main site's concrete sculptures stand at the head of four stations, beside the label.
+   Like the case images they arrive in two halves and join; the palette grades them like the film. */
+.section-heading.has-bldg{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;column-gap:1rem}
+.section-heading.has-bldg>.k{grid-column:1;grid-row:1}
+.section-heading.has-bldg>h2{grid-column:1/-1;grid-row:2}
+.bldg{grid-column:2;grid-row:1;position:relative;margin:0 0 .4rem;width:clamp(7.5rem,12vw,12.5rem);pointer-events:none;
+  filter:drop-shadow(0 14px 12px rgba(20,23,25,.14))}
+html[data-palette] .bldg{filter:var(--pal-map,none) drop-shadow(0 14px 12px rgba(0,0,0,.14))}
+.bldg-bridge{width:clamp(9rem,15vw,15rem)}
+.bldg-portal{width:clamp(5.5rem,8.4vw,8.75rem)}
+.bldg img{display:block;width:100%;height:auto}
+.bldg .dz-left{transform:translate(calc(var(--s,0) * -2%),calc(var(--s,0) * 6%))}
+.bldg.dz-ready .dz-left{clip-path:inset(0 calc(50% - .5px) 0 0);transform:translate(calc(var(--s,0) * -2%),calc(var(--s,0) * 6%))}
+.bldg .dz-twin{position:absolute;inset:0;width:100%;height:100%;clip-path:inset(0 0 0 calc(50% - .5px));transform:translate(calc(var(--s,0) * 2%),calc(var(--s,0) * -6%))}
+.dz-seam{display:flex;align-items:center;gap:1rem;margin:0 0 2.2rem;pointer-events:none}
+.dz-seam span{flex:1;height:1px;background:var(--line);transform:scaleX(calc(1 - var(--s,0)))}
+.dz-seam span:first-child{transform-origin:left center}
+.dz-seam span:last-child{transform-origin:right center}
+.dz-seam b{font-weight:500;font-size:1.2rem;line-height:1;color:var(--red);opacity:calc(1 - var(--s,0) * .9);transform:rotate(calc(var(--s,0) * -180deg)) scale(calc(1 - var(--s,0) * .6))}
+
+/* Images: left half and right half, one rising, one falling, then joined. One grade for the image,
+   its twin and an app film's overlay: black and white, or the palette's gradient map. */
+.study-image,.plate-image{position:relative;isolation:isolate;overflow:hidden;background:var(--chalk-2);min-width:0}
+.study-image,.plate-image{filter:grayscale(1) contrast(1.04)}
+html[data-palette] .study-image,html[data-palette] .plate-image{filter:var(--pal-filter)}
+html[data-palette] .plate img,html[data-palette] .plate-image img{filter:none}
+.study-image{aspect-ratio:2048/1285}
+.study-image img{width:100%;height:100%;object-fit:contain;object-position:center}
+.study-image .dz-left,.plate-image .dz-left{transform:translate(calc(var(--s,0) * -3%),calc(var(--s,0) * 9%))}
+.dz-ready>.dz-left{clip-path:inset(0 calc(50% - .5px) 0 0);transform:translate(calc(var(--s,0) * -3%),calc(var(--s,0) * 9%))}
+.study-image .dz-twin,.plate-image .dz-twin{position:absolute;inset:0;z-index:0;width:100%;height:100%;clip-path:inset(0 0 0 calc(50% - .5px));transform:translate(calc(var(--s,0) * 3%),calc(var(--s,0) * -9%))}
+.study-image .dz-twin{object-fit:contain}
+.plate{margin:0}
+.plate .plate-image{aspect-ratio:16/10}
+.plate-image img{width:100%;height:100%;object-fit:cover;object-position:50% 38%}
+.study-plates .plate-image{aspect-ratio:605/375}
+.study-plates .plate-image img{object-position:top left}
+
+/* II–IV — case studies */
+.study-heading .study-label{display:flex;flex-wrap:wrap;gap:.3rem 1rem;margin:0;font-size:.875rem;color:var(--ink-2)}
+.study-heading h3{margin-top:1rem;font-size:clamp(2.5rem,4.3vw,4.5rem);line-height:1.04}
+.study-subtitle{margin-top:1.1rem;font-size:1.125rem;line-height:1.5;color:var(--ink-2);max-width:42ch}
+.study-visual{margin:0}
+.study-context{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-top:1.4rem}
+.study-context span{display:block;margin-bottom:.4rem;font-size:.8125rem;line-height:1.45;color:var(--ink-2)}
+.study-context strong{display:block;font-size:1.15rem;font-weight:500;letter-spacing:-.025em;line-height:1.2;overflow-wrap:anywhere}
+.study-visual figcaption{margin-top:1.1rem;font-size:.8125rem;line-height:1.5;color:var(--ink-2)}
+.study-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.1rem 1.5rem;margin:2.4rem 0 0;font-size:.875rem;line-height:1.55}
+.study-meta dt{margin-bottom:.3rem;color:var(--ink-2)}
+.study-meta dd{margin:0}
+.study-meta a{color:var(--red)}
+.study-story{margin-top:2rem}
+.study-story .study-label,.study-decision .study-label{display:block;font-size:.875rem;color:var(--ink-2)}
+.study-story h4{margin:.5rem 0 .9rem;font-size:clamp(1.6rem,2.3vw,2.2rem);max-width:24ch}
+.study-story>p{color:var(--ink-2)}
+.study-decision{margin-top:1.4rem}
+.study-decision p{margin-top:.4rem;font-size:1.125rem;line-height:1.55}
+.study-detail-number{display:block;font-size:.875rem;color:var(--red)}
+.study-heads{list-style:none;margin:2rem 0 0;padding:0;display:grid;gap:.7rem}
+.study-heads li{padding-top:.75rem;border-top:1px solid var(--line)}
+.study-heads h4{margin-top:.35rem;font-size:clamp(1.3rem,1.8vw,1.65rem);line-height:1.15}
+/* Engineering notes: the detail paragraphs, scope, tools, shots and "also built", one click away */
+.eng-notes{margin-top:1.6rem;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.eng-notes>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 0;cursor:pointer;font-family:var(--mono);
+  font-size:.75rem;line-height:1.5;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);-webkit-tap-highlight-color:transparent}
+.eng-notes>summary::-webkit-details-marker{display:none}
+.eng-notes>summary::after{content:'+';flex:none;width:1.6rem;height:1.6rem;display:grid;place-items:center;border:1px solid var(--line);border-radius:50%;
+  font-size:1.05rem;font-weight:500;letter-spacing:0;color:var(--red);transition:transform .45s cubic-bezier(.22,1,.36,1),background .2s}
+.eng-notes[open]>summary::after{transform:rotate(45deg)}
+.eng-notes>summary:hover{color:var(--ink)}
+.eng-notes>summary:hover::after{background:var(--chalk-2)}
+.eng-notes>summary:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
+.notes-body{padding:.4rem 0 1.8rem}
+.notes-details{display:grid;gap:1.3rem}
+.notes-details p{margin-top:.35rem;color:var(--ink-2)}
+.eng-notes .study-meta{margin-top:1.8rem}
+.eng-notes .study-plates{margin-top:1.8rem}
+.eng-notes .study-scope{margin-top:1.6rem}
+.study-plates{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:2.4rem}
+.study-plates figure{margin:0;min-width:0}
+.study-plates figcaption{margin-top:.6rem;font-size:.8125rem;line-height:1.45;color:var(--ink-2)}
+.study-scope{margin-top:2rem;font-size:.875rem;line-height:1.65;color:var(--ink-2)}
+.study-scope strong{font-weight:500;color:var(--ink)}
+
+/* V — services: Engineering on paper, Organization on ink, stacked and joined on a red seam with a turning × */
+.practice-intro{margin-top:1.4rem;font-size:1.0625rem;color:var(--ink-2);max-width:44ch}
+.practice{position:relative;display:grid}
+.practice-half{position:relative;min-width:0;padding:1.6rem 1.5rem 1.2rem}
+.practice-half.eng{background:var(--chalk-2);transform:translateX(calc(var(--s,0) * -1 * min(4vw,2.25rem)))}
+.practice-half.org{background:var(--ink);color:var(--chalk);transform:translateX(calc(var(--s,0) * min(4vw,2.25rem)))}
+.practice-heading{display:flex;align-items:baseline;gap:1rem;margin-bottom:.8rem}
+.practice-heading .letter{font-size:3rem;font-weight:500;line-height:1;letter-spacing:-.04em;color:var(--red)}
+.practice-heading h3{font-size:2rem}
+.practice-half>p{margin-bottom:1rem;color:var(--ink-2)}
+.service-list{list-style:none;margin:0;padding:0}
+.service-list li{display:grid;grid-template-columns:1.6rem minmax(0,1fr);gap:.1rem .6rem;padding:.45rem 0}
+.service-list .n{padding-top:.3rem;font-size:.75rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.service-list .t{font-size:1rem;font-weight:500}
+.service-list .d{grid-column:2;font-size:.875rem;color:var(--ink-2)}
+.practice-half.org h3{color:var(--chalk)}
+.practice-half.org>p,.practice-half.org .service-list .d{color:color-mix(in srgb,var(--chalk) 74%,var(--ink))}
+.practice-half.org .service-list .n{color:color-mix(in srgb,var(--chalk) 56%,var(--ink))}
+.practice-half.org .letter{color:color-mix(in srgb,var(--red) 72%,var(--chalk))}
+.dz-axis{position:relative;z-index:2;height:0;pointer-events:none}
+.dz-axis::before{content:'';position:absolute;left:0;right:0;top:-1px;height:2px;background:var(--red);transform:scaleX(calc(1 - var(--s,0) * .7))}
+.dz-axis b{position:absolute;left:50%;top:0;width:2.4rem;height:2.4rem;margin:-1.2rem 0 0 -1.2rem;display:grid;place-items:center;border-radius:50%;background:var(--red);color:var(--chalk);font-weight:500;font-size:1.3rem;line-height:1;transform:rotate(calc(var(--s,0) * -180deg)) scale(calc(1 - var(--s,0) * .5))}
+
+/* VI — method */
+.steps{list-style:none;margin:.6rem 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:2rem 1.8rem}
+.step .num{display:block;font-size:2.2rem;font-weight:500;letter-spacing:-.04em;line-height:1;color:var(--red)}
+.step h3{margin:1rem 0 .5rem;font-size:1.6rem}
+.step p{color:var(--ink-2);max-width:26ch}
+
+/* VII — about */
+.about-copy{display:grid;gap:1.8rem}
+.about-copy p{font-size:1.0625rem;color:var(--ink-2);max-width:42ch}
+.facts{display:flex;flex-direction:column;gap:.7rem;font-size:.875rem;color:var(--ink-2)}
+.facts span:first-child{color:var(--ink);font-weight:500}
+
+/* VIII — contact: three lines waiting for three sentences */
+.s-contact{padding-bottom:6vh}
+.contact-lead{color:var(--ink-2);max-width:42ch}
+.questions{list-style:none;counter-reset:q;margin:1.6rem 0 2.2rem;padding:0}
+.questions li{counter-increment:q;display:grid;grid-template-columns:2.2rem auto minmax(2rem,1fr);align-items:baseline;gap:.8rem;padding:.9rem 0;border-bottom:1px solid var(--line)}
+.questions li::before{content:'0' counter(q);font-size:.75rem;font-weight:600;color:var(--red);font-variant-numeric:tabular-nums}
+.questions .q{font-size:1.15rem;font-weight:500;letter-spacing:-.02em;color:var(--ink)}
+.questions .rule{display:block;height:0;border-bottom:1.5px dotted var(--muted)}
+.mailbtn{max-width:100%;overflow-wrap:anywhere}
+.cta-meta{margin-top:1.4rem;font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;color:var(--red)}
+
+/* The brand's × closes on load (and still turns on hover, and spins at the summit). */
+@media (prefers-reduced-motion:no-preference){.mark .x{animation:dz-cross 1.2s cubic-bezier(.22,1,.36,1) .25s backwards}}
+@keyframes dz-cross{from{opacity:0;transform:rotate(-135deg) scale(.3)}}
+
+.foot{position:relative;z-index:2;display:flex;flex-direction:column;gap:.4rem;width:calc(var(--gut) + var(--col));padding:1.6rem 0 2.4rem var(--gut);font-size:.75rem;line-height:1.6;color:var(--muted)}
+.foot p{margin:0}
+.foot-mark{margin-right:.6rem;font-size:1.05rem;font-weight:600;letter-spacing:-.04em;color:var(--ink)}
+.foot-note cite{font-style:italic}
+
+/* Reduced motion only: four stills, each with the network drawn over it, instead of the scrubbed film */
+.rm-only{display:none}
+.rm-still{margin:2.6rem 0 0}
+.rm-still figcaption{display:flex;gap:.8rem;margin-top:.6rem;font-size:.8125rem;color:var(--ink-2)}
+.rm-still figcaption span{color:var(--ink);letter-spacing:.1em;text-transform:uppercase}
+.still-frame img{filter:grayscale(1) contrast(1.07)}
+html[data-palette] .still-frame img{filter:var(--pal-filter)}
+.still-mode .film,.still-mode .slip,.still-mode .hint,.still-mode .ph-note{display:none}
+.still-mode .rm-only{display:block}
+
+/* ---------- Narrow screens: the hill becomes a band at the bottom ---------- */
+@media (max-width:899px){
+  :root{--gut:22px;--col:auto;--bar-h:56px;--band-open:clamp(150px,30svh,300px);--band-small:clamp(116px,21svh,180px);--band:calc(var(--band-open) + env(safe-area-inset-bottom));--film-x:50%;--film-y:60%}
+  body{font-size:17.5px}
+  .bar{padding:0 18px;gap:12px}
+  .mark{font-size:21px}
+  .links a:not(.write){display:none}
+  .links .write{padding:9px 12px}
+  .alt{gap:8px;font-size:10.5px}
+  .alt-station{display:none}
+  .film{inset:auto 0 0 0;height:var(--band);z-index:6;background:transparent;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 46px);mask-image:linear-gradient(180deg,transparent 0,#000 46px)}
+  .film-frame{inset:0;width:auto;aspect-ratio:auto;-webkit-mask-image:none;mask-image:none}
+  .film-frame img,.film-v{object-fit:cover;object-position:var(--film-x) var(--film-y)}
+  .film-wash{background:linear-gradient(180deg,rgba(255,255,255,.4) 0,rgba(255,255,255,0) 26%)}
+  .haze{display:none}
+  .ph-note{right:auto;left:var(--gut);top:auto;bottom:12px;z-index:8}
+  .slip,.hint{z-index:8}
+  .slip{font-size:16px;max-width:15ch}
+  main{padding-bottom:0}
+  .col{width:auto;margin:0 var(--gut);max-width:640px}
+  .station{padding:8vh 0 3vh}
+  .s-intro{padding-top:calc(var(--bar-h) + 4vh)}
+  .hero-title{font-size:clamp(2.2rem,9.4vw,3.4rem)}
+  .section-heading h2{font-size:clamp(2.3rem,10vw,3.4rem)}
+  .study-heading h3{font-size:clamp(2.3rem,10.5vw,3.6rem)}
+  .study-context{grid-template-columns:1fr;gap:1rem}
+  .study-context>div{display:grid;grid-template-columns:1fr 1.25fr;gap:1rem;align-items:start}
+  .study-context span{margin:0}
+  .study-context strong br{display:none}
+  .study-plates{grid-template-columns:1fr}
+  .steps{gap:1.6rem 1.2rem}
+  .practice-half{padding:1.5rem 1.2rem 1.1rem}
+  .questions li{grid-template-columns:2rem minmax(0,1fr)}
+  .questions .rule{grid-column:2}
+  .foot{width:auto;padding:24px var(--gut) calc(var(--band) + 24px)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .film,.slip,.hint,.ph-note{display:none}
+  .rm-only{display:block}
+  .foot{padding-bottom:34px}
+}
+
+/* ======================= Version 14: the sky over the film ======================= */
+/* The canvases and the words sit over the film box, outside its fade, so they stay crisp. */
+.net,.sky{position:absolute;left:0;top:0;pointer-events:none}
+.notes{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+/* The outer span is placed every frame (sub-pixel translate3d); the inner one carries the entrance:
+   it rises 8 px out of a slight blur, staggered by --d, and on exit fades and blurs away, then resets unseen. */
+.note{position:absolute;left:0;top:0;margin:0;white-space:nowrap;will-change:transform}
+/* Star-chart words: neutral white, set small, with a soft halo of the palette's ink for the pale sky
+   (the film is also darkened softly behind every figure, in sky.js) */
+.note-in{
+  display:block;opacity:0;transform:translate3d(0,8px,0);filter:blur(3px);will-change:opacity,transform;color:#fff;
+  text-shadow:0 0 1px color-mix(in srgb,var(--ink) 75%,transparent),0 0 5px color-mix(in srgb,var(--ink) 55%,transparent),0 0 12px color-mix(in srgb,var(--ink) 35%,transparent);
+  transition:opacity .38s cubic-bezier(.4,0,.2,1),filter .38s cubic-bezier(.4,0,.2,1),transform 0s linear .38s;
+}
+.note.on .note-in{
+  opacity:1;transform:none;filter:none;
+  transition:opacity .65s cubic-bezier(.22,1,.36,1) var(--d,0ms),transform .65s cubic-bezier(.22,1,.36,1) var(--d,0ms),filter .65s cubic-bezier(.22,1,.36,1) var(--d,0ms);
+}
+.n-role{display:block;font:italic 400 .8rem/1.2 var(--serif);letter-spacing:.005em;color:inherit}
+.n-name{display:block;font:500 .56rem/1.3 var(--mono);letter-spacing:.17em;text-transform:uppercase}
+.n-role+.n-name{margin-top:2px;opacity:.8}
+.n-latin{display:block;font:500 .64rem/1.3 var(--mono);letter-spacing:.32em;text-transform:uppercase}
+.n-eng{display:block;font:italic 400 .74rem/1.3 var(--serif);color:inherit}
+/* where we stand: as seen from Earth, then in depth (the two lines share one place and cross-fade) */
+.n-state{display:grid;margin-top:4px;font:500 .56rem/1.3 var(--mono);letter-spacing:.15em;text-transform:uppercase}
+.n-state>span{grid-area:1/1;transition:opacity .6s ease}
+.n-depth,.note-title.deep .n-earth{opacity:0}
+.note-title.deep .n-depth{opacity:1}
+/* a checkpoint is saved: a small white tick rises over the climber */
+.sky-tick{position:absolute;left:0;top:0;width:10px;height:5px;margin:-3px 0 0 -5px;opacity:0;pointer-events:none}
+.sky-tick::before{content:'';position:absolute;inset:0;border-left:1.6px solid #fff;border-bottom:1.6px solid #fff;transform:rotate(-45deg);filter:drop-shadow(0 0 2px color-mix(in srgb,var(--ink) 70%,transparent))}
+.sky-tick.on{animation:sky-tick 1.5s cubic-bezier(.22,1,.36,1) forwards}
+@keyframes sky-tick{0%{opacity:0;translate:0 4px}18%{opacity:1}60%{opacity:1}100%{opacity:0;translate:0 -12px}}
+.net-legend{
+  position:absolute;right:16px;bottom:calc(46px + 12px);margin:0;padding:5px 8px 4px;background:color-mix(in srgb,var(--chalk) 82%,transparent);
+  display:flex;align-items:center;gap:7px;font:400 10.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);
+  opacity:0;transition:opacity .8s ease .6s;
+}
+.film-ready .net-legend{opacity:1}
+/* the key, in the page's ink: a star, a figure line, a tether (dashed), a checkpoint */
+.lg-star{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--ink-2);box-shadow:0 0 0 2.5px color-mix(in srgb,var(--ink-2) 16%,transparent)}
+.lg{display:inline-block;width:16px;height:0;border-top:1px solid var(--ink-2)}
+.lg-teth{border-top-style:dashed}
+.lg-fig,.lg-teth,.lg-tick{margin-left:10px}
+
+/* Drag the film (right of the text column), ask its places, hold the boulder. */
+.film-touch{position:fixed;z-index:3;touch-action:pan-y;cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+.dragging,.dragging *{cursor:grabbing!important}
+.spots{position:fixed;inset:0;z-index:4;pointer-events:none}
+.spot{
+  position:absolute;left:0;top:0;width:34px;height:34px;margin:-17px 0 0 -17px;padding:0;border:0;border-radius:50%;
+  background:none;cursor:pointer;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .35s ease,visibility 0s .35s;
+  touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;
+}
+.spot.on{pointer-events:auto;visibility:visible;transition:opacity .35s ease}
+.spot i{position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;border:1.2px solid var(--ink);background:color-mix(in srgb,var(--chalk) 60%,transparent);transition:transform .3s ease,background .3s ease}
+.spot i::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(0,0,0,.32);animation:spot 2.8s ease-out infinite}
+@keyframes spot{from{transform:scale(.55);opacity:1}to{transform:scale(1.7);opacity:0}}
+.spot:hover i,.spot:focus-visible i{transform:scale(1.35);background:var(--chalk)}
+.spot:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+/* the boulder: the whole sphere answers; a ring fills while you push toward the next checkpoint */
+.spot-push i{width:100%;height:100%;margin:0;left:0;top:0;border:1.2px dashed rgba(0,0,0,.55);background:none}
+.spot-push i::after{inset:-1px;border:1.6px solid transparent;border-radius:50%;animation:none;
+  background:conic-gradient(var(--ink) calc(var(--p,0) * 360deg),transparent 0) border-box;
+  -webkit-mask:linear-gradient(#000 0 0) padding-box exclude,linear-gradient(#000 0 0);mask:linear-gradient(#000 0 0) padding-box exclude,linear-gradient(#000 0 0);opacity:0}
+.spot-push:hover i{transform:scale(1.06);background:color-mix(in srgb,var(--chalk) 12%,transparent)}
+.pushing .spot-push i{transform:scale(.94);border-style:solid}
+.pushing .spot-push i::after{opacity:1}
+/* with a mouse, the markers show while the pointer is over the film; on touch they are always there */
+@media (hover:hover) and (pointer:fine){
+  .spot.on{opacity:0}
+  .film-hover .spot.on,.spot.on:focus-visible,.pushing .spot.on{opacity:1}
+}
+@media (hover:none),(pointer:coarse){ .spot.on{opacity:.9} }
+
+/* The climb rail: one stop per station; a tick for every checkpoint saved. */
+.rail{position:fixed;z-index:5;left:var(--rail-l,0);width:var(--rail-w,100%);bottom:10px;height:36px;opacity:0;transition:opacity .8s ease .4s}
+.film-ready .rail,.loading .rail{opacity:1}
+.rail-note{position:absolute;left:16px;top:-6px;margin:0;display:flex;align-items:center;gap:6px;font:400 10px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.lg-tick,.rail-stop.saved::before{content:'';display:block;width:7px;height:3.5px;border-left:1.6px solid var(--ink);border-bottom:1.6px solid var(--ink);transform:rotate(-45deg) translateY(-1px)}
+.rail-track{position:absolute;left:0;right:0;top:22px;height:18px;margin-top:-9px;cursor:pointer;touch-action:none}
+.rail-track::before{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(0,0,0,.25)}
+.rail-done{position:absolute;left:0;top:50%;height:2px;margin-top:-1px;width:calc(var(--p,0) * 100%);background:var(--ink)}
+.rail-head{position:absolute;top:50%;left:calc(var(--p,0) * 100%);width:7px;height:7px;margin:-3.5px 0 0 -3.5px;background:var(--ink)}
+.rail-stops{list-style:none;margin:0;padding:0;position:absolute;inset:0;pointer-events:none}
+.rail-stop{position:absolute;left:var(--x);top:22px}
+.rail-stop button{position:absolute;left:-12px;top:-12px;width:24px;height:24px;padding:0;border:0;background:none;cursor:pointer;pointer-events:auto;border-radius:50%}
+.rail-stop button i{position:absolute;left:50%;top:50%;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;background:var(--chalk);border:1.2px solid var(--ink);transition:transform .25s ease,background .25s ease}
+.rail-stop button:hover i,.rail-stop button:focus-visible i{transform:scale(1.35);background:var(--ink)}
+.rail-stop button:focus-visible{outline:2px solid var(--ink);outline-offset:1px}
+.rail-stop.saved::before{position:absolute;left:-4px;top:-16px}
+.rail-stop.just::before{animation:tick 1.2s cubic-bezier(.2,1.6,.4,1)}
+@keyframes tick{from{opacity:0;transform:rotate(-45deg) translateY(-1px) scale(.2)}to{opacity:1}}
+.rail-lbl{position:absolute;left:0;bottom:16px;transform:translateX(-50%);padding:4px 7px 3px;background:var(--chalk);border:1px solid var(--line);font:400 10.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;color:var(--ink);opacity:0;pointer-events:none;transition:opacity .2s}
+.rail-stop:first-child .rail-lbl{left:-8px;transform:none}
+.rail-stop:last-child .rail-lbl{left:auto;right:-8px;transform:none}
+.rail-stop:hover .rail-lbl,.rail-stop:focus-within .rail-lbl{opacity:1}
+
+.tip{
+  position:fixed;left:0;top:0;z-index:30;margin:0;max-width:260px;padding:7px 10px 8px;background:var(--chalk);border:1px solid var(--line);
+  box-shadow:0 10px 24px -14px rgba(0,0,0,.4);font:400 13.5px/1.35 var(--serif);color:var(--ink);pointer-events:none;opacity:0;transition:opacity .18s ease;
+}
+.tip.on{opacity:1}
+.tip b{display:block;margin-bottom:3px;font:600 9.5px/1.3 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.tip small{display:block;margin-top:5px;font:400 10px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.say{
+  position:fixed;left:0;top:0;z-index:4;margin:0;pointer-events:none;max-width:24ch;
+  font:italic 400 18px/1.25 var(--serif);color:var(--ink);opacity:0;transition:opacity .5s ease;
+}
+/* v14: both captions carry their own paper, so they read over the network */
+.slip,.say{padding:8px 11px 9px;background:color-mix(in srgb,var(--chalk) 90%,transparent);box-shadow:0 8px 22px -16px rgba(0,0,0,.45);text-shadow:none;max-width:24ch}
+.say.on{opacity:1}
+.say small{display:block;margin-top:6px;font:400 10.5px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;font-style:normal;color:var(--muted)}
+.hint{bottom:auto}
+
+/* Reduced motion: the network is drawn once over each still frame. */
+.still-frame{position:relative}
+.still-frame canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+
+@media (max-width:899px){
+  .film-touch{z-index:7}
+  .spots{z-index:8}
+  .spot:not(.spot-push){display:none}   /* on a phone the band is small: the boulder stays the one thing to hold */
+  /* on phones the shared palette dock takes the band's bottom: the rail rides at its top, just under the fade */
+  .rail{z-index:9;bottom:auto;top:var(--rail-top,calc(100svh - var(--band) + 48px))}
+  .rail-note{display:none}
+  .rail-lbl{display:none}
+  .net-legend{display:none}
+  .n-role{font-size:.74rem}
+  .n-latin{font-size:.6rem;letter-spacing:.26em}
+  .n-eng{display:none}   /* the band is small: the Latin name and where we stand */
+  .say{z-index:9;font-size:16px}
+  .tip{z-index:31;max-width:220px}
+}
+.still-mode .film-touch,.still-mode .spots,.still-mode .rail,.still-mode .tip,.still-mode .say{display:none}
+@media (prefers-reduced-motion:reduce){
+  .film-touch,.spots,.rail,.tip,.say{display:none}
+}
+
+/* Lenis (desktop wheel smoothing): its recommended rules; the page's own smooth anchors are handled in film.js */
+html.lenis,html.lenis body{height:auto}
+html.lenis{scroll-behavior:auto}
+.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
+.lenis.lenis-stopped{overflow:clip}
+.lenis.lenis-smooth iframe{pointer-events:none}
+/* a target focused after a keyboard jump shows no box */
+[tabindex="-1"]:focus{outline:none}
+
+/* ======================= Version 15: the left column in the language of version 04 (Floors) =======================
+   Every station is a floor of the building: a level tag on the slab, a big floor number cast as it arrives,
+   heavy tight headings, small tracked labels, prints in paper frames, spec rows. The colours are the palette's
+   tokens (the Floors palette by default), so the dock still recolours everything. */
+:root{
+  --red-text:color-mix(in srgb,var(--red) 80%,var(--ink));
+  --paper:color-mix(in srgb,var(--chalk-2) 62%,#fff);
+  --slab:color-mix(in srgb,var(--chalk) 90%,var(--ink));
+  --slab-dark:color-mix(in srgb,var(--ink) 90%,var(--chalk));
+}
+body{font-stretch:100%}
+::selection{background:var(--red);color:#fff}
+:focus-visible{outline:2px solid var(--red);outline-offset:4px}
+a:focus-visible,.btn:focus-visible,.project-index a:focus-visible,.eng-notes>summary:focus-visible{outline:2px solid var(--red)}
+.lbl{display:block;font-family:var(--mono);font-size:.7rem;line-height:1.4;font-weight:650;font-stretch:76%;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+/* bar: the mark, the station, a plain outlined button */
+.mark{font-weight:720;font-stretch:115%}
+.alt,.links{font-size:.7rem;font-weight:650;font-stretch:78%;letter-spacing:.14em}
+.alt{color:var(--ink-2)}
+.links .write{padding:.62rem 1rem;background:none;color:var(--ink);border:1.5px solid var(--ink);border-radius:0;line-height:1;transition:background .25s,color .25s,border-color .25s}
+.links .write:hover{background:var(--red);border-color:var(--red);color:#fff;text-decoration:none}
+
+/* the floor's head: its level on the slab, then its number, poured as the floor reaches reading height */
+.floor-head{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
+.lvl{display:flex;align-items:center;gap:.55rem;margin:0 0 .85rem;transition:color .5s}
+.tri{width:13px;height:11px;flex:none;stroke:currentColor;fill:none;stroke-width:1.4;stroke-linejoin:round}
+.station.is-active .lvl{color:var(--red-text)}
+/* the floor's number, in the red of version 04 and the floor's first thing to read: big, at full weight, cast red
+   from the bottom up as the floor arrives */
+.floor-no{display:block;margin:0 0 .6rem -.06em;font-size:clamp(5rem,10vw,11rem);line-height:.78;font-weight:900;font-stretch:125%;letter-spacing:-.025em;
+  color:transparent;-webkit-text-stroke:1.5px var(--red);
+  background:linear-gradient(var(--red),var(--red)) no-repeat 0 100%/100% calc((1 - var(--s,0)) * 100%);-webkit-background-clip:text;background-clip:text}
+@media (min-width:900px){ .col .floor-no{text-shadow:none} }
+
+/* headings: heavy and tight */
+.col h1,.col h2,.col h3,.col h4{font-weight:720;font-stretch:116%;letter-spacing:-.028em;line-height:.96}
+.hero-title{margin-top:1.5rem;font-size:clamp(2.5rem,4.15vw,4.2rem);line-height:.92;font-weight:760;font-stretch:118%;letter-spacing:-.03em}
+.hero-title span{width:fit-content}
+.section-heading h2,.study-heading h3{font-size:clamp(2.35rem,4.1vw,4.3rem);line-height:.94}
+.section-heading .lbl{margin-bottom:1rem}
+/* the hero pours like wet concrete on arrival (v04) */
+.pour span{text-shadow:none;color:transparent;-webkit-text-stroke:1px var(--ink);background:linear-gradient(var(--ink),var(--ink)) no-repeat 0 100%/100% 0%;-webkit-background-clip:text;background-clip:text;transition:background-size 1.5s cubic-bezier(.65,0,.25,1) .2s}
+.is-in .pour span{background-size:100% 100%}
+.is-in .pour span+span{transition-delay:.62s}
+
+/* plain sentences: the one a non-engineer reads first */
+.hero-who,.study-subtitle,.practice-intro,.work-ownership,.roof-plain{font-size:clamp(1.12rem,1.42vw,1.4rem);line-height:1.32;font-weight:440;letter-spacing:-.012em;color:var(--ink);text-wrap:pretty}
+
+/* I — the foundation */
+.kicker{display:flex;flex-direction:column;gap:.2rem;margin-top:.35rem}
+.kicker span:first-child{color:var(--ink)}
+.hero-who{margin-top:1.5rem;max-width:30ch}
+.hero-description{margin-top:.9rem;font-size:1rem;line-height:1.6;max-width:44ch}
+.hero-foot{display:flex;flex-wrap:wrap;align-items:center;gap:.8rem 1.4rem;margin-top:1.6rem}
+.hero-foot .hero-ownership{margin:0}
+.project-index{margin-top:2.4rem;padding-top:0;border-top:1.5px solid var(--ink)}
+.project-index a{border-bottom:1px solid var(--line);padding:.55rem 0}
+.project-index .index-number{font-size:.72rem;font-weight:700;font-stretch:80%;color:var(--red-text)}
+.project-index .index-title{font-size:1.3rem;font-weight:700;font-stretch:110%;letter-spacing:-.025em}
+.project-index .index-title small{font-family:var(--mono);font-size:.66rem;font-weight:650;font-stretch:76%;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.s-intro .section-heading{margin-top:3.6rem}
+.work-ownership{margin-top:1.2rem}
+
+/* the floors' heads beside their sculptures */
+.section-heading.has-bldg>.floor-head{grid-column:1;grid-row:1;align-self:end}
+.section-heading.has-bldg>h2{margin-top:.2rem}
+
+/* buttons: square, as cast */
+.btn{border-radius:0;font-weight:650;letter-spacing:.01em}
+.btn:hover{background:var(--ink);border-color:var(--ink)}
+
+/* dichotomy rails: the pair in the heading face */
+.drail{border-top:1px solid var(--line)}
+.drail-no{color:var(--muted)}
+.drail-no b{font-weight:700;color:var(--red-text)}
+.drail-pair{font-weight:680;font-stretch:108%;letter-spacing:-.025em}
+.dz-seam span{background:color-mix(in srgb,var(--ink) 34%,transparent)}
+
+/* II–IV — floors 01–03 */
+.study-heading .study-label{display:flex;flex-wrap:wrap;gap:.3rem 1rem;margin:0 0 .2rem;font-size:.7rem;color:var(--muted)}
+.study-heading h3{margin-top:.75rem}
+.study-subtitle{margin-top:1rem;max-width:34ch}
+.print{margin:1.4rem 0 1.8rem;padding:8px 8px 0;background:var(--paper);border:1px solid color-mix(in srgb,var(--ink) 12%,transparent)}
+.print .study-context{padding:0 .35rem;margin-top:1.1rem}
+.print figcaption{padding:.75rem .35rem .8rem;margin:0}
+.study-visual figcaption{font-size:.8125rem;color:var(--muted)}
+.study-context span{font-family:var(--mono);font-size:.64rem;font-weight:650;font-stretch:76%;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+.study-context strong{font-weight:700;font-stretch:108%;font-size:1.05rem}
+.study-story{margin-top:1.8rem}
+.spec{display:grid;grid-template-columns:8.2rem minmax(0,1fr);gap:.35rem 1.1rem;padding:1rem 0 1.25rem;border-top:1px solid var(--line)}
+.spec>.lbl{padding-top:.32rem}
+.spec p{color:var(--ink-2)}
+.spec-body h4{margin:0 0 .65rem;font-size:clamp(1.35rem,1.75vw,1.7rem);line-height:1.04;font-weight:720;max-width:20ch}
+.spec.key{margin:0;border-top:1.5px solid var(--ink)}
+.spec.key>.lbl{color:var(--red-text)}
+.spec.key p{margin:0;font-size:1.0625rem;line-height:1.5;font-weight:560;color:var(--ink)}
+.study-heads{margin:1.6rem 0 0;gap:0;border-top:1.5px solid var(--ink)}
+.study-heads li{display:grid;grid-template-columns:8.2rem minmax(0,1fr);align-items:baseline;gap:.2rem 1.1rem;padding:.95rem 0 1rem;border-top:0;border-bottom:1px solid var(--line)}
+.study-heads .study-detail-number{color:var(--red-text)}
+.study-heads h4{margin:0;font-size:1.2rem;line-height:1.15;font-weight:680;font-stretch:108%;letter-spacing:-.02em}
+.notes-details .study-detail-number{color:var(--red-text);font-size:.7rem}
+.study-meta dt{font-family:var(--mono);font-size:.66rem;font-weight:650;font-stretch:76%;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.study-meta a{color:var(--red-text);font-weight:600}
+.eng-notes{border-top:1.5px solid var(--ink)}
+.eng-notes>summary{font-size:.7rem;font-weight:650;font-stretch:76%;letter-spacing:.14em;color:var(--ink-2)}
+.study-scope strong{font-weight:650}
+
+/* V — floor 04: two wings on one floor, joined on the red seam */
+.practice-half{padding:1.5rem 1.5rem 1.1rem}
+.practice-half.eng{background:var(--slab);border-top:3px solid var(--ink)}
+.practice-half.org{background:var(--slab-dark)}
+.practice-heading h3{font-size:clamp(1.6rem,2.2vw,2.1rem);line-height:1;font-weight:720;font-stretch:118%;letter-spacing:-.025em}
+.practice-heading .letter{font-weight:820;font-stretch:125%}
+.service-list li{padding:.55rem 0;border-top:1px solid color-mix(in srgb,var(--ink) 13%,transparent)}
+.practice-half.org .service-list li{border-top-color:color-mix(in srgb,var(--chalk) 16%,transparent)}
+.service-list .n{font-size:.72rem;font-weight:700;font-stretch:80%}
+.service-list .t{font-weight:620}
+
+/* VI — the stair: one step per row, the number lights when its tether arrives */
+.steps{display:block;margin:.4rem 0 0;border-bottom:1px solid var(--line)}
+.step{display:grid;grid-template-columns:4.4rem minmax(0,1fr);gap:.1rem 1rem;padding:1.1rem 0 1.15rem;border-top:1px solid var(--line)}
+.step .num{grid-row:1/3;font-size:2.6rem;line-height:.82;font-weight:820;font-stretch:125%;letter-spacing:-.04em;color:color-mix(in srgb,var(--ink) 28%,transparent);transition:color .5s}
+.step h3{margin:0 0 .3rem;font-size:1.55rem;line-height:1.05;font-weight:700;font-stretch:112%;letter-spacing:-.03em}
+.step p{max-width:none}
+.step.tt-on .num{color:var(--red)}
+
+/* VII — floor 06 */
+.about-copy p{font-size:1.0625rem;color:var(--ink-2)}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem 1.4rem;margin:0;padding-top:1rem;border-top:1px solid var(--line);font-size:inherit;color:inherit}
+.facts dt{margin-bottom:.2rem}
+.facts dd{margin:0;font-size:.92rem;color:var(--ink)}
+
+/* VIII — the roof: topping out, then three sentences */
+.roof-plain{margin-top:1.2rem;max-width:34ch}
+.contact-title{margin:2.2rem 0 .9rem;font-size:clamp(1.9rem,2.9vw,2.9rem);line-height:.95;font-weight:760;letter-spacing:-.03em}
+.questions{margin:1.4rem 0 2rem;border-top:1.5px solid var(--ink)}
+.questions li::before{font-family:var(--mono);font-weight:700;color:var(--red-text)}
+.questions .q{font-weight:650;font-stretch:108%;letter-spacing:-.02em}
+.handover{display:flex;flex-direction:column;align-items:flex-start;gap:.9rem}
+.next-floor{font-size:clamp(1.3rem,1.8vw,1.75rem);line-height:1.05;font-weight:720;font-stretch:112%;letter-spacing:-.025em}
+.mailbtn{padding:1.05rem 1.4rem;font-size:clamp(1rem,1.3vw,1.2rem)}
+.cta-meta{font-family:var(--mono);font-size:.7rem;font-weight:650;font-stretch:76%;letter-spacing:.14em;color:var(--red-text)}
+@media (max-width:899px){
+  .floor-no{font-size:5.6rem}
+  .hero-title{font-size:clamp(2.3rem,10.4vw,3.6rem)}
+  .section-heading h2,.study-heading h3{font-size:clamp(2.2rem,9.6vw,3.2rem)}
+  .spec,.study-heads li{grid-template-columns:1fr;gap:.3rem}
+  .facts{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){ .pour span{background-size:100% 100%;transition:none} }
+
+/* ======================= Version 15: the tethers, from the film to the words ======================= */
+.tethers{position:fixed;left:0;top:0;z-index:3;pointer-events:none}
+.tt-label{position:fixed;left:0;top:0;z-index:5;margin:0;padding:5px 8px 4px;background:var(--chalk);border:1px solid color-mix(in srgb,var(--ink) 22%,transparent);
+  font-family:var(--mono);font-size:.62rem;line-height:1.2;font-weight:650;font-stretch:76%;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);
+  white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .25s ease;will-change:transform}
+.tt-label.on{opacity:1}
+/* the splits rest while the anchors are measured (one frame, never painted) */
+.tt-measure .col :is(.dz-a,.dz-b,.ra,.rb,.practice-half){transform:none!important}
+/* the thing in the film is hovered: its words are underlined in red */
+.hero-who,.spec-body h4,.study-heads h4,.step h3,#about-title>.dz-a,#about-title>.dz-b,.questions .q{text-decoration:underline 2px transparent;text-underline-offset:.17em;text-decoration-skip-ink:auto;transition:text-decoration-color .25s ease}
+.hero-who.tt-hot,.spec-body h4.tt-hot,.study-heads h4.tt-hot,.step h3.tt-hot,#about-title>.dz-a.tt-hot,#about-title>.dz-b.tt-hot,.questions li.tt-hot .q{text-decoration-color:var(--red)}
+.drail,.practice-half{outline:1.5px solid transparent;outline-offset:10px;transition:outline-color .25s ease}
+.practice-half{outline-offset:5px}
+.drail.tt-hot,.practice-half.tt-hot{outline-color:var(--red)}
+/* a star's own words over the film light up while the words it is tied to are hovered */
+.note.lit .n-role{text-decoration:underline 1px;text-underline-offset:.2em}
+.note.lit .note-in{filter:drop-shadow(0 0 6px color-mix(in srgb,var(--ink) 70%,transparent))}
+/* the words you can focus to ask the film for their moment */
+.tt-focus:focus{outline:none}
+.tt-focus:focus-visible{outline:2px solid var(--red);outline-offset:8px}
+.tt-over .film-touch{cursor:pointer}
+@media (max-width:899px){
+  .tethers{z-index:7}
+  .tt-label{z-index:9}
+}
+
+/* Version 15, reduced motion: the film's frame stays, as one still per floor, with its tethers drawn at once.
+   (Version 14 hid it; the stills in the column give way to the frame.) */
+.still-mode .film{display:block}
+.still-mode .film-vids,.still-mode .sky,.still-mode .net-legend{display:none}
+.still-mode .rm-only{display:none}
+@media (prefers-reduced-motion:reduce){
+  .film{display:block}
+  .rm-only{display:none}
+}
+/* the key: a line from the film to the words ends in a dot */
+.lg-page{position:relative;margin-left:10px;border-top-color:color-mix(in srgb,var(--ink) 60%,transparent)}
+.lg-page::after{content:'';position:absolute;right:-3px;top:-3px;width:5px;height:5px;border-radius:50%;background:var(--ink-2)}
+
+/* ======================= Version 15, full bleed: the film covers the whole page, the words sit on it =======================
+   No blur, no fades, no see-through layers and no line between the words and the film: the film is crisp and opaque
+   from edge to edge, under the bar too. The words keep the left half; the tethers reach them across the film. */
+.film-mirror .film-stack{transform:scaleX(-1)}   /* only with FILM.mirror */
+/* the film's grade: the palette's gradient map and nothing else (no contrast, brightness or blur on the picture) */
+.film .film-stack{filter:grayscale(1)}
+html[data-palette] .film .film-stack{filter:var(--pal-map,grayscale(1))}
+.film-wash,.haze{display:none}
+.bar,html[data-palette] header.bar{background:var(--chalk)}
+.hint,.slip,.say,html[data-palette] .hint{background:var(--chalk)}
+.net-legend{background:var(--chalk)}
+@media (min-width:900px){
+  /* the words keep the left half: a 4vw gutter at least, centred in the half once the measure (560px) is reached */
+  :root{--gut:max(4vw,calc(25vw - 300px));--col:min(560px,calc(50vw - 2 * var(--gut)))}
+  .film{inset:0;background:var(--chalk)}
+  .film-frame{inset:0;width:auto;aspect-ratio:auto;-webkit-mask-image:none;mask-image:none}
+  /* cover, never zoomed past it; --film-x pins the frame to the left edge (FILM.wideFocusX, set by film.js) */
+  .film-frame img,.film-v{object-fit:cover;object-position:var(--film-x) var(--film-y)}
+  /* the bar spans the whole page over the film with nothing behind it; the words scroll away under it (film.js clips them) */
+  .bar,html[data-palette] header.bar{background:none}
+  /* the words' half: a veil of paper over the film, see-through and unblurred, so the words read and the film still
+     shows. It covers the column and fades out within a few words' width past it (no edge line), so the woman, who
+     climbs just right of the words, stays clear of it at the start. */
+  .film-frame::after{content:'';position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(90deg,var(--veil) 0,var(--veil) calc(var(--gut) + var(--col) + 16px),transparent calc(var(--gut) + var(--col) + 72px))}
+}
+/* the veil's paper (palette-aware) */
+:root{--veil:color-mix(in srgb,var(--chalk) 66%,transparent)}
+@media (max-width:899px){
+  /* phones: the band keeps a hard top edge (no fade into the page) */
+  .film{-webkit-mask-image:none;mask-image:none}
+}
+
+/* ======================= Version 15: one numbering, a quieter sky =======================
+   The floors are the only numbering (the bar and the rail read "04 · Services"); lists keep numbers only where
+   they are an order. Over the film the sky stays quiet: no dusk under the figures or their words, no stars' names,
+   only the meanings the page's words are tied to, set in the page's ink and appearing without blur. The key shows
+   for a moment at the start, and again while the pointer is on the film. */
+.service-list li{grid-template-columns:minmax(0,1fr)}
+.service-list .d{grid-column:1}
+.note-in{color:var(--ink);filter:none;
+  text-shadow:0 0 1px color-mix(in srgb,var(--chalk) 90%,transparent),0 0 3px color-mix(in srgb,var(--chalk) 75%,transparent)}
+.note.on .note-in{filter:none}
+.n-role+.n-name,.n-eng{display:none}
+.note-title .n-latin{opacity:.85}
+.film-ready .net-legend{opacity:0;animation:legend-once 7s ease 1.2s both}
+@keyframes legend-once{0%{opacity:0}10%,82%{opacity:1}100%{opacity:0}}
+.film-hover .net-legend{opacity:1;animation:none;transition:opacity .3s ease}
+@media (prefers-reduced-motion:reduce){ .film-ready .net-legend{animation:none;opacity:0} }
+
+/* ======================= Version 17: the header is the building's lift =======================
+   Beside the mark, the lift's readout: the floor you are on, rolling like an elevator's counter as you climb, and
+   its name. The navigation is the lift's panel: each section with its floor, the one you are on lit by a
+   red line. The call button carries the boulder: it turns as the film climbs (and back, when the climb slips),
+   rolls across the button on hover while the button fills with ink behind it, and rests at the far end on the roof.
+   Words in the text face (Outfit), figures in the label face. */
+.bar{gap:clamp(14px,2vw,32px)}
+.bar .mark{font-size:27px;letter-spacing:-.03em}
+.lift{display:flex;align-items:baseline;gap:.62rem;margin:0 auto 0 clamp(14px,2.2vw,40px);white-space:nowrap;color:var(--ink);pointer-events:none}
+.lift-arrow{align-self:center;font-size:8.5px;line-height:1;color:var(--red);transform:translateY(-1px)}
+.lift-no{position:relative;display:inline-block;height:1.1em;overflow:hidden;font:700 21px/1.1 var(--font-label);letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:var(--ink)}
+.lift-roll{display:grid}
+.lift-roll b{grid-area:1/1;font-weight:inherit;will-change:transform}
+.lift-name{display:inline-block;font:500 17px/1 var(--font-text);letter-spacing:-.01em;text-transform:none;color:var(--ink)}
+.bar .links{gap:clamp(12px,1.7vw,30px)}
+.bar .links a:not(.write){position:relative;display:inline-flex;align-items:baseline;gap:.3rem;padding:10px 0;
+  font:500 16.5px/1 var(--font-text);letter-spacing:-.01em;text-transform:none;text-decoration:none;color:var(--ink)}
+.bar .links a:not(.write) i{font:400 9.5px/1 var(--font-label);font-style:normal;letter-spacing:.06em;color:var(--muted);transform:translateY(-.7em);transition:color .3s ease}
+.bar .links a:not(.write)::after{content:'';position:absolute;left:0;right:0;bottom:4px;height:1.5px;background:var(--red);transform:scaleX(0);transform-origin:left center;transition:transform .5s cubic-bezier(.65,0,.35,1)}
+.bar .links a:not(.write):hover{text-decoration:none}
+.bar .links a:not(.write):is(:hover,:focus-visible,.on)::after{transform:scaleX(1)}
+.bar .links a:not(.write):is(:hover,.on) i{color:var(--red)}
+/* the call button and its boulder */
+.bar .links .write{position:relative;isolation:isolate;overflow:hidden;display:inline-flex;align-items:center;gap:.6rem;height:44px;padding:0 20px 0 8px;
+  border:1.5px solid var(--ink);border-radius:999px;background:none;color:var(--ink);text-decoration:none;
+  font:500 16.5px/1 var(--font-text);letter-spacing:-.01em;text-transform:none;transition:color .45s ease .05s}
+.bar .links .write::before{content:'';position:absolute;inset:-1px;z-index:-1;background:var(--ink);transform:scaleX(0);transform-origin:left center;transition:transform .6s cubic-bezier(.65,0,.35,1)}
+.bar .links .write:is(:hover,:focus-visible){color:var(--chalk);background:none;border-color:var(--ink);text-decoration:none}
+.bar .links .write:is(:hover,:focus-visible)::before{transform:scaleX(1)}
+.boulder{position:relative;flex:none;width:28px;height:28px;border-radius:50%;
+  background:radial-gradient(circle at 34% 30%,color-mix(in srgb,var(--chalk) 92%,#fff) 0,color-mix(in srgb,var(--muted) 45%,var(--chalk)) 48%,color-mix(in srgb,var(--ink-2) 85%,var(--chalk)) 100%);
+  box-shadow:inset -2px -3px 5px color-mix(in srgb,var(--ink) 30%,transparent);
+  transform:translateX(0) rotate(calc(var(--climb,0) * 1440deg));transition:transform .7s cubic-bezier(.65,0,.35,1)}
+.boulder::after{content:'';position:absolute;left:10%;right:10%;top:50%;height:1.2px;margin-top:-.6px;border-radius:1px;background:color-mix(in srgb,var(--ink) 55%,transparent)}   /* its seam */
+.write-t{display:inline-block;transition:transform .7s cubic-bezier(.65,0,.35,1)}
+.bar .links .write:is(:hover,:focus-visible,.on) .boulder{transform:translateX(var(--run,96px)) rotate(calc(var(--climb,0) * 1440deg + 420deg))}
+.bar .links .write:is(:hover,:focus-visible,.on) .write-t{transform:translateX(-34px)}
+.bar .links .write:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+@media (max-width:899px){
+  .lift{display:none}
+  .bar .links .write{height:40px;font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){ .boulder,.write-t,.bar .links .write::before{transition:none} }
+/* over the film's darker floors the panel needs paper behind it: a veil of the page, see-through and unblurred, that
+   fades out below the bar (the film still runs under it) */
+@media (min-width:900px){
+  .bar::before{content:'';position:absolute;left:0;right:0;top:0;height:calc(100% + 26px);z-index:-1;pointer-events:none;
+    background:linear-gradient(180deg,color-mix(in srgb,var(--chalk) 80%,transparent) 0%,color-mix(in srgb,var(--chalk) 66%,transparent) 58%,color-mix(in srgb,var(--chalk) 0%,transparent) 100%)}
+}
+
+/* version 17: the constellations carry the page's meanings, so their words are set a little larger */
+.n-role{font-size:.95rem}
+.n-latin{font-size:.7rem}
+
+/* version 17: the first screen: what she builds, the title, who, one button and the three projects as the building's
+   directory; on wide screens it stands alone and the work begins below it */
+@media (min-width:900px){
+  .s-intro .intro{min-height:calc(100svh - var(--bar-h) - 14vh);display:flex;flex-direction:column;justify-content:center}
+  .hero-who{margin-top:1.4rem}
+  .hero-foot{margin-top:2rem}
+}
+/* phones: the bar keeps the mark and the call button; the panel's links wait in the page */
+@media (max-width:899px){ .bar .links a:not(.write){display:none} }
+
+/* from version 15 (added there by another session, 2026-10-03 00:40): */
+/* Mobile reading: the opening keeps the climb in view; after the headline it becomes a quiet strip.
+   The height changes in one step so film.js can remap the picture, drag surface and rail together. */
+.film-toggle{display:none}
+@media (max-width:899px){
+  html.film-compact{--band:calc(var(--band-small) + env(safe-area-inset-bottom))}
+  .s-intro{padding-top:calc(var(--bar-h) + 24px)}
+  .s-intro .floor-no{font-size:4.8rem}
+  .s-intro .hero-title{margin-top:1.2rem}
+  .s-intro .hero-who{margin-top:1.2rem}
+  .s-intro .hero-foot{margin-top:1.2rem}
+  .film-toggle:not([hidden]){display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    position:fixed;right:max(12px,env(safe-area-inset-right));bottom:calc(8px + env(safe-area-inset-bottom));z-index:31;
+    min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:2px;
+    background:var(--chalk);color:var(--ink);font:600 10px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+  .film-toggle svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.5}
+  .film-toggle[aria-expanded="false"] svg{transform:rotate(180deg)}
+  .film-toggle:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+  .film-compact :is(.net,.sky,.notes,.spots,.slip,.say,.hint,.tethers,.tt-label){visibility:hidden;pointer-events:none}
+  .film-compact .spots,.film-compact .tip{display:none}
+  .film-compact .rail{opacity:1;transition:none}
+  .rail-stop button{width:36px;height:44px;left:-18px;top:-22px}
+  .foot,.still-mode .foot{padding-bottom:calc(var(--band) + 32px)}
+  html{scroll-padding-bottom:calc(var(--band) + 16px)}
+}
+/* the kicker over the hero spans the column (the column's 62ch measure is for sentences), and breaks in balance */
+.s-intro .kicker{max-width:none;text-wrap:balance}

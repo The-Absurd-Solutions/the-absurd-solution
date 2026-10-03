@@ -1,0 +1,4 @@
+# Static site: v17 (floors-cyanotype), no build step.
+[build]
+  publish = "site"
+  command = "echo 'static site, nothing to build'"

@@ -1,0 +1,37 @@
+/* Version 17, the working version: the Cyanotype palette (Anna Atkins, Photographs of British Algae, 1843) and the
+   Tilt Warp pairing (Tilt Warp, Outfit, Space Mono) are set here for good. No picker: these rules are the shared palette
+   layer of the Sisyphus film pages, copied so the version stands on its own. */
+html[data-palette="cyanotype"]{
+  --chalk:#f3f0e8;--chalk-2:#e9e5da;--sand:#e9e5da;--ink:#0d2a4f;--ochre-ink:#0d2a4f;--ink-2:#2f4b74;--muted:#536a8c;--ochre:#536a8c;
+  --red:#c4432a;--line:rgba(13,42,79,.16);
+  --pal-filter:contrast(1.07) brightness(var(--film-bri,1.12)) url(#pal-cyanotype);--pal-map:url(#pal-cyanotype);
+  --font-display:'Tilt Warp','Libre Franklin',Arial,sans-serif;--font-text:'Outfit','Libre Franklin',Arial,sans-serif;--font-label:'Space Mono','Libre Franklin',Arial,sans-serif;
+  --display-weight:400;--display-tracking:-.02em;--display-stretch:normal;
+}
+/* Palette layer for the Sisyphus film pages: the white washes follow the page colour, the film is graded
+   by the palette's gradient map, and a small dock switches palettes. */
+html[data-palette] .film-frame img,
+html[data-palette] .film-v,
+html[data-palette] .plate img{filter:var(--pal-filter)}
+html[data-palette] .bar{background:linear-gradient(180deg,color-mix(in srgb,var(--chalk) 98.5%,transparent) 0%,color-mix(in srgb,var(--chalk) 97%,transparent) 74%,color-mix(in srgb,var(--chalk) 0%,transparent) 100%)}
+html[data-palette] .film-wash{background:linear-gradient(180deg,color-mix(in srgb,var(--chalk) 0%,transparent) 86%,color-mix(in srgb,var(--chalk) 30%,transparent) 100%)}
+html[data-palette] .haze{background:linear-gradient(90deg,color-mix(in srgb,var(--chalk) 96%,transparent) 0,color-mix(in srgb,var(--chalk) 92%,transparent) calc(var(--gut) + var(--col)),color-mix(in srgb,var(--chalk) 0%,transparent) calc(var(--gut) + var(--col) + 56px))}
+html[data-palette] .ph-note,
+html[data-palette] .hint{background:color-mix(in srgb,var(--chalk) 88%,transparent)}
+html[data-palette] .plate{background:var(--chalk)}
+html[data-palette] .foot{background:linear-gradient(180deg,color-mix(in srgb,var(--chalk) 0%,transparent),color-mix(in srgb,var(--chalk) 90%,transparent) 40%)}
+@media (min-width:900px){
+  html[data-palette] :is(.hero h1,.chapter-title,.case-title,.s-lever h2,.s-path h2,.s-person h2,.summit-title,.case-boulder,.def,.dict .word){
+    text-shadow:0 0 2px color-mix(in srgb,var(--chalk) 90%,transparent),0 0 18px color-mix(in srgb,var(--chalk) 95%,transparent),0 0 42px color-mix(in srgb,var(--chalk) 80%,transparent)}
+}
+html[data-palette] .slip{text-shadow:0 0 2px color-mix(in srgb,var(--chalk) 95%,transparent),0 0 14px color-mix(in srgb,var(--chalk) 95%,transparent),0 0 30px color-mix(in srgb,var(--chalk) 85%,transparent)}
+@media (max-width:899px){
+  html[data-palette] .film-wash{background:linear-gradient(180deg,color-mix(in srgb,var(--chalk) 40%,transparent) 0,color-mix(in srgb,var(--chalk) 0%,transparent) 26%)}
+}
+
+/* Type pairings: the page's text and label faces follow --font-text and --font-label; headings,
+   the dichotomy pairs and the wordmark take the display face with its own weight, tracking and width. */
+html[data-type]{--serif:var(--font-text);--mono:var(--font-label);--sans:var(--font-text)}
+html[data-type] body{font-family:var(--font-text)}
+html[data-type] :is(h1,h2,h3,h4,.drail-pair,.mark,.foot-mark){font-family:var(--font-display);font-weight:var(--display-weight);letter-spacing:var(--display-tracking);font-stretch:var(--display-stretch)}
+html[data-type] :is(.k,.drail-no,.alt,.links,.legend,.tip,.hint,.slip-sub,.note,.eng-notes>summary){font-family:var(--font-label)}

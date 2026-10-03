@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en" data-palette="cyanotype" data-type="tilt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Absurd Solution — research platforms, business software &amp; AI automation, built floor by floor</title>
+<meta name="description" content="Research platforms, business software and AI automation. Designed and built end to end by Vesna Božić, software engineer and sociologist.">
+<meta name="theme-color" content="#f3f0e8">
+<link rel="stylesheet" href="_shared/fonts/libre-franklin.css">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="palette.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tilt+Warp&amp;family=Outfit:wght@300..700&amp;family=Space+Mono:wght@400;700&amp;display=swap">
+<link rel="stylesheet" href="assets/app-films.css?v=editorial2">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%230b0b0b'/%3E%3Cpath d='M10 10l12 12M22 10L10 22' stroke='%23c7240e' stroke-width='3.4' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preload" as="image" href="video/woman-poster-full.jpg" media="(min-width:900px)">
+<link rel="preload" as="image" href="video/woman-poster-band.jpg" media="(max-width:899px)">
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.22/dist/lenis.min.js" integrity="sha384-p8oGi3ptMrIBsAXwqfB60dWrWwUl5tfZLTQa6tMVtkP9L7rYaQcsI15oW7OZs60m" crossorigin="anonymous" defer></script>
+<!-- three.js for the sky over the film, pinned; sky.js imports it only when the film moves -->
+<script type="importmap">
+{
+  "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.min.js" },
+  "integrity": {
+    "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.min.js": "sha384-G204cH8yiGRBsIeOd0ayBXn7MSDuf0X5To614xt+2b1ApqNUxAWn/XqL8Xilauyd",
+    "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.core.min.js": "sha384-Aa12tAyxIBJJAFu3qP8FVQCMM0U5JQGdmu9Plhyw4kRdmajEzNw8jChNzDqgEu9x"
+  }
+}
+</script>
+<script src="film-config.js" defer></script>
+<script src="sky.js" defer></script>
+<script src="left.js" defer></script>
+<script src="tethers.js" defer></script>
+<script src="film.js" defer></script>
+<script src="assets/app-films.js?v=editorial2" defer></script>
+</head>
+<body>
+<!-- version 17: the Cyanotype gradient map for the film (luminance first, then shadow → highlight per channel) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><filter id="pal-cyanotype" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".2126 .7152 .0722 0 0  .2126 .7152 .0722 0 0  .2126 .7152 .0722 0 0  0 0 0 1 0"/><feComponentTransfer><feFuncR type="table" tableValues="0.0431 0.1216 0.5255 0.9529"/><feFuncG type="table" tableValues="0.1451 0.3098 0.6549 0.9412"/><feFuncB type="table" tableValues="0.2784 0.5255 0.7843 0.9098"/></feComponentTransfer></filter></defs></svg>
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="bar">
+  <a class="mark" href="#top" aria-label="The Absurd Solution, back to the top">absurd<span class="x" aria-hidden="true">×</span></a>
+  <!-- version 17: the lift. Its readout shows the floor you are on; the navigation is its panel; the call button carries the boulder -->
+  <p class="lift" aria-hidden="true"><span class="lift-arrow">▲</span><span class="lift-no"><span class="lift-roll"><b>00</b></span></span><span class="alt-station lift-name">Foundation</span></p>
+  <nav class="links" aria-label="Main">
+    <a href="#work" data-floors="1-3"><i aria-hidden="true">01–03</i>Work</a>
+    <a href="#services" data-floors="4"><i aria-hidden="true">04</i>Services</a>
+    <a href="#method" data-floors="5"><i aria-hidden="true">05</i>Method</a>
+    <a href="#about" data-floors="6"><i aria-hidden="true">06</i>About</a>
+    <a class="write" href="#write"><span class="boulder" aria-hidden="true"></span><span class="write-t">Let’s talk</span></a>
+  </nav>
+</header>
+
+<div class="film" id="climb-film" aria-hidden="true">
+  <div class="film-frame">
+    <!-- one grade for the whole stack: the poster, and two copies of the film that blend the moments between frames.
+         Version 15: on wide screens this frame is the whole page, edge to edge, under the bar and the words -->
+    <div class="film-stack">
+      <picture>
+        <source media="(max-width:899px)" srcset="video/woman-poster-band.jpg">
+        <img class="film-poster" src="video/woman-poster-full.jpg" width="1920" height="1080" alt="" decoding="async" fetchpriority="high">
+      </picture>
+      <div class="film-vids">
+        <video class="film-v film-v0" muted playsinline preload="none" disablepictureinpicture disableremoteplayback tabindex="-1"></video>
+        <video class="film-v film-v1" muted playsinline preload="none" disablepictureinpicture disableremoteplayback tabindex="-1"></video>
+      </div>
+    </div>
+  </div>
+  <canvas class="net"></canvas>
+  <canvas class="sky"></canvas>
+  <div class="notes">
+  </div>
+</div>
+<button class="film-toggle" type="button" aria-controls="climb-film" aria-expanded="true" hidden>
+  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg><span>Minimize film</span>
+</button>
+<div class="film-touch" aria-hidden="true"></div>
+<div class="spots"></div>
+<p class="tip" aria-hidden="true"></p>
+<p class="say" aria-hidden="true"></p>
+<p class="slip" aria-hidden="true"></p>
+<p class="hint" aria-hidden="true"><span class="hint-arrow">↓</span> <span class="hint-t">Scroll to push</span><span class="hint-bar"><i></i></span></p>
+
+<main id="content">
+
+  <!-- I · Selected work -->
+  <section class="station s-intro" id="top" data-station="00" data-key="absurd" data-name="Foundation" aria-labelledby="h-hero">
+    <div class="col">
+      <div class="intro">
+        <p class="kicker lbl"><span>Research platforms · Business software · AI&nbsp;automation</span></p>
+        <h1 class="hero-title pour" id="h-hero"><span>Built to stand.</span><span>Built to be used.</span></h1>
+        <p class="hero-who" data-tether="woman">I’m Vesna Božić, a software engineer and a sociologist.</p>
+        <div class="hero-foot"><a class="btn" href="#write">Start a conversation</a></div>
+        <nav class="project-index" aria-label="Selected projects">
+          <a href="#istrazimo-project"><span class="index-number">01</span><span class="index-title">Istražimo<small>Research platform</small></span></a>
+          <a href="#platform-project"><span class="index-number">02</span><span class="index-title">Shared foundations<small>Platform engineering</small></span></a>
+          <a href="#catalog-project"><span class="index-number">03</span><span class="index-title">From scans to search<small>Document intelligence</small></span></a>
+        </nav>
+      </div>
+      <div class="section-heading" id="work">
+        <p class="lbl">Selected work · floors 01–03</p>
+        <h2 id="work-title" class="dz"><span class="dz-a">Ideas,</span> <span class="dz-cut" aria-hidden="true"></span><span class="dz-b">made real.</span></h2>
+        <p class="work-ownership">Three systems. Designed and built independently, from product decisions to cloud infrastructure.</p>
+      </div>
+      <aside class="drail" aria-label="Dichotomy"><p class="drail-pair"><span class="ra">Built</span> <span class="drail-cut" aria-hidden="true"><b>×</b></span><span class="rb">Still being worked out</span></p><p class="drail-line">Solid on one side, scaffold on the other.</p></aside>
+      <figure class="plate print"><div class="plate-image"><img src="_shared/hero-old-poster.jpg" width="1440" height="960" alt="A brutalist megastructure: solid concrete volumes on the left dissolve into an open scaffold of cubes on the right, with small figures on the terraces" loading="lazy" decoding="async"></div></figure>
+      <figure class="rm-still rm-only"><div class="still-frame" data-at="0"><img src="video/woman-still-1.jpg" width="1280" height="720" alt="Film still: the start of the climb." loading="lazy" decoding="async"><canvas aria-hidden="true"></canvas></div><figcaption><span>Still 1</span>The foot of the climb.</figcaption></figure>
+    </div>
+  </section>
+
+  <!-- II · Istražimo -->
+  <section class="station s-case" id="istrazimo-project" data-station="01" data-key="boulder-1" data-name="Istražimo" data-seam aria-labelledby="istrazimo-title">
+    <div class="col">
+      <article class="study">
+        <header class="study-heading"><div class="floor-head"><p class="lvl lbl">Case study · Research platform</p><span class="floor-no" aria-hidden="true">01</span></div><h3 id="istrazimo-title">Istražimo.</h3><p class="study-subtitle">Research software that keeps answers in context, from questionnaire design to analysis.</p></header>
+        <aside class="drail" aria-label="Dichotomy"><p class="drail-pair"><span class="ra">The question</span> <span class="drail-cut" aria-hidden="true"><b>×</b></span><span class="rb">The answer</span></p><p class="drail-line">A changed question changes what an answer means.</p></aside>
+        <figure class="study-visual print"><div class="study-image"><img src="istrazimo.jpg" width="1400" height="869" alt="Istražimo public landing page with concrete architecture and an introduction to the research platform" loading="lazy" decoding="async"></div><div class="study-context"><div><span>Published instrument</span><strong>Question<br> + options + logic</strong></div><div><span>Response</span><strong>Answers<br> + version + consent</strong></div><div><span>Main analysis &amp; export</span><strong>Original context.</strong></div></div><figcaption>Public landing page, September 2026. The diagram shows how instrument context travels with responses.</figcaption></figure>
+        <div class="study-story"><div class="spec"><span class="lbl">The problem</span><div class="spec-body"><h4 data-tether="sphere">Questions give answers their meaning.</h4><p>A changed question, option or scale can change how a value should be interpreted. I built Istražimo to preserve those definitions through study design, consent, participation and analysis.</p></div></div><div class="spec key study-decision"><span class="lbl">The key decision</span><p data-tether="published" data-node="Alphecca">Tie each response to a published instrument version, and keep that link through the main results and export workflow.</p></div></div>
+        <ol class="study-heads" aria-label="Istražimo engineering decisions"><li><span class="study-detail-number lbl">Integrity</span><h4>Saves in sequence.</h4></li><li><span class="study-detail-number lbl">Responsibility</span><h4>Access with boundaries.</h4></li><li><span class="study-detail-number lbl">Interpretation</span><h4>Statistics in context.</h4></li></ol>
+        <details class="eng-notes"><summary>Engineering notes</summary><div class="notes-body"><div class="notes-details"><div><span class="study-detail-number">Integrity — Saves in sequence.</span><p>Queued saves and stale-update rejection protect newer answers. Shared branching rules remove answers outside the current path; completion waits for server confirmation.</p></div><div><span class="study-detail-number">Responsibility — Access with boundaries.</span><p>Study editing, aggregate analysis and raw responses have separate permissions. Participants give explicit consent; researchers retain control over collaboration.</p></div><div><span class="study-detail-number">Interpretation — Statistics in context.</span><p>Descriptive statistics, Welch’s t-test, Cohen’s d and Cronbach’s alpha support analysis. Reliability includes item selection and sample limitations; it does not establish construct validity.</p></div></div><dl class="study-meta"><div><dt>Scope</dt><dd>Product · Interface · API · Statistics · Infrastructure</dd></div><div><dt>Built with</dt><dd>Next.js · TypeScript · Hono · DynamoDB · AWS</dd></div><div><dt>Website</dt><dd><a href="https://istrazimo.com/" target="_blank" rel="noopener noreferrer">Visit Istražimo</a></dd></div></dl><div class="study-plates"><figure><div class="plate-image"><img src="assets/istrazimo-builder.jpg" width="605" height="375" alt="Istražimo questionnaire builder: questions, options and branching logic" loading="lazy" decoding="async"></div><figcaption>Builder · questions, options and logic</figcaption></figure><figure><div class="plate-image"><img src="assets/istrazimo-analysis.jpg" width="605" height="315" alt="Istražimo analysis view with results in plain language" loading="lazy" decoding="async"></div><figcaption>Analysis · results in context</figcaption></figure></div><p class="study-scope"><strong>Also built:</strong> scales, matrices, ranking, uploads, invitations, question-level comments, bilingual workflows, CSV/codebooks and SPSS import syntax. Panel and pilot features have rollout restrictions.</p></div></details>
+      </article>
+    </div>
+  </section>
+
+  <!-- III · Shared foundations -->
+  <section class="station s-case" id="platform-project" data-station="02" data-key="boulder-2" data-name="Shared foundations" data-seam aria-labelledby="platform-title">
+    <div class="col">
+      <article class="study">
+        <header class="study-heading"><div class="floor-head"><p class="lvl lbl">Case study · Platform engineering</p><span class="floor-no" aria-hidden="true">02</span></div><h3 id="platform-title">Shared foundations.</h3><p class="study-subtitle">A common entry point for business applications, with clear ownership of sessions, data and delivery.</p></header>
+        <aside class="drail" aria-label="Dichotomy" data-tether="door"><p class="drail-pair"><span class="ra">A session</span> <span class="drail-cut" aria-hidden="true"><b>×</b></span><span class="rb">A grant</span></p><p class="drail-line">Signing in is not the same as being allowed.</p></aside>
+        <figure class="study-visual print"><div class="study-image app-film" data-app-film="portal" role="img" aria-label="Animated interface concept: a cursor selects Training from a visual application library and opens its learning workspace."><img src="assets/film-editorial-workspace.webp" width="1586" height="992" alt="" loading="lazy" decoding="async"><div class="film-overlay" aria-hidden="true"><div class="film-stage"><div class="film-selection-ring"></div><div class="film-selection-cover"><span class="film-eyebrow">YOUR WORKSPACE</span><h4>Three tools.<br>One place.</h4><p>Select an application<br>to explore its workspace.</p><div class="film-cover-labels"><span>Training</span><span>Proposals</span><span>Knowledge</span></div></div><div class="film-training-view"><div class="film-training-top"><span>Workspace / Training</span><span>Member</span></div><h4>My learning</h4><div class="film-training-tabs"><span>Courses</span><span>Enrollments</span><span>Records</span></div><div class="film-training-art"></div><div class="film-training-course"><span class="film-eyebrow">RESEARCH METHODS</span><h5>Research foundations</h5><p>Question design, sampling<br>and interpreting answers.</p><span class="film-course-action">View course</span></div><div class="film-training-next"><span class="film-eyebrow">ALSO IN THE CATALOG</span><h5>Questionnaire design</h5><p>From concepts to questions.</p></div><div class="film-training-record"><span>Enrollment record</span><p>Original course details<br>retained with each enrollment.</p></div></div><span class="film-cursor"><svg viewBox="0 0 24 30" aria-hidden="true"><path d="M2 2v23l6-6 5 9 4-2-5-9h9Z" fill="#172027" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg></span><span class="film-click"></span></div></div></div><div class="study-context"><div><span>Shared portal</span><strong>Identity<br> + access.</strong></div><div><span>Integrated applications</span><strong>Single-use<br> ticket.</strong></div><div><span>Receiving backend</span><strong>App-owned<br> session.</strong></div></div><figcaption>Animated interface concept · from the application library into a learning workspace.</figcaption></figure>
+        <div class="study-story"><div class="spec"><span class="lbl">The problem</span><div class="spec-body"><h4>One suite. Distinct responsibilities.</h4><p>Business applications need consistent navigation and access rules while each workflow keeps its own logic. I built the shared portal, interfaces, backends and delivery workflows around that boundary.</p></div></div><div class="spec key study-decision"><span class="lbl">The key decision</span><p>Centralize identity and access rules, while integrated applications create their own sessions and retain independent release paths.</p></div></div>
+        <ol class="study-heads" aria-label="Platform engineering decisions"><li><span class="study-detail-number lbl">Authorization</span><h4>A session is not a grant.</h4></li><li><span class="study-detail-number lbl">Consistency</span><h4>Rules with one source.</h4></li><li><span class="study-detail-number lbl">History</span><h4>Records that stay true.</h4></li></ol>
+        <details class="eng-notes"><summary>Engineering notes</summary><div class="notes-body"><div class="notes-details"><div><span class="study-detail-number">Authorization — A session is not a grant.</span><p>In the training application, the API checks current central access grants on subsequent requests. Shared sign-on uses a short-lived, single-use ticket. The receiving backend creates an HttpOnly cookie session; the central identity token stays out of the handoff.</p></div><div><span class="study-detail-number">Consistency — Rules with one source.</span><p>A central registry generates shared configuration. A common permission matrix informs interface and API decisions, with consistency checks in delivery workflows.</p></div><div><span class="study-detail-number">History — Records that stay true.</span><p>Training enrollments snapshot the original course details. A transactional check verifies the course at write time, so later catalog edits cannot silently rewrite history.</p></div></div><dl class="study-meta"><div><dt>Scope</dt><dd>Architecture · Applications · Identity · Cloud delivery</dd></div><div><dt>Built with</dt><dd>TypeScript · Python · AWS · Infrastructure as code</dd></div></dl><p class="study-scope"><strong>Also built:</strong> reusable UI, permission audit trails, asynchronous notifications, infrastructure and delivery checks, knowledge ingestion and configuration-controlled AI features. Implementation spans development and staging; some integrations retain older patterns.</p></div></details>
+        <figure class="rm-still rm-only"><div class="still-frame" data-at=".3"><img src="video/woman-still-2.jpg" width="1280" height="720" alt="Film still: a third of the way up the climb." loading="lazy" decoding="async"><canvas aria-hidden="true"></canvas></div><figcaption><span>Still 2</span>A third of the way up.</figcaption></figure>
+      </article>
+    </div>
+  </section>
+
+  <!-- IV · From scans to search -->
+  <section class="station s-case" id="catalog-project" data-station="03" data-key="boulder-3" data-name="From scans to search" data-seam aria-labelledby="pipeline-title">
+    <div class="col">
+      <article class="study">
+        <header class="study-heading"><div class="floor-head"><p class="lvl lbl">Case study · Document intelligence</p><span class="floor-no" aria-hidden="true">03</span></div><h3 id="pipeline-title">From scans to search.</h3><p class="study-subtitle">An archive system that reads scanned catalogs, connects entries with images and keeps results linked to their source.</p></header>
+        <aside class="drail" aria-label="Dichotomy"><p class="drail-pair"><span class="ra">A proposal</span> <span class="drail-cut" aria-hidden="true"><b>×</b></span><span class="rb">The evidence</span></p><p class="drail-line">Model output stays a proposal until the page agrees.</p></aside>
+        <figure class="study-visual print"><div class="study-image app-film" data-app-film="catalog" role="img" aria-label="Animated interface concept: a cursor selects a ceramic object from a visual archive and expands its original catalog page."><img src="assets/film-visual-archive.webp" width="1586" height="992" alt="" loading="lazy" decoding="async"><div class="film-overlay" aria-hidden="true"><div class="film-stage"><div class="film-selection-ring"></div><div class="film-selection-cover"><span class="film-eyebrow">SOURCE EVIDENCE</span><h4>Every object.<br>Its origin.</h4><p>Select an object to inspect<br>the original catalog page.</p><div class="film-cover-labels"><span>Document</span><span>Page</span><span>Entry</span></div></div><div class="film-source-view"><div class="film-source-toolbar"><div><span class="film-eyebrow">ORIGINAL DOCUMENT</span><strong>Catalog A</strong></div><span>Page 12</span><span>×</span></div><div class="film-source-paper"></div><div class="film-source-footer"><span>Entry 04 · Vessel study</span><span>Text + image evidence</span></div></div><span class="film-cursor"><svg viewBox="0 0 24 30" aria-hidden="true"><path d="M2 2v23l6-6 5 9 4-2-5-9h9Z" fill="#172027" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg></span><span class="film-click"></span></div></div></div><div class="study-context"><div><span>Source evidence</span><strong>Text<br> + position + image.</strong></div><div><span>Extraction checks</span><strong>Accept<br> or keep for review.</strong></div><div><span>Search publication</span><strong>Verify<br> then release.</strong></div></div><figcaption>Animated interface concept · from a visual result to its original catalog page.</figcaption></figure>
+        <div class="study-story"><div class="spec"><span class="lbl">The problem</span><div class="spec-body"><h4>A page contains evidence and ambiguity.</h4><p>A catalog number can look like a year. A photograph can belong to the entry beside it. I built the pipeline, search runtime and review tools to resolve these ambiguities against the source page.</p></div></div><div class="spec key study-decision"><span class="lbl">The key decision</span><p>Treat model output as a proposal. Verify it against page evidence, then verify publication to search as a separate operation.</p></div></div>
+        <ol class="study-heads" aria-label="Document intelligence engineering decisions"><li><span class="study-detail-number lbl">Uncertainty</span><h4 data-tether="sitter">Keep the reason.</h4></li><li><span class="study-detail-number lbl">Provenance</span><h4>Keep the source.</h4></li><li><span class="study-detail-number lbl">Publication</span><h4>Verify the release.</h4></li></ol>
+        <details class="eng-notes"><summary>Engineering notes</summary><div class="notes-body"><div class="notes-details"><div><span class="study-detail-number">Uncertainty — Keep the reason.</span><p>Unresolved records retain a status and explanation. A text page that still fails after retries blocks completion. Human review is targeted; a review status does not mean someone has already checked it.</p></div><div><span class="study-detail-number">Provenance — Keep the source.</span><p>Caption positions and page text connect images to entries, with vision confirmation where needed. Results retain document, page and segment references; corrections preserve an audit trail.</p></div><div><span class="study-detail-number">Publication — Verify the release.</span><p>Index changes begin with a read-only plan, then capped writes and per-record verification. Versioned releases, health checks and automatic rollback protect the searchable collection.</p></div></div><dl class="study-meta"><div><dt>Scope</dt><dd>OCR · Extraction · Image linking · Search · Review tools</dd></div><div><dt>Built with</dt><dd>Python · React · Cloud processing · Vector search</dd></div></dl><p class="study-scope"><strong>Also built:</strong> document triage, cached text vectors, image embeddings, full-text and combined search, correction tools and an index membership registry. Accepted extraction and published search results remain distinct states.</p></div></details>
+      </article>
+    </div>
+  </section>
+
+  <!-- V · Services -->
+  <section class="station s-services" id="services" data-station="04" data-key="lever" data-name="Services" data-seam aria-labelledby="services-title">
+    <div class="col">
+      <div class="section-heading has-bldg"><div class="floor-head"><p class="lvl lbl">Services</p><span class="floor-no" aria-hidden="true">04</span></div><h2 id="services-title" class="dz"><span class="dz-a">Make it work.</span> <span class="dz-cut" aria-hidden="true"></span><span class="dz-b">Make it stick.</span></h2></div>
+      <p class="practice-intro">Infrastructure and models on one side. People, incentives and trust on the other. I work across the seam.</p>
+      <aside class="drail" aria-label="Dichotomy"><p class="drail-pair"><span class="ra">Infrastructure · models</span> <span class="drail-cut" aria-hidden="true"><b>×</b></span><span class="rb">People · incentives · trust</span></p><p class="drail-line">I work across the seam.</p></aside>
+      <div class="practice">
+        <div class="practice-half eng" data-tether="portal" data-node="Zubenelgenubi"><div class="practice-heading"><span class="letter" aria-hidden="true">E</span><h3>Engineering.</h3></div><p>Systems that run, with clear specifications, measured quality and costs that follow volume.</p>
+          <ol class="service-list"><li><span class="t">AI systems &amp; integration</span><span class="d">Claude · OpenAI · Gemini, in real workflows</span></li><li><span class="t">RAG &amp; evaluations</span><span class="d">Privacy-first retrieval and measured quality</span></li><li><span class="t">Agents &amp; automation</span><span class="d">From n8n prototype to production</span></li><li><span class="t">Serverless platforms</span><span class="d">AWS · CDK · Bedrock · CI/CD</span></li><li><span class="t">Web apps &amp; design systems</span><span class="d">React · Next.js, end to end</span></li></ol>
+        </div>
+        <span class="dz-axis" aria-hidden="true"><b>×</b></span>
+        <div class="practice-half org" data-tether="portal" data-node="Zubeneschamali"><div class="practice-heading"><span class="letter" aria-hidden="true">O</span><h3>Organization.</h3></div><p>Systems people can use, trust and keep working with after the handover.</p>
+          <ol class="service-list"><li><span class="t">Adoption &amp; incentives</span><span class="d">Who uses it, and why they would</span></li><li><span class="t">Workflow research</span><span class="d">The real process and the documented one</span></li><li><span class="t">Trust, GDPR &amp; audit</span><span class="d">Accountability within the workflow</span></li><li><span class="t">Handover &amp; training</span><span class="d">Documentation, ownership and continuity</span></li><li><span class="t">First-feature strategy</span><span class="d">A focused starting point for an AI product</span></li></ol>
+        </div>
+      </div>
+      <figure class="rm-still rm-only"><div class="still-frame" data-at=".6"><img src="video/woman-still-3.jpg" width="1280" height="720" alt="Film still: past halfway up the climb." loading="lazy" decoding="async"><canvas aria-hidden="true"></canvas></div><figcaption><span>Still 3</span>Past halfway.</figcaption></figure>
+    </div>
+  </section>
+
+  <!-- VI · Method -->
+  <section class="station s-method" id="method" data-station="05" data-key="path" data-name="Method" data-seam aria-labelledby="method-title">
+    <div class="col">
+      <div class="section-heading has-bldg"><div class="floor-head"><p class="lvl lbl">Method</p><span class="floor-no" aria-hidden="true">05</span></div><h2 id="method-title" class="dz"><span class="dz-a">A clear path</span> <span class="dz-cut" aria-hidden="true"></span><span class="dz-b">through.</span></h2></div>
+      <aside class="drail" aria-label="Dichotomy"><p class="drail-pair"><span class="ra">The documented process</span> <span class="drail-cut" aria-hidden="true"><b>×</b></span><span class="rb">The real one</span></p><p class="drail-line">I build software for the real one.</p></aside>
+      <ol class="steps"><li class="step"><span class="num" aria-hidden="true">01</span><h3 data-tether="steps" data-node="diagnose">Diagnose</h3><p>Understand the problem and the people doing the work.</p></li><li class="step"><span class="num" aria-hidden="true">02</span><h3 data-tether="steps" data-node="specify">Specify</h3><p>Agree on the workflow, boundaries and success criteria.</p></li><li class="step"><span class="num" aria-hidden="true">03</span><h3 data-tether="steps" data-node="build">Build</h3><p>Implement, evaluate and test in the real workflow.</p></li><li class="step"><span class="num" aria-hidden="true">04</span><h3 data-tether="steps" data-node="hand over">Hand over</h3><p>Leave a system that is documented, measured and yours.</p></li></ol>
+    </div>
+  </section>
+
+  <!-- VII · About -->
+  <section class="station s-about" id="about" data-station="06" data-key="person" data-name="About" data-seam aria-labelledby="about-title">
+    <div class="col">
+      <div class="section-heading has-bldg"><div class="floor-head"><p class="lvl lbl">About</p><span class="floor-no" aria-hidden="true">06</span></div><h2 id="about-title" class="dz"><span class="dz-a" data-tether="group" data-node="Castor">Engineer.</span> <span class="dz-cut" aria-hidden="true"></span><span class="dz-b" data-tether="group" data-node="Pollux">Sociologist.</span></h2></div>
+      <aside class="drail" aria-label="Dichotomy"><p class="drail-pair"><span class="ra">Reading organizations</span> <span class="drail-cut" aria-hidden="true"><b>×</b></span><span class="rb">Building for them</span></p><p class="drail-line">Now both, at once.</p></aside>
+      <div class="about-copy"><p>I'm Vesna Božić. Years spent reading organizations before building for them — now both, at once. Independent practice.</p><dl class="facts"><div><dt class="lbl">Practice</dt><dd>Independent · remote-first</dd></div><div><dt class="lbl">Stack</dt><dd>Python · TypeScript · AWS</dd></div><div><dt class="lbl">Tools</dt><dd>Claude Code · n8n · CDK</dd></div><div><dt class="lbl">Languages</dt><dd>SR · EN · ES · IT</dd></div></dl></div>
+    </div>
+  </section>
+
+  <!-- VIII · Contact -->
+  <section class="station s-contact" id="write" data-station="R" data-key="summit" data-name="Contact" data-seam aria-labelledby="contact-title">
+    <div class="col">
+      <div class="section-heading has-bldg"><div class="floor-head"><p class="lvl lbl">Contact</p><span class="floor-no" aria-hidden="true">R</span></div><h2 id="contact-title" class="dz"><span class="dz-a">Topping</span> <span class="dz-cut" aria-hidden="true"></span><span class="dz-b">out.</span></h2></div>
+      <p class="roof-plain">When the structure is complete, builders put a small tree on the roof. Then the people move in.</p>
+      <aside class="drail" aria-label="Dichotomy"><p class="drail-pair"><span class="ra">Your problem</span> <span class="drail-cut" aria-hidden="true"><b>×</b></span><span class="rb">Three sentences</span></p><p class="drail-line">Three sentences are enough to start.</p></aside>
+      <h3 class="contact-title">Start with three sentences.</h3>
+      <p class="contact-lead">What are you building, who is it for, and where are you stuck? A real reply within two working days.</p>
+      <ol class="questions"><li data-tether="belt" data-node="Mintaka"><span class="q">What are you building?</span><span class="rule" aria-hidden="true"></span></li><li data-tether="belt" data-node="Alnilam"><span class="q">Who is it for?</span><span class="rule" aria-hidden="true"></span></li><li data-tether="belt" data-node="Alnitak"><span class="q">Where are you stuck?</span><span class="rule" aria-hidden="true"></span></li></ol>
+      <div class="handover"><p class="next-floor">The next floor is yours.</p><a class="btn mailbtn" href="mailto:vesna.bozic.se@gmail.com?subject=Three%20sentences&amp;body=What%20we%20are%20building%3A%0A%0AWho%20it%20is%20for%3A%0A%0AWhere%20we%20are%20stuck%3A%0A">vesna.bozic.se@gmail.com</a></div>
+      <p class="cta-meta">Independent practice × remote-first</p>
+      <figure class="rm-still rm-only"><div class="still-frame" data-at=".95"><img src="video/woman-still-4.jpg" width="1280" height="720" alt="Film still: the summit." loading="lazy" decoding="async"><canvas aria-hidden="true"></canvas></div><figcaption><span>Still 4</span>The summit.</figcaption></figure>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <p><span class="foot-mark">absurd<span class="x">×</span></span> the absurd solution · © 2026 / Independent practice</p>
+  <p class="foot-note">The figures over the film are real constellations: first as seen from Earth, then turned to show how far apart their stars are (distance on a log scale). Their meanings are metaphors.</p>
+  <p class="foot-note">Star data: <a href="https://github.com/astronexus/HYG-Database" rel="noopener noreferrer">HYG Database v4.0</a> (CC BY-SA 4.0). Constellation lines: <a href="https://github.com/ofrohn/d3-celestial" rel="noopener noreferrer">d3-celestial</a> (BSD-3).</p>
+</footer>
+</body>
+</html>

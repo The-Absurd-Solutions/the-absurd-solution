@@ -76,20 +76,21 @@
   const instant = y => scrollToY(y, false);
 
   /* ---------------- Layout: scroll anchors per station ---------------- */
-  let vw = innerWidth, vh = innerHeight, narrow = narrowMQ.matches, bandH = vh, bandTop = 0, readH = vh;
+  let vw = innerWidth, vh = innerHeight, narrow = narrowMQ.matches, bandH = vh, bandTop = 0, readH = vh, readingTop = 0;
   let S = [], maxScroll = 1, frameBox = { left: 0, width: vw, top: 0, height: vh }, filmBox = { left: 0, top: 0 };
   let colLeft = 0, colRight = 0, barH = 64, touchRect = null, sharpX = 0, mainTop = 0;
   let reserve = 52;   // the bottom of the film taken by the rail (on phones: by the palette dock)
   const BAND = { top: 18, bottom: 18, rail: 8 };   // phones: the band's edges kept clear (version 17: no rail, no picker)
   let filmCompact = false, filmExpandedByUser = null, collapseAfter = Infinity;
   const skyOnly = () => narrow && FILM.narrowSkyOnly === true;   // phones: the constellations without the film
+  const portraitMode = () => narrow && FILM.narrowFullscreen === true;
   // Use the headline's document position, independent of the band's size, to avoid resize/scroll oscillation.
   // A deliberate choice stays in effect while reading and when rotating the device.
   function syncMobileFilm(y) {
-    const compact = narrow && !skyOnly() && !(filmExpandedByUser ?? (y < collapseAfter && vh >= 500));
+    const compact = narrow && !skyOnly() && !portraitMode() && !(filmExpandedByUser ?? (y < collapseAfter && vh >= 500));
     doc.classList.toggle('sky-only', skyOnly());
     if (filmToggle) {
-      const hide = !narrow || skyOnly();
+      const hide = !narrow || skyOnly() || portraitMode();
       if (filmToggle.hidden !== hide) filmToggle.hidden = hide;
       if (filmToggle.getAttribute('aria-expanded') !== String(!compact)) {
         filmToggle.setAttribute('aria-expanded', String(!compact));
@@ -104,13 +105,13 @@
   const OPEN_GAP = 32;   // wide screens: the film's open part starts this far right of the words
   // the film's object-position across its box: pinned left on wide screens (FILM.wideFocusX), centred in the band
   const focusX = () => (narrow ? .5 : clamp(typeof FILM.wideFocusX === 'number' ? FILM.wideFocusX : .5));
-  const focusY = () => narrow ? (filmCompact ? (vw > vh ? .72 : .82) : parseFloat(FILM.narrowFocusY) / 100) : .5;
+  const focusY = () => portraitMode() ? (vw > vh ? .82 : .5) : narrow ? (filmCompact ? (vw > vh ? .72 : .82) : parseFloat(FILM.narrowFocusY) / 100) : .5;
 
   // Wide screens: the bar has nothing behind it but the film, so the words scroll away under its lower edge.
   const mainEl = $('main');
   let clipY = -2;
   function clipUnderBar(y) {
-    const top = narrow ? -1 : Math.max(0, Math.round(y + barH - mainTop));
+    const top = narrow && !portraitMode() ? -1 : Math.max(0, Math.round(y + (portraitMode() ? readingTop : barH) - mainTop));
     if (top === clipY) return;
     clipY = top;
     mainEl.style.clipPath = top < 0 ? '' : `inset(${top}px 0 0 0)`;
@@ -119,6 +120,7 @@
   function layout() {
     vw = innerWidth; vh = innerHeight;
     narrow = narrowMQ.matches;
+    if (narrow) previewT = null;
     doc.classList.toggle('sky-only', skyOnly());   // before anything is measured: the band's size depends on it
     barH = $('.bar').getBoundingClientRect().height;
     if (writeBtn) { const bw = writeBtn.getBoundingClientRect().width, bb = writeBtn.querySelector('.boulder'); writeBtn.style.setProperty('--run', `${Math.max(0, bw - (bb ? bb.offsetWidth : 26) - 18).toFixed(1)}px`); }
@@ -128,7 +130,8 @@
     filmBox = { left: box.left, top: box.top };
     bandH = narrow ? box.height : vh;
     bandTop = narrow ? box.top : 0;
-    readH = narrow && !skyOnly() ? bandTop : vh;   // phones without the film: the sky is behind the words, the whole screen reads
+    readingTop = portraitMode() ? parseFloat(getComputedStyle(mainEl).paddingTop) || Math.min(280, Math.max(220, vh * .3)) : 0;
+    readH = portraitMode() ? Math.max(1, vh - readingTop) : narrow && !skyOnly() && !portraitMode() ? bandTop : vh;
     if (narrow) {
       const controlBottom = filmToggle && !filmToggle.hidden ? vh - filmToggle.getBoundingClientRect().top + 8 : 18;   // sky-only: no toggle, only a small margin
       BAND.bottom = Math.min(controlBottom, Math.max(16, bandH - BAND.top - 16));
@@ -136,7 +139,7 @@
     maxScroll = Math.max(1, doc.scrollHeight - vh);
     const top = el => el.getBoundingClientRect().top + scrollY;
     // A station's moment arrives when its heading reaches reading height.
-    S = stations.map((el, i) => (i === 0 ? 0 : clamp(top(el) - readH * .55, 0, maxScroll)));
+    S = stations.map((el, i) => (i === 0 ? 0 : clamp(top(el) - readingTop - readH * (portraitMode() ? .15 : .55), 0, maxScroll)));
     for (let i = 1; i < S.length; i++) S[i] = Math.max(S[i], S[i - 1] + 1);
     S.push(Math.max(maxScroll, S[S.length - 1] + 1));
     const fb = frameEl.getBoundingClientRect();
@@ -292,7 +295,7 @@
   const rvfc = 'requestVideoFrameCallback' in HTMLVideoElement.prototype;
   const layers = vids.map(el => ({ el, req: -1, painted: -1, pending: false, next: -1, t0: 0, guard: 0, seekedAt: 0, ms: [] }));
   const L0 = layers[0], L1 = layers[1] || null;
-  let blend = !!L1 && !/[?&]noblend\b/.test(location.search);   // ?noblend: one copy only (for comparison)
+  let blend = !!L1 && !narrow && !/[?&]noblend\b/.test(location.search);   // phones decode one layer; desktop blends adjacent frames
   let lastFrame = Math.max(1, Math.round(FILM.referenceDuration * fps) - 1);
   let topOpacity = 0, topShown = -1, tD = 0;   // tD: the moment on screen; the sky, hotspots and rail follow it
   const stats = { seeks: 0, total: 0, max: 0, samples: [], blend };
@@ -377,7 +380,8 @@
   }
 
   /* ---------------- Loading the film whole, so every seek is local ---------------- */
-  let ready = false, loadedSrc = '', objectURL = '';
+  let ready = false, loadedSrc = '', objectURL = '', loadRequest = 0, loadController = null;
+  let filmFailed = false;
 
   function setLoading(p) {
     doc.classList.toggle('loading', p < 1);
@@ -386,8 +390,8 @@
     positionHint();
   }
 
-  async function fetchWhole(url) {
-    const res = await fetch(url);
+  async function fetchWhole(url, signal, isCurrent) {
+    const res = await fetch(url, { signal });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const total = +res.headers.get('content-length') || 0;
     if (!res.body || !total) return res.blob();
@@ -397,59 +401,119 @@
       const { done, value } = await reader.read();
       if (done) break;
       parts.push(value); got += value.length;
-      setLoading(Math.min(.99, got / total));
+      if (isCurrent()) setLoading(Math.min(.99, got / total));
     }
     return new Blob(parts, { type: 'video/mp4' });
   }
 
-  const once = (el, type) => new Promise(r => el.addEventListener(type, r, { once: true }));
+  // Every media wait settles, including unsupported codecs, interrupted loads and offline use.
+  function waitForMedia(el, type, signal, timeout = 12000) {
+    return new Promise((resolve, reject) => {
+      const cleanup = () => {
+        clearTimeout(timer);
+        el.removeEventListener(type, success);
+        el.removeEventListener('error', failure);
+        signal.removeEventListener('abort', abort);
+      };
+      const success = () => { cleanup(); resolve(); };
+      const failure = () => { cleanup(); reject(new Error('Film could not be decoded')); };
+      const abort = () => { cleanup(); reject(new DOMException('Superseded film load', 'AbortError')); };
+      const timer = setTimeout(() => { cleanup(); reject(new Error('Film loading timed out')); }, timeout);
+      el.addEventListener(type, success, { once: true });
+      el.addEventListener('error', failure, { once: true });
+      signal.addEventListener('abort', abort, { once: true });
+      if (signal.aborted) abort();
+      else if (el.error) failure();
+    });
+  }
 
   async function loadFilm() {
     doc.classList.toggle('sky-only', skyOnly());
     if (skyOnly()) { setLoading(1); return; }   // phones: the film is never fetched; the sky runs on the scroll alone
     const src = narrow && FILM.portraitSrc ? FILM.portraitSrc : FILM.src;
     if (src === loadedSrc) return;
+    const request = ++loadRequest;
+    if (loadController) loadController.abort();
+    loadController = new AbortController();
+    const { signal } = loadController;
+    const isCurrent = () => request === loadRequest && !signal.aborted;
     loadedSrc = src;
     ready = false;
-    doc.classList.remove('film-ready');
+    filmFailed = false;
+    doc.classList.remove('film-ready', 'film-failed');
+    blend = !!L1 && !narrow && !/[?&]noblend\b/.test(location.search);
+    stats.blend = blend;
+    firstSeeks.length = 0;
+    const activeLayers = blend ? layers : [L0];
+    if (L1 && !blend) {
+      L1.el.pause();
+      L1.el.removeAttribute('src');
+      L1.el.load();
+      L1.el.style.opacity = '0';
+    }
     setLoading(0);
     let url = src;
+    const fetchDeadline = setTimeout(() => loadController && request === loadRequest && loadController.abort(), 20000);
     try {
-      const blob = await fetchWhole(src);
-      if (src !== loadedSrc) return;
+      const blob = await fetchWhole(src, signal, isCurrent);
+      if (!isCurrent()) return;
       if (objectURL) URL.revokeObjectURL(objectURL);
       objectURL = url = URL.createObjectURL(blob);
     } catch (e) {
+      if (request !== loadRequest) return;
+      if (signal.aborted) {
+        filmFailed = true;
+        doc.classList.add('film-failed');
+        setLoading(1);
+        return;
+      }
       // Fall back to streaming from the server; seeking still works, a little less smoothly.
       if (debug) console.warn('film: streaming fallback', e);
+    } finally {
+      clearTimeout(fetchDeadline);
     }
-    for (const L of layers) {
-      clearTimeout(L.guard);
-      Object.assign(L, { req: -1, painted: -1, pending: false, next: -1 });
-      L.el.src = url;
-      L.el.load();
+    if (!isCurrent()) return;
+    try {
+      await Promise.all(activeLayers.map(async L => {
+        clearTimeout(L.guard);
+        Object.assign(L, { req: -1, painted: -1, pending: false, next: -1 });
+        L.el.src = url;
+        L.el.load();
+        if (L.el.readyState < 1) await waitForMedia(L.el, 'loadedmetadata', signal);
+      }));
+      if (!isCurrent()) return;
+      const v = L0.el;
+      const d = isFinite(v.duration) && v.duration > 0 ? v.duration : FILM.referenceDuration;
+      lastFrame = Math.max(1, Math.round(d * fps) - 1);
+      if (Math.abs(d - duration) > 1e-3) { duration = d; mapTimes(); if (SKY) SKY.rebuild(); }
+      // Muted inline playback primes iOS decoding; do not wait forever for autoplay permission.
+      await Promise.all(activeLayers.map(async L => {
+        try {
+          await Promise.race([L.el.play(), new Promise(r => setTimeout(r, 1200))]);
+        } catch (e) { /* the poster remains if this browser cannot decode a seeked frame */ }
+        if (isCurrent()) L.el.pause();
+      }));
+      if (!isCurrent()) return;
+      cur = timeAt(scrollY); vel = 0;
+      const firstFrame = waitForMedia(L0.el, 'seeked', signal);
+      present(clamp(cur - roll, 0, endT) * fps);
+      await firstFrame;
+      if (!isCurrent()) return;
+      if (v.readyState < 2 || !v.videoWidth) throw new Error('No decoded film frame');
+      ready = true;
+      setLoading(1);
+      doc.classList.add('film-ready');
+      if (L1 && blend) { L1.el.style.opacity = '0.02'; topShown = .02; }
+      kick();
+    } catch (e) {
+      if (request !== loadRequest) return;
+      filmFailed = true;
+      activeLayers.forEach(L => L.el.pause());
+      doc.classList.remove('film-ready');
+      doc.classList.add('film-failed');
+      setLoading(1);
+      if (debug) console.warn('film: keeping the poster', e);
     }
-    await Promise.all(layers.map(L => (L.el.readyState >= 1 ? null : once(L.el, 'loadedmetadata'))));
-    if (src !== loadedSrc) return;
-    const v = L0.el;
-    const d = isFinite(v.duration) && v.duration > 0 ? v.duration : FILM.referenceDuration;
-    lastFrame = Math.max(1, Math.round(d * fps) - 1);
-    if (Math.abs(d - duration) > 1e-3) { duration = d; mapTimes(); if (SKY) SKY.rebuild(); }
-    // iOS only paints seeked frames after the film has played once.
-    await Promise.all(layers.map(async L => {
-      try { await L.el.play(); } catch (e) { /* muted inline play may be refused; seeking still works */ }
-      L.el.pause();
-    }));
-    cur = timeAt(scrollY); vel = 0;
-    const firstFrame = once(L0.el, 'seeked');
-    present(clamp(cur - roll, 0, endT) * fps);
-    await Promise.race([firstFrame, new Promise(r => setTimeout(r, 900))]);
-    ready = true;
-    setLoading(1);
-    doc.classList.add('film-ready');
-    // draw the top copy once while the film fades in, so its first appearance costs nothing mid-scroll
-    if (L1 && blend) { L1.el.style.opacity = '0.02'; topShown = .02; }
-    kick();
   }
 
   /* ---------------- Checkpoints: saved in sequence ---------------- */
@@ -555,6 +619,11 @@
   function holdStill() { if (lenis) lenis.scrollTo(window.scrollY, { immediate: true, force: true }); }
   function placeTouch() {
     if (!touchEl) return;
+    if (portraitMode()) {
+      touchEl.style.cssText = 'display:none';
+      touchRect = null;
+      return;
+    }
     const left = narrow ? 0 : Math.max(frameBox.left, colRight + 16);   // drag anywhere right of the words
     const top = narrow ? bandTop : Math.max(frameBox.top, barH);
     touchEl.style.cssText = `left:${left}px;top:${top}px;width:${Math.max(0, vw - left)}px;height:${Math.max(0, vh - top)}px`;
@@ -894,13 +963,13 @@
       markX.classList.remove('spin'); requestAnimationFrame(() => markX.classList.add('spin'));
     } else if (summitOn && y < maxScroll - 90) summitOn = false;
     updateStatus(shown, y);
-    if (LEFT) LEFT.update(y, readH, false, narrow);
+    if (LEFT) LEFT.update(y + readingTop, readH, portraitMode(), narrow);
     updateRail(tp);
     turnBoulder(tp);
-    placeSpots(tp);
+    if (!narrow) placeSpots(tp);
     if (SKY && !filmCompact) SKY.frame(tp, now);
-    if (TETH && !filmCompact) TETH.frame(y, tp, now);
-    hintEl.classList.toggle('on', !ready && !skyOnly() && doc.classList.contains('is-in'));   // version 17: no scroll cue, only the film's loading
+    if (TETH && !narrow && !filmCompact) TETH.frame(y, tp, now);
+    hintEl.classList.toggle('on', !ready && !filmFailed && !skyOnly() && doc.classList.contains('is-in'));
 
     if (document.hidden) { running = false; return; }
     requestAnimationFrame(frame);
@@ -916,10 +985,12 @@
     const y = scrollY;
     if (syncMobileFilm(y)) layout();
     clipUnderBar(y);
+    const previousStation = lastStation;
     updateStatus(clamp(y / maxScroll) * endT, y);
-    if (LEFT) LEFT.update(y, readH, true, narrow);   // reduced motion: everything joined
+    if (LEFT) LEFT.update(y + readingTop, readH, true, narrow);   // reduced motion: everything joined
     const t = showStill(Math.max(0, lastStation));
-    if (TETH && !filmCompact) TETH.frame(y, t, performance.now());   // drawn at once: no drawing on, no fades
+    if (narrow && previousStation !== lastStation) drawStills();
+    if (TETH && !narrow && !filmCompact) TETH.frame(y, t, performance.now());
   }
   /* Reduced motion (version 15): the film's frame stays, as stills. Each floor shows the still nearest its moment
      (FILM.stillFor), with the sky's flat figure over it on wide screens, and its tethers drawn at once. */
@@ -932,8 +1003,10 @@
       stillShown = k;
       const src = posterImg.closest('picture') && posterImg.closest('picture').querySelector('source');
       if (src) src.remove();   // phones too show the whole frame, cropped by the band
-      posterImg.src = !narrow && FILM.halfStills ? `${FILM.halfStills}${k + 1}.jpg` : `video/woman-still-${k + 1}.jpg`;
-      if (narrow) {
+      posterImg.src = portraitMode() && FILM.portraitStills ? `${FILM.portraitStills}${k + 1}.jpg` : !narrow && FILM.halfStills ? `${FILM.halfStills}${k + 1}.jpg` : `video/woman-still-${k + 1}.jpg`;
+      if (portraitMode()) {
+        posterImg.style.objectPosition = `50% ${focusY() * 100}%`;
+      } else if (narrow) {
         // the band keeps the climb in view, as the moving band does
         const W = frameBox.width, Hh = frameBox.height, sW = 16 * Math.max(W / 16, Hh / 9);
         const c = FILM.portraitCrop, centre = lerp(c.from, c.to, clamp(t / FILM.referenceDuration)), w = W / sW;
@@ -955,7 +1028,7 @@
     if (!el) return;
     e.preventDefault();
     cancelAuto();
-    scrollToY(clamp(el.getBoundingClientRect().top + scrollY - (barH + 12), 0, maxScroll), true);
+    scrollToY(clamp(el.getBoundingClientRect().top + scrollY - ((portraitMode() ? readingTop : barH) + 12), 0, maxScroll), true);
     if (location.hash !== `#${id}`) history.pushState(null, '', `#${id}`);
     if (e.detail === 0 || a.classList.contains('skip')) {
       if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '-1');
@@ -969,7 +1042,6 @@
     // the flat figure over the still in the film's frame (wide screens: the frame is the whole 16:9 picture)
     const cv = $('canvas.net');
     if (!cv || stillShown < 0) return;
-    if (narrow) { const c = cv.getContext('2d'); c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, cv.width, cv.height); return; }
     SKY.drawStill(cv, FILM.stills[stillShown] * FILM.referenceDuration, { live: true });
   }
 
@@ -978,7 +1050,9 @@
     FILM, debug, pointer,
     at, vis, toScreen, safe, unit, noteArea,
     T: Tkey, end: () => endT, scaled, stationKeys: () => keys.slice(), captions: captionRect,
+    activeStation: () => keys[Math.max(0, lastStation)],
     frame: () => frameBox, filmBox: () => filmBox, narrow: () => narrow,
+    mobileSkyArea: () => ({ x: 24, y: barH + 12, w: vw - 48, h: Math.max(64, readingTop - barH - 30) }),
     tip: (c, x, y) => { if (!spotHover) showTip(c, x, y); },
     spotHover: () => !!spotHover,
     hint: () => (hintR && hintEl.classList.contains('on') ? hintR : null),
@@ -994,7 +1068,7 @@
       return out;
     },
     spotHoverId: () => (spotHover ? spotHover.id : null),
-    preview: t => { const v = t === null || t === undefined || stillMode ? null : clamp(t, 0, endT); if (v !== previewT) { previewT = v; activity(); } },
+    preview: t => { const v = t === null || t === undefined || stillMode || narrow ? null : clamp(t, 0, endT); if (v !== previewT) { previewT = v; activity(); } },
     layoutInfo: () => ({ vw, vh, narrow, bandTop, readH, barH, colLeft, colRight, reserve, sharpX, filmTop: narrow ? bandTop : frameBox.top, railY: narrow ? bandTop + BAND.rail + 22 : vh - 10 - 36 + 22 }),
     mirror: MIRROR, half: !!FILM.halfCrop,
     seg: SKY && SKY.segAt ? label => SKY.segAt(label) : null,

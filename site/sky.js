@@ -69,11 +69,20 @@ const ClimbSky = (() => {
   let flashT0 = -1e9, lastShown = null;
   const par = { yaw: 0, pitch: 0 };   // pointer parallax, radians
   const pendingStills = [];
+  const mobilePortrait = () => !!(api && api.narrow() && !F.narrowSkyOnly && F.portraitSrc);
+
+  // The portrait film has its own open sky. Never map the landscape's tracks into this frame.
+  function mobileArea() {
+    const supplied = api.mobileSkyArea && api.mobileSkyArea();
+    const r = supplied || { x: 24, y: Math.max(68, H * .09), w: W - 48, h: Math.min(220, H * .24) };
+    const x = clamp(r.x, 22, Math.max(22, W - 66)), y = clamp(r.y, 22, Math.max(22, H - 66));
+    return { x, y, w: Math.max(44, Math.min(r.w, W - x - 22)), h: Math.max(44, Math.min(r.h, H - y - 22)) };
+  }
 
   /* ---------------- Views: the live film, or a still frame for reduced motion ---------------- */
   const liveView = {
     px(fx, fy, t) { const [x, y] = api.toScreen(fx, fy, t), fb = api.frame(); return [x - fb.left, y - fb.top]; },
-    area: () => api.noteArea(),
+    area: () => mobilePortrait() ? mobileArea() : api.noteArea(),
     narrow: () => api.narrow(),
   };
   function stillView(w, h) {
@@ -146,6 +155,10 @@ const ClimbSky = (() => {
   // its box on the canvas: in the film's sky on wide screens, beside the woman on phones
   function boxFor(c, t) {
     const narrow = view.narrow();
+    if (narrow && mobilePortrait()) {
+      const A = mobileArea();
+      return { x: A.x + 22, y: A.y + 22, w: Math.max(20, A.w - 44), h: Math.max(20, A.h - 44), align: '' };
+    }
     // a film in the right half only (FILM.halfCrop) may have its own placements; version 15 covers the page and uses wide
     const P = (narrow && !still ? c.cfg.narrow : (api.half && c.cfg.half) || c.cfg.wide) || {};
     const A = view.area();
@@ -184,9 +197,9 @@ const ClimbSky = (() => {
     if (R.align.includes('bottom')) cy = R.y + R.h - bh * s / 2 - 4;
     let px = cx - (u0 + u1) / 2 * s, py = cy + (v0 + v1) / 2 * s;
     // the figure sways left and right as the page scrolls, as if the sky turned
-    if (!still) px += Math.sin(window.scrollY / SWAY.per) * Math.min(SWAY.max, W * SWAY.k);
+    if (!still && !mobilePortrait()) px += Math.sin(window.scrollY / SWAY.per) * Math.min(SWAY.max, W * SWAY.k);
     // the figure keeps clear of the woman and the boulder: if its extent would touch them, it steps aside
-    if (!still) {
+    if (!still && !mobilePortrait()) {
       const ex = exclusion(t), fx0 = px + u0 * s - 14, fx1 = px + u1 * s + 14, fy0 = py - v1 * s - 14, fy1 = py - v0 * s + 14;
       if (fx0 < ex.x + ex.w && fx1 > ex.x && fy0 < ex.y + ex.h && fy1 > ex.y) {
         const up = fy1 - ex.y, right = ex.x + ex.w - fx0, left = fx1 - ex.x;
@@ -259,9 +272,18 @@ const ClimbSky = (() => {
   /* ---------------- Per frame: what shows, and how far each figure has turned ---------------- */
   function update(t, now, dt) {
     if (!still) parallax(dt);
+    const portrait = view.narrow() && mobilePortrait();
+    // The mobile sky belongs to the section being read. A paused video frame can sit exactly
+    // in the desktop fade gap, and several sections share a single reduced-motion poster.
+    let mobileKey = portrait && api.activeStation && api.activeStation();
+    if (portrait && !mobileKey) {
+      const keys = api.stationKeys();
+      mobileKey = keys[0];
+      for (const key of keys) if (t >= api.T(key)) mobileKey = key;
+    }
     let shown = null;
     for (const c of cons) {
-      const a = c.alpha(t);
+      const a = portrait ? Number(c.key === mobileKey) : c.alpha(t);
       c.a = a;
       if (a < .005) { c.bornAt = -1; continue; }
       if (c.bornAt < 0) c.bornAt = still ? -1e9 : now;
@@ -478,6 +500,7 @@ const ClimbSky = (() => {
   function layoutNotes(shown, t, now, dt) {
     const leads = [];
     if (!notesEl) return leads;
+    if (mobilePortrait()) { notes.forEach(n => setOn(n, false, now)); return leads; }
     const narrow = view.narrow();
     const max = shown && narrow && shown.cfg.maxNarrow ? shown.cfg.maxNarrow : narrow ? F.maxNotes.narrow : F.maxNotes.wide;
     const S = view.area();
@@ -878,6 +901,7 @@ const ClimbSky = (() => {
   // a tether drops from its star to someone in the film
   function tetherLines(c, t) {
     const out = [];
+    if (mobilePortrait()) return out;
     if (still || c.tetherG < .01) return out;
     if (document.documentElement.classList.contains('sky-only')) return out;   // phones without the film: nothing in it to tie a star to
     const A = view.area();
@@ -985,6 +1009,7 @@ const ClimbSky = (() => {
 
   /* ---------------- Hover: which star is this? ---------------- */
   function hover(shown) {
+    if (mobilePortrait()) { if (tipShown) { api.tip(null); tipShown = false; } return; }
     const p = api.pointer;
     if (!shown || !p.on || p.down || api.spotHover()) { if (tipShown) { api.tip(null); tipShown = false; } return; }
     const fb = api.frame(), x = p.x - fb.left, y = p.y - fb.top, hit = p.touch ? 22 : 13;
@@ -1003,8 +1028,150 @@ const ClimbSky = (() => {
     } else if (tipShown) { api.tip(null); tipShown = false; }
   }
 
+  /* A phone has real tap targets, outside the decorative film's aria-hidden subtree.
+     Only the points capture taps; every gap and every vertical swipe keeps native page scrolling. */
+  let mobileControls = null, mobileHint = null, mobileLabel = null, mobileNodes = [];
+  let mobileConstellation = null, mobileSelection = null, mobileScroll = 0;
+  function clearMobileSelection() {
+    mobileSelection = null;
+    if (mobileLabel) mobileLabel.hidden = true;
+    if (mobileHint) mobileHint.hidden = !mobileControls || mobileControls.hidden || !mobileNodes.some(n => !n.el.hidden);
+    for (const n of mobileNodes) {
+      n.el.setAttribute('aria-expanded', 'false');
+      n.ring.style.borderWidth = '1px';
+    }
+  }
+  function selectMobileNode(n) {
+    if (mobileSelection === n) { clearMobileSelection(); return; }
+    clearMobileSelection();
+    mobileSelection = n;
+    mobileScroll = window.scrollY;
+    mobileHint.hidden = true;
+    n.el.setAttribute('aria-expanded', 'true');
+    n.ring.style.borderWidth = '2px';
+    const s = n.s;
+    const title = document.createElement('strong');
+    title.textContent = s.name || designation(s.bayer);
+    title.style.cssText = 'display:block;font:500 15px/1.35 var(--font-text,sans-serif);margin-bottom:4px';
+    const detail = document.createElement('span');
+    detail.textContent = `${s.dist ? `${lyText(s.dist)} light-years away` : 'Distance unknown'} · ${n.c.raw.latin}${s.role ? ` · ${s.role}` : ''}`;
+    detail.style.cssText = 'display:block;font:400 12px/1.45 var(--font-text,sans-serif)';
+    mobileLabel.replaceChildren(title, detail);
+    mobileLabel.hidden = false;
+    placeMobileLabel();
+  }
+  function placeMobileLabel() {
+    if (!mobileSelection || !mobileLabel) return;
+    const A = mobileArea(), fb = api.frame(), n = mobileSelection;
+    const width = Math.min(232, W - 32);
+    mobileLabel.style.width = `${width}px`;
+    mobileLabel.style.left = `${clamp(fb.left + n.s.x - width / 2, 16, Math.max(16, innerWidth - width - 16))}px`;
+    mobileLabel.style.top = `${fb.top + A.y + Math.max(0, A.h - 88)}px`;
+  }
+  function initMobileControls() {
+    mobileControls = document.createElement('div');
+    mobileControls.className = 'mobile-sky-controls';
+    mobileControls.setAttribute('role', 'group');
+    mobileControls.setAttribute('aria-label', 'Explore constellation stars');
+    mobileControls.style.cssText = 'position:fixed;inset:0;z-index:8;pointer-events:none;color:#f3f0e8';
+    mobileControls.hidden = true;
+    mobileHint = document.createElement('span');
+    mobileHint.className = 'mobile-sky-hint';
+    mobileHint.style.cssText = 'position:fixed;pointer-events:none;font:400 9px/1.4 var(--font-label,monospace);letter-spacing:.1em;text-transform:uppercase;text-shadow:0 1px 8px #091929';
+    mobileHint.setAttribute('aria-hidden', 'true');
+    mobileLabel = document.createElement('div');
+    mobileLabel.id = 'mobile-star-detail';
+    mobileLabel.className = 'mobile-sky-label';
+    mobileLabel.setAttribute('role', 'status');
+    mobileLabel.setAttribute('aria-live', 'polite');
+    mobileLabel.style.cssText = 'position:fixed;z-index:1;box-sizing:border-box;padding:12px 14px;pointer-events:none;color:#f3f0e8;background:rgba(10,28,44,.94);border:1px solid rgba(243,240,232,.3);text-shadow:none';
+    mobileLabel.hidden = true;
+    mobileControls.append(mobileHint, mobileLabel);
+    document.body.appendChild(mobileControls);
+    addEventListener('scroll', () => {
+      if (mobileSelection && Math.abs(window.scrollY - mobileScroll) > 8) clearMobileSelection();
+    }, { passive: true });
+    document.addEventListener('click', e => {
+      if (mobileSelection && !mobileControls.contains(e.target)) clearMobileSelection();
+    }, { passive: true });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') clearMobileSelection(); });
+  }
+  function buildMobileNodes(c) {
+    clearMobileSelection();
+    mobileNodes.forEach(n => n.el.remove());
+    mobileNodes = [];
+    mobileConstellation = c;
+    if (!c) return;
+    mobileHint.textContent = `${c.raw.latin} · Tap a star`;
+    const sorted = c.stars.slice().sort((a, b) => Number(!!b.role) - Number(!!a.role) || a.mag - b.mag);
+    for (const s of sorted) {
+      const el = document.createElement('button'), ring = document.createElement('span');
+      el.type = 'button';
+      el.className = 'mobile-sky-node';
+      el.setAttribute('aria-label', `${s.name || designation(s.bayer)}, ${c.raw.latin}. Show star details`);
+      el.setAttribute('aria-controls', 'mobile-star-detail');
+      el.setAttribute('aria-expanded', 'false');
+      el.style.cssText = 'position:fixed;left:0;top:0;width:44px;height:44px;min-width:44px;min-height:44px;margin:0;padding:0;border:0;border-radius:50%;background:transparent;color:#f3f0e8;pointer-events:auto;touch-action:pan-y;cursor:pointer;-webkit-tap-highlight-color:transparent';
+      ring.setAttribute('aria-hidden', 'true');
+      ring.style.cssText = 'position:absolute;inset:15px;border:1px solid rgba(243,240,232,.8);border-radius:50%;box-shadow:0 0 8px rgba(10,28,44,.7);pointer-events:none';
+      el.appendChild(ring);
+      const n = { c, s, el, ring, placed: '' };
+      let press = null, moved = false;
+      el.addEventListener('pointerdown', e => { press = { x: e.clientX, y: e.clientY, scroll: window.scrollY }; moved = false; }, { passive: true });
+      el.addEventListener('pointermove', e => { if (press && Math.hypot(e.clientX - press.x, e.clientY - press.y) > 8) moved = true; }, { passive: true });
+      el.addEventListener('pointercancel', () => { moved = true; press = null; }, { passive: true });
+      el.addEventListener('click', e => {
+        if (!mobilePortrait() || (e.detail && (moved || (press && Math.abs(window.scrollY - press.scroll) > 8)))) return;
+        selectMobileNode(n);
+      });
+      el.hidden = true;
+      mobileNodes.push(n);
+      mobileControls.insertBefore(el, mobileLabel);
+    }
+  }
+  function updateMobileControls(shown) {
+    if (!mobileControls) return;
+    if (!mobilePortrait() || !shown || shown.a < .5) {
+      mobileControls.hidden = true;
+      clearMobileSelection();
+      return;
+    }
+    if (mobileConstellation !== shown) buildMobileNodes(shown);
+    mobileControls.hidden = false;
+    const A = mobileArea(), fb = api.frame(), placed = [];
+    // Stable priority keeps neighbouring 44px squares from stealing one another's taps.
+    for (const n of mobileNodes) {
+      const s = n.s;
+      const fits = s.a > .5 && s.x >= 22 && s.x <= W - 22 && s.y >= A.y + 22 && s.y <= A.y + A.h - 22;
+      const on = fits && !placed.some(p => Math.abs(p.x - s.x) < 44 && Math.abs(p.y - s.y) < 44);
+      if (n.el.hidden === on) n.el.hidden = !on;
+      if (!on) { if (mobileSelection === n) clearMobileSelection(); continue; }
+      placed.push(s);
+      const transform = `translate3d(${(fb.left + s.x - 22).toFixed(2)}px,${(fb.top + s.y - 22).toFixed(2)}px,0)`;
+      if (transform !== n.placed) { n.el.style.transform = transform; n.placed = transform; }
+    }
+    mobileHint.style.left = `${fb.left + A.x}px`;
+    mobileHint.style.top = `${fb.top + A.y + A.h + 4}px`;
+    mobileHint.hidden = !placed.length || !!mobileSelection;
+    placeMobileLabel();
+  }
+
+  // A failed optional sky layer must never stop the film's requestAnimationFrame loop.
+  let renderFault = false;
+  function stopSkyAfterError(err) {
+    if (!renderFault) console.warn('sky: keeping the film without constellation controls', err && err.message);
+    renderFault = true;
+    if (mobileControls) mobileControls.hidden = true;
+    if (cvGL) cvGL.style.visibility = 'hidden';
+    if (cv2) cv2.style.visibility = 'hidden';
+  }
+
   /* ---------------- The loop's call ---------------- */
   function frame(t, now) {
+    if (renderFault) return;
+    try { renderFrame(t, now); } catch (err) { stopSkyAfterError(err); }
+  }
+  function renderFrame(t, now) {
     if (mode === 'wait' || !cons.length) return;
     const dt = clamp((now - lastNow) / 1000, .001, .05);
     lastNow = now;
@@ -1029,11 +1196,13 @@ const ClimbSky = (() => {
       }
     }
     hover(shown);
+    updateMobileControls(shown);
     placeTick(now);
   }
 
   /* ---------------- A checkpoint is saved: a small white tick rises over the climber ---------------- */
   function flash() {
+    if (mobilePortrait()) return;
     flashT0 = performance.now();
     if (!tickEl) return;
     tickEl.classList.remove('on');
@@ -1041,6 +1210,7 @@ const ClimbSky = (() => {
     tickEl.classList.add('on');
   }
   function placeTick(now) {
+    if (mobilePortrait()) return;
     if (!tickEl || now - flashT0 > 1600) return;
     const p = api.at('climber', api.tD ? api.tD() : 0) || [.4, .7];
     const [x, y] = view.px(p[0], p[1] - F.climberBox[1], 0);
@@ -1049,6 +1219,10 @@ const ClimbSky = (() => {
 
   /* ---------------- Reduced motion: the flat figure, drawn once over each still frame ---------------- */
   function drawStill(canvas, t, opts = {}) {
+    if (renderFault) return;
+    try { renderStill(canvas, t, opts); } catch (err) { stopSkyAfterError(err); }
+  }
+  function renderStill(canvas, t, opts = {}) {
     if (!cons.length) { pendingStills.push([canvas, t, opts]); return; }
     const w = canvas.clientWidth, h = canvas.clientHeight;
     if (!w || !h) return;
@@ -1061,7 +1235,8 @@ const ClimbSky = (() => {
     // opts.live: a canvas over the film's own frame (version 15), placed through the film's mapping (cover, mirror)
     view = opts.live ? liveView : stillView(w, h); still = true; W = w; H = h;
     const shown = update(t, 0, .016);
-    if (shown) draw2D(ctx, shown, [], t, { title: true, k: .9 });
+    if (shown) draw2D(ctx, shown, [], t, { title: !mobilePortrait(), k: .9 });
+    if (opts.live) { lastShown = shown; updateMobileControls(shown); }
     ({ view, W, H } = saved);
     still = false;
     for (const c of cons) c.bornAt = -1;
@@ -1102,6 +1277,7 @@ const ClimbSky = (() => {
     cvGL = document.querySelector('canvas.sky');
     notesEl = document.querySelector('.notes');
     legendEl = document.querySelector('.net-legend');
+    initMobileControls();
     if (notesEl) {
       tickEl = document.createElement('span');
       tickEl.className = 'sky-tick';
@@ -1139,6 +1315,7 @@ const ClimbSky = (() => {
     if (cv2) { cv2.width = Math.round(W * DPR); cv2.height = Math.round(H * DPR); cv2.style.cssText = style + (mode === 'gl' && !debug ? ';visibility:hidden' : ''); }
     if (cvGL) { cvGL.style.cssText = style + (mode === '2d' ? ';display:none' : ''); if (G) G.size(); }
     if (notesEl) notesEl.style.cssText = style;
+    if (!mobilePortrait() && mobileControls) { mobileControls.hidden = true; clearMobileSelection(); }
     measureNotes();
     dirty = true;
   }
@@ -1146,6 +1323,7 @@ const ClimbSky = (() => {
     if (G) G.renderer.clear();
     if (ctx2) { ctx2.setTransform(1, 0, 0, 1, 0, 0); ctx2.clearRect(0, 0, cv2.width, cv2.height); }
     notes.forEach(n => setOn(n, false));
+    if (mobileControls) { mobileControls.hidden = true; clearMobileSelection(); }
   }
 
   // peek: for tests (?test), what is on the canvas now

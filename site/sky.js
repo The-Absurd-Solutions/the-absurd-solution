@@ -72,7 +72,7 @@ const ClimbSky = (() => {
   const mobilePortrait = () => !!(api && api.narrow() && !F.narrowSkyOnly && F.portraitSrc);
 
   // The portrait film has its own open sky. Never map the landscape's tracks into this frame.
-  let mobileObstacles = [], mobileSlot = null, mobileSearchAt = -Infinity, mobileRetry = 0;
+  let mobileObstacles = [], mobileSlot = null, mobileSlotWidth = 0;
   function mobileBounds() {
     const supplied = api.mobileSkyArea && api.mobileSkyArea();
     const r = supplied || { x: 16, y: 68, w: W - 32, h: H - 84 };
@@ -82,10 +82,11 @@ const ClimbSky = (() => {
   // Read real line boxes only during layout, not from the film's animation loop.
   function measureMobileObstacles() {
     mobileObstacles = [];
-    mobileSlot = null;
-    clearMobileSelection();
-    clearTimeout(mobileRetry); mobileRetry = 0;
-    if (!mobilePortrait()) return;
+    if (!mobilePortrait()) {
+      mobileSlot = null;
+      document.documentElement.classList.remove('mobile-sky-obscured', 'mobile-sky-covered');
+      return;
+    }
     const fb = api.frame(), scroll = window.scrollY, range = document.createRange();
     const add = r => {
       if (r.width > 0 && r.height > 0) mobileObstacles.push({ x: r.left - fb.left, y: r.top + scroll - fb.top, w: r.width, h: r.height });
@@ -101,35 +102,36 @@ const ClimbSky = (() => {
         if (!el.closest('[aria-hidden="true"], .sr')) add(el.getBoundingClientRect());
       }
     }
-    mobileSearchAt = -Infinity;
   }
   function mobileArea() {
-    const bounds = mobileBounds(), now = performance.now(), scroll = window.scrollY;
-    const visible = mobileObstacles.filter(r => r.y + r.h > scroll + bounds.y - 10 && r.y < scroll + bounds.y + bounds.h + 10);
-    const clear = a => a.x >= bounds.x && a.y >= bounds.y && a.x + a.w <= bounds.x + bounds.w && a.y + a.h <= bounds.y + bounds.h &&
-      !visible.some(r => a.x < r.x + r.w + 10 && a.x + a.w + 10 > r.x && a.y + scroll < r.y + r.h + 10 && a.y + scroll + a.h + 10 > r.y);
-    // Keep a clear position. If text reaches it, remove hit targets immediately before searching again.
-    if (mobileSlot && clear(mobileSlot)) return mobileSlot;
-    if (mobileSlot) { mobileSlot = null; mobileSearchAt = now; clearMobileSelection(); }
-    let searched = false;
-    if (now - mobileSearchAt >= 140) {
-      searched = true;
-      mobileSearchAt = now;
-      for (const [w, h] of [[160, 180], [136, 156], [120, 148]]) {
-        if (w > bounds.w || h > bounds.h) continue;
-        const positions = [];
-        for (let y = bounds.y; y <= bounds.y + bounds.h - h; y += 24) positions.push(y);
-        positions.push(bounds.y + bounds.h - h);
-        positions.sort((a, b) => Math.abs(a - H * .53) - Math.abs(b - H * .53));
-        for (const y of positions) for (const x of [bounds.x + bounds.w - w, bounds.x]) {
-          const candidate = { x, y, w, h, available: true };
-          if (clear(candidate)) { mobileSlot = candidate; dirty = true; return mobileSlot; }
-        }
-      }
+    const bounds = mobileBounds(), scroll = window.scrollY;
+    // One fixed anchor: scrolling and mobile browser-bar resizes must not move the stars.
+    // A width change (including rotation) is the only reason to choose a new position.
+    if (!mobileSlot || mobileSlotWidth !== W) {
+      const w = Math.min(160, bounds.w), h = Math.min(180, bounds.h);
+      mobileSlot = {
+        x: bounds.x + bounds.w - w,
+        y: clamp(Math.round(H * .62), bounds.y, bounds.y + bounds.h - h),
+        w, h, available: false,
+      };
+      mobileSlotWidth = W;
+      clearMobileSelection();
+      dirty = true;
     }
-    // Reduced motion has no RAF loop: retry once after the search cooldown when scrolling stops.
-    if (stillPage && !searched && !mobileRetry) mobileRetry = setTimeout(() => { mobileRetry = 0; if (api.kick) api.kick(); }, 160);
-    return { x: bounds.x, y: bounds.y, w: 0, h: 0, available: false };
+    const a = mobileSlot;
+    let clearance = Infinity;
+    for (const r of mobileObstacles) {
+      if (a.x >= r.x + r.w + 12 || a.x + a.w + 12 <= r.x) continue;
+      const above = a.y + scroll - (r.y + r.h), below = r.y - (a.y + scroll + a.h);
+      clearance = Math.min(clearance, Math.max(above, below, 0));
+    }
+    // Fade before text arrives, and require more room before showing again.
+    // The wider return margin prevents flickering around a line of text.
+    const fits = a.y >= bounds.y && a.y + a.h <= bounds.y + bounds.h;
+    a.available = fits && clearance > (a.available ? 32 : 48);
+    document.documentElement.classList.toggle('mobile-sky-obscured', !a.available);
+    document.documentElement.classList.toggle('mobile-sky-covered', !fits || clearance === 0);
+    return a;
   }
 
   /* ---------------- Views: the live film, or a still frame for reduced motion ---------------- */
@@ -324,9 +326,11 @@ const ClimbSky = (() => {
 
   /* ---------------- Per frame: what shows, and how far each figure has turned ---------------- */
   function update(t, now, dt) {
-    if (!still) parallax(dt);
     const portrait = view.narrow() && mobilePortrait();
-    if (portrait && !mobileArea().available) { cons.forEach(c => { c.a = 0; }); return null; }
+    if (portrait) {
+      par.yaw = 0; par.pitch = 0;
+      mobileArea();
+    } else if (!still) parallax(dt);
     // The mobile sky belongs to the section being read. A paused video frame can sit exactly
     // in the desktop fade gap, and several sections share a single reduced-motion poster.
     let mobileKey = portrait && api.activeStation && api.activeStation();
@@ -341,7 +345,7 @@ const ClimbSky = (() => {
       c.a = a;
       if (a < .005) { c.bornAt = -1; continue; }
       if (c.bornAt < 0) c.bornAt = still ? -1e9 : now;
-      c.k = still ? 0 : c.turn(t);
+      c.k = still || portrait ? 0 : c.turn(t);
       c.pl = placeFigure(c, t);
       project(c, t);
       const age = now - c.bornAt;

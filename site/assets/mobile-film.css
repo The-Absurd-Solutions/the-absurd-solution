@@ -38,6 +38,10 @@
     mask-image: none;
   }
   .film-frame { inset: 0; }
+  .film :is(canvas.sky, canvas.net) { transition: opacity 180ms ease; }
+  .mobile-sky-obscured .film :is(canvas.sky, canvas.net) { opacity: 0; }
+  .still-mode .film :is(canvas.sky, canvas.net),
+  .mobile-sky-covered .film :is(canvas.sky, canvas.net) { transition: none; }
   .film::after { content: none; }
   .film-frame::after {
     content: '';
@@ -139,6 +143,10 @@
   :root { --gut: 20px; }
   .intro .hero-title { font-size: 30px; }
   .mobile-intro-copy { font-size: 15px; }
+}
+
+@media (max-width: 899px) and (prefers-reduced-motion: reduce) {
+  .film :is(canvas.sky, canvas.net) { transition: none; }
 }
 
 @media (max-width: 899px) {

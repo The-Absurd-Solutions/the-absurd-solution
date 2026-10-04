@@ -72,11 +72,64 @@ const ClimbSky = (() => {
   const mobilePortrait = () => !!(api && api.narrow() && !F.narrowSkyOnly && F.portraitSrc);
 
   // The portrait film has its own open sky. Never map the landscape's tracks into this frame.
-  function mobileArea() {
+  let mobileObstacles = [], mobileSlot = null, mobileSearchAt = -Infinity, mobileRetry = 0;
+  function mobileBounds() {
     const supplied = api.mobileSkyArea && api.mobileSkyArea();
-    const r = supplied || { x: 24, y: Math.max(68, H * .09), w: W - 48, h: Math.min(220, H * .24) };
-    const x = clamp(r.x, 22, Math.max(22, W - 66)), y = clamp(r.y, 22, Math.max(22, H - 66));
-    return { x, y, w: Math.max(44, Math.min(r.w, W - x - 22)), h: Math.max(44, Math.min(r.h, H - y - 22)) };
+    const r = supplied || { x: 16, y: 68, w: W - 32, h: H - 84 };
+    const x = Math.max(8, r.x), y = Math.max(8, r.y);
+    return { x, y, w: Math.max(0, Math.min(r.w, W - x - 8)), h: Math.max(0, Math.min(r.h, H - y - 8)) };
+  }
+  // Read real line boxes only during layout, not from the film's animation loop.
+  function measureMobileObstacles() {
+    mobileObstacles = [];
+    mobileSlot = null;
+    clearMobileSelection();
+    clearTimeout(mobileRetry); mobileRetry = 0;
+    if (!mobilePortrait()) return;
+    const fb = api.frame(), scroll = window.scrollY, range = document.createRange();
+    const add = r => {
+      if (r.width > 0 && r.height > 0) mobileObstacles.push({ x: r.left - fb.left, y: r.top + scroll - fb.top, w: r.width, h: r.height });
+    };
+    for (const host of document.querySelectorAll('main, footer')) {
+      const walker = document.createTreeWalker(host, NodeFilter.SHOW_TEXT);
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        if (!node.nodeValue.trim() || !node.parentElement || node.parentElement.closest('.sr, [hidden], [aria-hidden="true"], #work, script, style')) continue;
+        range.selectNodeContents(node);
+        for (const r of range.getClientRects()) add(r);
+      }
+      for (const el of host.querySelectorAll('img, video, canvas, svg, a, button, input, select, textarea, summary, .evidence-plate')) {
+        if (!el.closest('[aria-hidden="true"], .sr')) add(el.getBoundingClientRect());
+      }
+    }
+    mobileSearchAt = -Infinity;
+  }
+  function mobileArea() {
+    const bounds = mobileBounds(), now = performance.now(), scroll = window.scrollY;
+    const visible = mobileObstacles.filter(r => r.y + r.h > scroll + bounds.y - 10 && r.y < scroll + bounds.y + bounds.h + 10);
+    const clear = a => a.x >= bounds.x && a.y >= bounds.y && a.x + a.w <= bounds.x + bounds.w && a.y + a.h <= bounds.y + bounds.h &&
+      !visible.some(r => a.x < r.x + r.w + 10 && a.x + a.w + 10 > r.x && a.y + scroll < r.y + r.h + 10 && a.y + scroll + a.h + 10 > r.y);
+    // Keep a clear position. If text reaches it, remove hit targets immediately before searching again.
+    if (mobileSlot && clear(mobileSlot)) return mobileSlot;
+    if (mobileSlot) { mobileSlot = null; mobileSearchAt = now; clearMobileSelection(); }
+    let searched = false;
+    if (now - mobileSearchAt >= 140) {
+      searched = true;
+      mobileSearchAt = now;
+      for (const [w, h] of [[160, 180], [136, 156], [120, 148]]) {
+        if (w > bounds.w || h > bounds.h) continue;
+        const positions = [];
+        for (let y = bounds.y; y <= bounds.y + bounds.h - h; y += 24) positions.push(y);
+        positions.push(bounds.y + bounds.h - h);
+        positions.sort((a, b) => Math.abs(a - H * .53) - Math.abs(b - H * .53));
+        for (const y of positions) for (const x of [bounds.x + bounds.w - w, bounds.x]) {
+          const candidate = { x, y, w, h, available: true };
+          if (clear(candidate)) { mobileSlot = candidate; dirty = true; return mobileSlot; }
+        }
+      }
+    }
+    // Reduced motion has no RAF loop: retry once after the search cooldown when scrolling stops.
+    if (stillPage && !searched && !mobileRetry) mobileRetry = setTimeout(() => { mobileRetry = 0; if (api.kick) api.kick(); }, 160);
+    return { x: bounds.x, y: bounds.y, w: 0, h: 0, available: false };
   }
 
   /* ---------------- Views: the live film, or a still frame for reduced motion ---------------- */
@@ -157,7 +210,7 @@ const ClimbSky = (() => {
     const narrow = view.narrow();
     if (narrow && mobilePortrait()) {
       const A = mobileArea();
-      return { x: A.x + 22, y: A.y + 22, w: Math.max(20, A.w - 44), h: Math.max(20, A.h - 44), align: '' };
+      return { x: A.x + 22, y: A.y + 22, w: Math.max(20, A.w - 44), h: Math.max(20, A.h - 72), align: '' };
     }
     // a film in the right half only (FILM.halfCrop) may have its own placements; version 15 covers the page and uses wide
     const P = (narrow && !still ? c.cfg.narrow : (api.half && c.cfg.half) || c.cfg.wide) || {};
@@ -273,6 +326,7 @@ const ClimbSky = (() => {
   function update(t, now, dt) {
     if (!still) parallax(dt);
     const portrait = view.narrow() && mobilePortrait();
+    if (portrait && !mobileArea().available) { cons.forEach(c => { c.a = 0; }); return null; }
     // The mobile sky belongs to the section being read. A paused video frame can sit exactly
     // in the desktop fade gap, and several sections share a single reduced-motion poster.
     let mobileKey = portrait && api.activeStation && api.activeStation();
@@ -1052,21 +1106,22 @@ const ClimbSky = (() => {
     const s = n.s;
     const title = document.createElement('strong');
     title.textContent = s.name || designation(s.bayer);
-    title.style.cssText = 'display:block;font:500 15px/1.35 var(--font-text,sans-serif);margin-bottom:4px';
+    title.style.cssText = 'display:block;font:500 14px/1.3 var(--font-text,sans-serif);margin-bottom:4px;overflow-wrap:anywhere';
     const detail = document.createElement('span');
-    detail.textContent = `${s.dist ? `${lyText(s.dist)} light-years away` : 'Distance unknown'} · ${n.c.raw.latin}${s.role ? ` · ${s.role}` : ''}`;
-    detail.style.cssText = 'display:block;font:400 12px/1.45 var(--font-text,sans-serif)';
+    detail.textContent = `${s.dist ? `${lyText(s.dist)} light-years away` : 'Distance unknown'}${s.role ? ` · ${s.role}` : ''}`;
+    detail.style.cssText = 'display:block;font:400 11px/1.45 var(--font-text,sans-serif);overflow-wrap:anywhere';
     mobileLabel.replaceChildren(title, detail);
     mobileLabel.hidden = false;
     placeMobileLabel();
   }
   function placeMobileLabel() {
     if (!mobileSelection || !mobileLabel) return;
-    const A = mobileArea(), fb = api.frame(), n = mobileSelection;
-    const width = Math.min(232, W - 32);
-    mobileLabel.style.width = `${width}px`;
-    mobileLabel.style.left = `${clamp(fb.left + n.s.x - width / 2, 16, Math.max(16, innerWidth - width - 16))}px`;
-    mobileLabel.style.top = `${fb.top + A.y + Math.max(0, A.h - 88)}px`;
+    const A = mobileArea(), fb = api.frame();
+    if (!A.available) { clearMobileSelection(); return; }
+    mobileLabel.style.width = `${A.w}px`;
+    mobileLabel.style.maxHeight = `${A.h}px`;
+    mobileLabel.style.left = `${fb.left + A.x}px`;
+    mobileLabel.style.top = `${fb.top + A.y}px`;
   }
   function initMobileControls() {
     mobileControls = document.createElement('div');
@@ -1077,14 +1132,14 @@ const ClimbSky = (() => {
     mobileControls.hidden = true;
     mobileHint = document.createElement('span');
     mobileHint.className = 'mobile-sky-hint';
-    mobileHint.style.cssText = 'position:fixed;pointer-events:none;font:400 9px/1.4 var(--font-label,monospace);letter-spacing:.1em;text-transform:uppercase;text-shadow:0 1px 8px #091929';
+    mobileHint.style.cssText = 'position:fixed;pointer-events:none;font:400 9px/1.3 var(--font-label,monospace);letter-spacing:.06em;text-align:center;text-transform:uppercase;text-shadow:0 1px 8px #091929';
     mobileHint.setAttribute('aria-hidden', 'true');
     mobileLabel = document.createElement('div');
     mobileLabel.id = 'mobile-star-detail';
     mobileLabel.className = 'mobile-sky-label';
     mobileLabel.setAttribute('role', 'status');
     mobileLabel.setAttribute('aria-live', 'polite');
-    mobileLabel.style.cssText = 'position:fixed;z-index:1;box-sizing:border-box;padding:12px 14px;pointer-events:none;color:#f3f0e8;background:rgba(10,28,44,.94);border:1px solid rgba(243,240,232,.3);text-shadow:none';
+    mobileLabel.style.cssText = 'position:fixed;z-index:1;box-sizing:border-box;padding:10px 12px;overflow:hidden;pointer-events:none;color:#f3f0e8;background:rgba(10,28,44,.94);border:1px solid rgba(243,240,232,.3);text-shadow:none';
     mobileLabel.hidden = true;
     mobileControls.append(mobileHint, mobileLabel);
     document.body.appendChild(mobileControls);
@@ -1131,7 +1186,7 @@ const ClimbSky = (() => {
   }
   function updateMobileControls(shown) {
     if (!mobileControls) return;
-    if (!mobilePortrait() || !shown || shown.a < .5) {
+    if (!mobilePortrait() || !shown || shown.a < .5 || !mobileArea().available) {
       mobileControls.hidden = true;
       clearMobileSelection();
       return;
@@ -1142,7 +1197,7 @@ const ClimbSky = (() => {
     // Stable priority keeps neighbouring 44px squares from stealing one another's taps.
     for (const n of mobileNodes) {
       const s = n.s;
-      const fits = s.a > .5 && s.x >= 22 && s.x <= W - 22 && s.y >= A.y + 22 && s.y <= A.y + A.h - 22;
+      const fits = s.a > .5 && s.x >= A.x + 22 && s.x <= A.x + A.w - 22 && s.y >= A.y + 22 && s.y <= A.y + A.h - 50;
       const on = fits && !placed.some(p => Math.abs(p.x - s.x) < 44 && Math.abs(p.y - s.y) < 44);
       if (n.el.hidden === on) n.el.hidden = !on;
       if (!on) { if (mobileSelection === n) clearMobileSelection(); continue; }
@@ -1151,7 +1206,8 @@ const ClimbSky = (() => {
       if (transform !== n.placed) { n.el.style.transform = transform; n.placed = transform; }
     }
     mobileHint.style.left = `${fb.left + A.x}px`;
-    mobileHint.style.top = `${fb.top + A.y + A.h + 4}px`;
+    mobileHint.style.top = `${fb.top + A.y + A.h - 24}px`;
+    mobileHint.style.width = `${A.w}px`;
     mobileHint.hidden = !placed.length || !!mobileSelection;
     placeMobileLabel();
   }
@@ -1224,10 +1280,12 @@ const ClimbSky = (() => {
   }
   function renderStill(canvas, t, opts = {}) {
     if (!cons.length) { pendingStills.push([canvas, t, opts]); return; }
-    const w = canvas.clientWidth, h = canvas.clientHeight;
+    const box = opts.live && mobilePortrait() ? api.frame() : null;
+    const w = box ? box.width : canvas.clientWidth, h = box ? box.height : canvas.clientHeight;
     if (!w || !h) return;
     const dpr = Math.min(2, devicePixelRatio || 1);
-    canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+    if (canvas.width !== Math.round(w * dpr)) canvas.width = Math.round(w * dpr);
+    if (canvas.height !== Math.round(h * dpr)) canvas.height = Math.round(h * dpr);
     const ctx = canvas.getContext('2d');
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, w, h);
@@ -1316,6 +1374,7 @@ const ClimbSky = (() => {
     if (cvGL) { cvGL.style.cssText = style + (mode === '2d' ? ';display:none' : ''); if (G) G.size(); }
     if (notesEl) notesEl.style.cssText = style;
     if (!mobilePortrait() && mobileControls) { mobileControls.hidden = true; clearMobileSelection(); }
+    measureMobileObstacles();
     measureNotes();
     dirty = true;
   }

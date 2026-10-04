@@ -130,7 +130,7 @@
     filmBox = { left: box.left, top: box.top };
     bandH = narrow ? box.height : vh;
     bandTop = narrow ? box.top : 0;
-    readingTop = portraitMode() ? parseFloat(getComputedStyle(mainEl).paddingTop) || Math.min(280, Math.max(220, vh * .3)) : 0;
+    readingTop = portraitMode() ? barH : 0;
     readH = portraitMode() ? Math.max(1, vh - readingTop) : narrow && !skyOnly() && !portraitMode() ? bandTop : vh;
     if (narrow) {
       const controlBottom = filmToggle && !filmToggle.hidden ? vh - filmToggle.getBoundingClientRect().top + 8 : 18;   // sky-only: no toggle, only a small margin
@@ -985,11 +985,10 @@
     const y = scrollY;
     if (syncMobileFilm(y)) layout();
     clipUnderBar(y);
-    const previousStation = lastStation;
     updateStatus(clamp(y / maxScroll) * endT, y);
     if (LEFT) LEFT.update(y + readingTop, readH, true, narrow);   // reduced motion: everything joined
     const t = showStill(Math.max(0, lastStation));
-    if (narrow && previousStation !== lastStation) drawStills();
+    if (narrow) drawStills();
     if (TETH && !narrow && !filmCompact) TETH.frame(y, t, performance.now());
   }
   /* Reduced motion (version 15): the film's frame stays, as stills. Each floor shows the still nearest its moment
@@ -1052,7 +1051,7 @@
     T: Tkey, end: () => endT, scaled, stationKeys: () => keys.slice(), captions: captionRect,
     activeStation: () => keys[Math.max(0, lastStation)],
     frame: () => frameBox, filmBox: () => filmBox, narrow: () => narrow,
-    mobileSkyArea: () => ({ x: 24, y: barH + 12, w: vw - 48, h: Math.max(64, readingTop - barH - 30) }),
+    mobileSkyArea: () => ({ x: 16, y: barH + 12, w: vw - 32, h: Math.max(64, vh - barH - 28) }),
     tip: (c, x, y) => { if (!spotHover) showTip(c, x, y); },
     spotHover: () => !!spotHover,
     hint: () => (hintR && hintEl.classList.contains('on') ? hintR : null),

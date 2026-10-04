@@ -2,10 +2,10 @@
 .mobile-identity, .mobile-intro-copy, .mobile-work-link { display: none; }
 
 @media (max-width: 899px) {
-  :root { --band: 0px; --mobile-sky-bottom: clamp(220px, 30svh, 280px); --gut: 24px; }
+  :root { --band: 0px; --gut: 24px; }
   html, html.film-compact {
     --band: 0px;
-    scroll-padding-top: calc(var(--mobile-sky-bottom) + 12px);
+    scroll-padding-top: calc(var(--bar-h) + 12px);
     scroll-padding-bottom: 20px;
   }
   html[data-palette] header.bar {
@@ -50,12 +50,12 @@
   .film-touch, .film-toggle:not([hidden]), .tethers, .tt-label,
   .spots, .slip, .say, .tip, .hint, .rail { display: none; }
 
-  main { padding-top: var(--mobile-sky-bottom); background: transparent; }
+  main { padding-top: var(--bar-h); background: transparent; }
   .station { padding: 48px 0; background: transparent; }
   .station + .station { border-top: 1px solid var(--line); }
   .col { max-width: 640px; margin-inline: var(--gut); }
   .s-intro { padding-top: 28px; padding-bottom: 34px; }
-  .intro .hero-copy { min-height: calc(100svh - var(--mobile-sky-bottom) - 28px); }
+  .intro .hero-copy { min-height: calc(100svh - var(--bar-h) - 28px); }
   .hero-text::before { content: none; }
   .mobile-identity {
     display: block;
